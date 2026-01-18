@@ -1,0 +1,17 @@
+**/node_modules/
+packages/*/dist/
+**/tsconfig.tsbuildinfo
+
+/.idea/
+.DS_Store
+
+.env
+.env.*
+!.env.example
+db.sql
+/compose/*
+!/compose/
+!/compose/docker-compose*.yml
+
+# generated GraphQL schema for codegen
+packages/web/schema.graphql

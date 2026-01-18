@@ -1,0 +1,37 @@
+{
+    "words": [
+        "codegen",
+        "edis",
+        "embeddeds",
+        "fontsource",
+        "fortawesome",
+        "frnk",
+        "ftccmp",
+        "ftcscout",
+        "jank",
+        "jemi",
+        "jemison",
+        "luxon",
+        "mstd", // match score table descriptor
+        "ocho",
+        "offseason",
+        "oprs",
+        "powershot",
+        "powershots",
+        "qliso",
+        "quals",
+        "Reinis",
+        "skystone",
+        "skystones",
+        "stateprov",
+        "subpixels",
+        "teleop",
+        "teps",
+        "threlte",
+        "timestamptz",
+        "tmps",
+        "typeorm",
+        "unsub",
+        "xmark"
+    ]
+}

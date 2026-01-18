@@ -1,0 +1,43 @@
+query CompareTeams($numbers: [Int!]!, $season: Int!) {
+    teams: teamsByNumbers(numbers: $numbers) {
+        name
+        number
+        location {
+            city
+            state
+            country
+        }
+        rookieYear
+        quickStats(season: $season) {
+            tot {
+                value
+                rank
+            }
+            auto {
+                value
+                rank
+            }
+            dc {
+                value
+                rank
+            }
+            eg {
+                value
+                rank
+            }
+            count
+        }
+        events(season: $season) {
+            season
+            eventCode
+            teamNumber
+            stats {
+                __typename
+                ...TeamPageStats
+            }
+            event {
+                ...BasicEventInfo
+            }
+        }
+    }
+}
