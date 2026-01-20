@@ -2,14 +2,42 @@
     import type { IconDefinition as IconDefinition1 } from "@fortawesome/free-solid-svg-icons";
     import type { IconDefinition as IconDefinition2 } from "@fortawesome/free-brands-svg-icons";
     import Fa from "svelte-fa";
+    import { locale, translateText } from "$lib/i18n";
+    import { browser } from "$app/environment";
 
     export let icon: IconDefinition1 | IconDefinition2;
     export let name: string;
+    export let nameKey: string | undefined = undefined;
     export let link: string;
     export let newTab: boolean | null = null;
+
+    let translatedTitle = name;
+    let requestId = 0;
+
+    $: void (async () => {
+        let currentLocale = $locale;
+        let currentKey = nameKey ?? name;
+        if (!browser || !currentLocale) {
+            translatedTitle = name;
+            return;
+        }
+        if (currentLocale.toLowerCase().startsWith("en")) {
+            translatedTitle = name;
+            return;
+        }
+        translatedTitle = name;
+        let id = ++requestId;
+        let result = await translateText(currentLocale, currentKey, name);
+        if (id === requestId) translatedTitle = result;
+    })();
 </script>
 
-<a href={link} title={name} target={newTab ? "_blank" : null} rel={newTab ? "noreferrer" : null}>
+<a
+    href={link}
+    title={translatedTitle}
+    target={newTab ? "_blank" : null}
+    rel={newTab ? "noreferrer" : null}
+>
     <Fa {icon} size="1.25x" fw />
 </a>
 

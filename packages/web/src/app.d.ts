@@ -3,8 +3,19 @@
 declare global {
     namespace App {
         // interface Error {}
-        // interface Locals {}
-        // interface PageData {}
+        interface Locals {
+            locale: string;
+            localePreference: "auto" | "manual";
+            manualLocale: string | null;
+            detectedLocale: string;
+        }
+
+        interface PageData {
+            locale?: string;
+            localePreference?: "auto" | "manual";
+            manualLocale?: string | null;
+            detectedLocale?: string;
+        }
         // interface Platform {}
     }
 }

@@ -5,6 +5,12 @@ export const IS_DEV = !IS_PROD;
 export const THEME_COOKIE_NAME = "ftc-scout:theme";
 export const THEME_COOKIE_AGE = 60 * 60 * 24 * 356 * 10;
 
+// locale settings
+export const LOCALE_COOKIE_NAME = "ftc-scout:locale";
+export const LOCALE_COOKIE_AGE = 60 * 60 * 24 * 356 * 2;
+export const DEFAULT_LOCALE = "en";
+export const SUPPORTED_LOCALES = ["en", "zh-Hans"] as const;
+
 // alert bar settings
 export const ALERT_COOKIE_NAME = "ftc-scout:alert-dismissed";
 export const ALERT_COOKIE_AGE = 60 * 60 * 24 * 7;

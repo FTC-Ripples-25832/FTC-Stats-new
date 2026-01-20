@@ -35,6 +35,7 @@
             <ul>
                 <li>Saving dark/light mode preference</li>
                 <li>Remembering if you have dismissed a banner</li>
+                <li>Saving language preference</li>
             </ul>
             <p>You can delete these cookies in your browser settings.</p>
 

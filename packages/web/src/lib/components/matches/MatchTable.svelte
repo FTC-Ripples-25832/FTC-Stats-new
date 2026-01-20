@@ -33,6 +33,7 @@
         remote: boolean;
     };
     export let focusedTeam: number | null = null;
+    export let teamOprMap: Record<number, number> | null = null;
 
     $: timeZone = event.timezone;
     $: remote = event.remote;
@@ -118,6 +119,7 @@
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
                         {teamCount}
+                        {teamOprMap}
                     />
                 {/each}
                 {#if finals.length}
@@ -131,6 +133,7 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
+                        {teamOprMap}
                     />
                 {/each}
                 {#if semis.length}
@@ -144,6 +147,7 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
+                        {teamOprMap}
                     />
                 {/each}
                 {#if quals.length && (finals.length || semis.length || doubleElim.length)}
@@ -157,6 +161,7 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
+                        {teamOprMap}
                     />
                 {/each}
             {/if}

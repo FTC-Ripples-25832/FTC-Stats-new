@@ -19,6 +19,7 @@
         faTrophy,
         faVideo,
         faChartBar,
+        faChartLine,
     } from "@fortawesome/free-solid-svg-icons";
     import { prettyPrintDateRangeString } from "$lib/printers/dateRange";
     import { prettyPrintURL } from "$lib/printers/url";
@@ -34,6 +35,7 @@
     import Teams from "./Teams.svelte";
     import Rankings from "./Rankings.svelte";
     import Awards from "./Awards.svelte";
+    import Figures from "./Figures.svelte";
     import Simulation from "./Simulation.svelte";
     import { isNonCompetition } from "$lib/util/event-type";
     import Head from "$lib/components/Head.svelte";
@@ -54,6 +56,24 @@
 
     $: season = +$page.params.season as Season;
     $: errorMessage = `No ${DESCRIPTORS[season].seasonName} event with code ${$page.params.code}`;
+
+    function getOprValue(stats: any, season: Season): number | null {
+        if (!stats || !("opr" in stats) || !stats.opr) return null;
+        const opr = stats.opr as Record<string, number | null | undefined>;
+        if (DESCRIPTORS[season].pensSubtract || !("totalPointsNp" in opr)) {
+            return opr.totalPoints ?? null;
+        }
+        return opr.totalPointsNp ?? opr.totalPoints ?? null;
+    }
+
+    $: teamOprMap =
+        stats?.reduce((acc, teamEvent) => {
+            const opr = getOprValue(teamEvent.stats, season);
+            if (opr != null) {
+                acc[teamEvent.teamNumber] = opr;
+            }
+            return acc;
+        }, {} as Record<number, number>) ?? {};
 
     function gotoTab(tab: string) {
         if (browser) {
@@ -148,6 +168,7 @@
                 [faBolt, "Matches", "matches", !!event.matches.length],
                 [faTrophy, "Rankings", "rankings", !!stats.length],
                 [faBolt, "Insights", "insights", !!insights.length],
+                [faChartLine, "Figures", "figures", !!stats.length],
                 [faMedal, "Awards", "awards", !!event.awards.length],
                 [faHashtag, "Teams", "teams", !!event.teams.length],
                 [faChartBar, "Simulation", "simulation", !!stats.length && !!event.matches.length],
@@ -166,7 +187,12 @@
             </Card>
 
             <TabContent name="matches">
-                <MatchTable matches={event.matches} {event} {focusedTeam} />
+                <MatchTable
+                    matches={event.matches}
+                    {event}
+                    {focusedTeam}
+                    {teamOprMap}
+                />
             </TabContent>
 
             <TabContent name="rankings">
@@ -186,6 +212,14 @@
                     eventName={event.name}
                     data={insights}
                     {focusedTeam}
+                />
+            </TabContent>
+
+            <TabContent name="figures">
+                <Figures
+                    {season}
+                    eventName={event.name}
+                    teams={stats}
                 />
             </TabContent>
 

@@ -1,6 +1,7 @@
 <script>
     import DarkModeToggle from "./DarkModeToggle.svelte";
     import Hamburger from "./Hamburger.svelte";
+    import LocaleSelect from "./LocaleSelect.svelte";
     import Logo from "./Logo.svelte";
     import Searchbar from "./search/Searchbar.svelte";
 </script>
@@ -13,6 +14,7 @@
 
     <div class="right">
         <Searchbar />
+        <LocaleSelect />
         <DarkModeToggle />
     </div>
 </nav>

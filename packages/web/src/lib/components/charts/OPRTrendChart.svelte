@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import Highcharts from "highcharts";
+    import { browser } from "$app/environment";
+    import type * as HighchartsType from "highcharts";
 
     export let teamData: Array<{
         teamNumber: number;
@@ -12,8 +13,9 @@
         }>;
     }>;
 
+    type HighchartsModule = typeof import("highcharts");
     let chartContainer: HTMLDivElement;
-    let chart: Highcharts.Chart | null = null;
+    let chart: HighchartsType.Chart | null = null;
 
     // Generate colors for teams (using theme colors)
     const teamColors = [
@@ -25,8 +27,16 @@
         "rgb(255, 152, 0)", // Amber
     ];
 
-    onMount(() => {
+    async function loadHighcharts(): Promise<HighchartsModule | null> {
+        if (!browser) return null;
+        const highchartsModule = await import("highcharts");
+        return (highchartsModule as { default?: HighchartsModule }).default ?? highchartsModule;
+    }
+
+    onMount(async () => {
         if (!chartContainer || teamData.length === 0) return;
+        const Highcharts = await loadHighcharts();
+        if (!Highcharts) return;
 
         // Prepare series data
         const series = teamData.map((team, idx) => ({

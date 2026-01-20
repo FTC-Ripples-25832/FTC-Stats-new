@@ -1,4 +1,5 @@
 import { browser } from "$app/environment";
+import { IS_DEV } from "$lib/constants";
 import type {
     ApolloClient,
     ApolloQueryResult,
@@ -32,14 +33,34 @@ export async function getData<Data = any, Variables extends OperationVariables =
 
     let result: Writable<ApolloQueryResult<Data> | null> = writable(null);
 
-    queryResult.then((r) => {
-        result.set(r);
-        if (bypassCacheKey) cache[keyWithVars] = r;
-    });
+    queryResult
+        .then((r) => {
+            result.set(r);
+            if (bypassCacheKey) cache[keyWithVars] = r;
+        })
+        .catch((error) => {
+            if (IS_DEV) {
+                console.error("GraphQL query failed:", error);
+            }
+            let fallback = {
+                data: null as Data,
+                errors: [error],
+                loading: false,
+                networkStatus: 7,
+            } as unknown as ApolloQueryResult<Data>;
+            result.set(fallback);
+            if (bypassCacheKey) cache[keyWithVars] = fallback;
+        });
 
     if (!browser) {
         // We are doing SSR so we must have the data.
-        await queryResult;
+        try {
+            await queryResult;
+        } catch (error) {
+            if (!IS_DEV) {
+                throw error;
+            }
+        }
     } else {
         // wait up to 300ms
         await Promise.race([queryResult, new Promise((r) => setTimeout(r, 300))]);
@@ -70,10 +91,24 @@ export function getDataSync<Data = any, Variables extends OperationVariables = o
 
     let result: Writable<ApolloQueryResult<Data> | null> = writable(null);
 
-    queryResult.then((r) => {
-        result.set(r);
-        if (bypassCacheKey) cache[keyWithVars] = r;
-    });
+    queryResult
+        .then((r) => {
+            result.set(r);
+            if (bypassCacheKey) cache[keyWithVars] = r;
+        })
+        .catch((error) => {
+            if (IS_DEV) {
+                console.error("GraphQL query failed:", error);
+            }
+            let fallback = {
+                data: null as Data,
+                errors: [error],
+                loading: false,
+                networkStatus: 7,
+            } as unknown as ApolloQueryResult<Data>;
+            result.set(fallback);
+            if (bypassCacheKey) cache[keyWithVars] = fallback;
+        });
 
     return result;
 }

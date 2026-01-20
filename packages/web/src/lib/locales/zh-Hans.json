@@ -1,0 +1,17 @@
+{
+    "nav.navigate": "导航",
+    "nav.home": "首页",
+    "nav.events": "赛事",
+    "nav.teams": "队伍",
+    "nav.compare-teams": "队伍对比",
+    "nav.records": "赛季记录",
+    "nav.scouting-report": "侦察报告",
+    "nav.about": "关于",
+    "nav.donate": "捐赠",
+    "nav.privacy": "隐私政策",
+    "nav.api": "API",
+    "nav.github": "GitHub",
+    "nav.discord": "Discord",
+    "nav.email": "邮箱",
+    "nav.status": "状态"
+}

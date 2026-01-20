@@ -38,9 +38,11 @@
     import { matchTimeTip } from "../../util/tippy";
     import { getContext } from "svelte";
     import { SHOW_MATCH_SCORE, type ShowMatchFn } from "./MatchTable.svelte";
+    import MatchPrediction from "./MatchPrediction.svelte";
 
     export let match: FullMatchFragment;
     export let timeZone: string;
+    export let teamOprMap: Record<number, number> | null = null;
 
     $: winner = computeWinner(match.scores);
 
@@ -62,6 +64,27 @@
     $: tip = matchTimeTip(match, timeZone, $tippyTheme);
 
     let show: ShowMatchFn = getContext(SHOW_MATCH_SCORE);
+
+    function getTeamNumber(team: FullMatchFragment["teams"][number]): number | null {
+        return team.teamNumber ?? team.team?.number ?? null;
+    }
+
+    $: redTeams = match.teams.filter((t) => t.alliance == Alliance.Red);
+    $: blueTeams = match.teams.filter((t) => t.alliance == Alliance.Blue);
+    $: redTeamNums = redTeams.map(getTeamNumber).filter((n): n is number => n != null);
+    $: blueTeamNums = blueTeams.map(getTeamNumber).filter((n): n is number => n != null);
+
+    $: redOPR1 = teamOprMap?.[redTeamNums[0] ?? -1] ?? null;
+    $: redOPR2 = teamOprMap?.[redTeamNums[1] ?? -1] ?? null;
+    $: blueOPR1 = teamOprMap?.[blueTeamNums[0] ?? -1] ?? null;
+    $: blueOPR2 = teamOprMap?.[blueTeamNums[1] ?? -1] ?? null;
+
+    $: showPrediction =
+        !match.scores &&
+        !!teamOprMap &&
+        [redOPR1, redOPR2, blueOPR1, blueOPR2].every(
+            (val) => typeof val == "number" && !Number.isNaN(val)
+        );
 </script>
 
 <td
@@ -80,7 +103,12 @@
     </div>
     <div class="score">
         {#if match.scores == undefined}
-            {prettyPrintTimeString(match.scheduledStartTime, timeZone)}
+            <div class="upcoming">
+                <span class="time">{prettyPrintTimeString(match.scheduledStartTime, timeZone)}</span>
+                {#if showPrediction}
+                    <MatchPrediction {redOPR1} {redOPR2} {blueOPR1} {blueOPR2} />
+                {/if}
+            </div>
         {:else if "red" in match.scores}
             <div class="left" class:winner={winner == Alliance.Red} class:tie={winner == "Tie"}>
                 <!-- // Help: Season Specific -->
@@ -200,6 +228,8 @@
         display: flex;
         justify-content: space-around;
         gap: var(--sm-gap);
+        align-items: center;
+        flex-wrap: wrap;
     }
 
     .score .left {
@@ -225,5 +255,16 @@
     .score .tie {
         font-weight: bold;
         color: var(--neutral-team-text-color);
+    }
+
+    .upcoming {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--sm-gap);
+    }
+
+    .time {
+        white-space: nowrap;
     }
 </style>

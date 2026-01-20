@@ -3,9 +3,11 @@
     import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import { sidebarOpen } from "./Sidebar.svelte";
+    import Translate from "$lib/components/i18n/Translate.svelte";
 
     export let icon: IconDefinition;
     export let name: string;
+    export let nameKey: string | undefined = undefined;
     export let link: string;
     export let strict = false;
     export let internal = true;
@@ -25,7 +27,7 @@
     on:click={() => ($sidebarOpen = false)}
 >
     <Fa {icon} fw size="1.25x" />
-    {name}
+    <Translate text={name} msgKey={nameKey} />
 </a>
 
 <style>

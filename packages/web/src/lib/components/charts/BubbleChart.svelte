@@ -1,12 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import Highcharts from "highcharts";
-    import HighchartsMore from "highcharts/highcharts-more";
-
-    // Initialize Highcharts More module for bubble charts
-    if (typeof Highcharts === "object") {
-        HighchartsMore(Highcharts);
-    }
+    import { browser } from "$app/environment";
+    import type * as HighchartsType from "highcharts";
 
     export let teams: Array<{
         teamNumber: number;
@@ -21,10 +16,28 @@
     export let title = "Team Performance Comparison";
 
     let chartContainer: HTMLDivElement;
-    let chart: Highcharts.Chart | null = null;
+    type HighchartsModule = typeof import("highcharts");
+    let chart: HighchartsType.Chart | null = null;
 
-    onMount(() => {
+    async function loadHighcharts(): Promise<HighchartsModule | null> {
+        if (!browser) return null;
+        const highchartsModule = await import("highcharts");
+        const Highcharts =
+            (highchartsModule as { default?: HighchartsModule }).default ?? highchartsModule;
+        const highchartsMoreModule = await import("highcharts/highcharts-more");
+        const HighchartsMore =
+            (highchartsMoreModule as { default?: (h: HighchartsModule) => void }).default ??
+            (highchartsMoreModule as (h: HighchartsModule) => void);
+        if (typeof HighchartsMore === "function") {
+            HighchartsMore(Highcharts);
+        }
+        return Highcharts;
+    }
+
+    onMount(async () => {
         if (!chartContainer || teams.length === 0) return;
+        const Highcharts = await loadHighcharts();
+        if (!Highcharts) return;
 
         // Prepare bubble data
         const bubbleData = teams.map((team) => ({

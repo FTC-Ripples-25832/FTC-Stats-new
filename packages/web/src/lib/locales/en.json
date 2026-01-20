@@ -1,0 +1,17 @@
+{
+    "nav.navigate": "Navigate",
+    "nav.home": "Home",
+    "nav.events": "Events",
+    "nav.teams": "Teams",
+    "nav.compare-teams": "Compare Teams",
+    "nav.records": "Season Records",
+    "nav.scouting-report": "The Scouting Report",
+    "nav.about": "About",
+    "nav.donate": "Donate",
+    "nav.privacy": "Privacy Policy",
+    "nav.api": "API",
+    "nav.github": "GitHub",
+    "nav.discord": "Discord",
+    "nav.email": "Email",
+    "nav.status": "Status"
+}

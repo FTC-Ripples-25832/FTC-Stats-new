@@ -7,6 +7,8 @@
     </p>
 </div>
 
+<h2 class="section-title">Product Concepts</h2>
+
 <div class="card-grid">
     <a class="mock-panel mock-card" href="/mocks/command-center">
         <div class="card-head">
@@ -67,6 +69,177 @@
     </a>
 </div>
 
+<h2 class="section-title">Stats UI Concepts</h2>
+
+<div class="card-grid">
+    <a class="mock-panel mock-card" href="/mocks/stats-table">
+        <div class="card-head">
+            <span class="badge">Stat Table</span>
+            <h2>Data-Dense Grid</h2>
+        </div>
+        <p class="mock-muted">Compact table-first layout for scanning team stats.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-pill"></span>
+                <span class="preview-pill"></span>
+            </div>
+            <div class="preview-tiles two">
+                <span></span>
+                <span></span>
+            </div>
+            <div class="preview-bar"></div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/stats-cards">
+        <div class="card-head">
+            <span class="badge">Stats Cards</span>
+            <h2>Insight Tiles</h2>
+        </div>
+        <p class="mock-muted">Card-based stats with emphasis on highlights and trends.</p>
+        <div class="preview">
+            <div class="preview-tiles">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="preview-bar short"></div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/stats-compare">
+        <div class="card-head">
+            <span class="badge">Compare</span>
+            <h2>Side-by-Side</h2>
+        </div>
+        <p class="mock-muted">Two-team comparison for alliance selection meetings.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+            </div>
+            <div class="preview-tiles two">
+                <span></span>
+                <span></span>
+            </div>
+            <div class="preview-bar"></div>
+        </div>
+    </a>
+</div>
+
+<h2 class="section-title">Event Page Concepts</h2>
+
+<div class="card-grid">
+    <a class="mock-panel mock-card" href="/mocks/event-results-minimal">
+        <div class="card-head">
+            <span class="badge">Event Results</span>
+            <h2>Minimal Tables</h2>
+        </div>
+        <p class="mock-muted">Clean, dense layout with standings and match timeline.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-pill"></span>
+                <span class="preview-pill"></span>
+                <span class="preview-pill"></span>
+            </div>
+            <div class="preview-tiles two">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/event-results-cards">
+        <div class="card-head">
+            <span class="badge">Event Results</span>
+            <h2>Card Stack</h2>
+        </div>
+        <p class="mock-muted">Visual match cards and highlight callouts.</p>
+        <div class="preview">
+            <div class="preview-tiles">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="preview-bar short"></div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/event-results-dashboard">
+        <div class="card-head">
+            <span class="badge">Event Results</span>
+            <h2>Split Dashboard</h2>
+        </div>
+        <p class="mock-muted">Sidebar schedule with live scoreboard focus.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+            </div>
+            <div class="preview-bar"></div>
+            <div class="preview-tiles two">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </a>
+</div>
+
+<h2 class="section-title">Team Page Concepts</h2>
+
+<div class="card-grid">
+    <a class="mock-panel mock-card" href="/mocks/team-stats-minimal">
+        <div class="card-head">
+            <span class="badge">Team Stats</span>
+            <h2>Minimal Profile</h2>
+        </div>
+        <p class="mock-muted">Tight layout with key stats and recent matches.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-pill"></span>
+                <span class="preview-pill"></span>
+            </div>
+            <div class="preview-bar"></div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/team-stats-cards">
+        <div class="card-head">
+            <span class="badge">Team Stats</span>
+            <h2>Insights Cards</h2>
+        </div>
+        <p class="mock-muted">Highlights, strengths, and match cards.</p>
+        <div class="preview">
+            <div class="preview-tiles">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="preview-bar short"></div>
+        </div>
+    </a>
+
+    <a class="mock-panel mock-card" href="/mocks/team-stats-compact">
+        <div class="card-head">
+            <span class="badge">Team Stats</span>
+            <h2>Compact Sidebar</h2>
+        </div>
+        <p class="mock-muted">Split view with sticky summary and results list.</p>
+        <div class="preview">
+            <div class="preview-row">
+                <span class="preview-dot"></span>
+                <span class="preview-dot"></span>
+            </div>
+            <div class="preview-tiles two">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </a>
+</div>
+
 <style>
     .intro {
         display: flex;
@@ -86,6 +259,11 @@
     h1 {
         margin: 0;
         font-size: calc(var(--xl-font-size) * 1.2);
+    }
+
+    .section-title {
+        margin: 0;
+        font-size: var(--vl-font-size);
     }
 
     .card-grid {
