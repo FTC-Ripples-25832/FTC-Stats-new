@@ -12,6 +12,7 @@
     import { createTippy } from "svelte-tippy";
     import { tippyTheme } from "$lib/components/nav/DarkModeToggle.svelte";
     import Sponsor from "$lib/components/nav/Sponsor.svelte";
+    import { t } from "$lib/i18n";
     // import AlertBar from "$lib/components/nav/AlertBar.svelte";
 
     export let data;
@@ -25,6 +26,10 @@
 
     let tippy = createTippy({});
     $: np = DESCRIPTORS[CURRENT_SEASON].pensSubtract ? "" : "no penalty ";
+    $: wrTooltipKey = DESCRIPTORS[CURRENT_SEASON].pensSubtract
+        ? "home.wr.tooltip"
+        : "home.wr.tooltip-no-penalty";
+    $: wrTooltip = $t(wrTooltipKey, `Top ${np}score in a FIRST sponsored event.`);
 </script>
 
 <Head title="FTCStats" />
@@ -38,25 +43,28 @@
     <Card vis={false}>
         <div class="title">
             <h1>FTC<em>Stats</em></h1>
-            <p>A new way to track and scout <em>FIRST</em> Tech Challenge</p>
+            <p>
+                {$t("home.tagline.prefix", "A new way to track and scout")} <em>FIRST</em>{" "}
+                {$t("home.tagline.suffix", "Tech Challenge")}
+            </p>
         </div>
 
         <div class="infos">
             <a class="info-box" href="/teams">
                 <div class="icon"><Fa icon={faHashtag} /></div>
                 <b class="count">{activeTeamsCount ?? "..."}</b>
-                <p class="name">Active Teams</p>
+                <p class="name">{$t("home.active-teams", "Active Teams")}</p>
             </a>
             <a class="info-box" href="/events/{CURRENT_SEASON}">
                 <div class="icon"><Fa icon={faBolt} /></div>
                 <b class="count">{matchesPlayedCount ?? "..."}</b>
-                <p class="name">Matches Played</p>
+                <p class="name">{$t("home.matches-played", "Matches Played")}</p>
             </a>
         </div>
 
         <div class="events">
             <div class="head">
-                <h2>Today's Events</h2>
+                <h2>{$t("home.todays-events", "Today's Events")}</h2>
                 <p>{prettyPrintDateRange(new Date(), new Date())}</p>
             </div>
 
@@ -74,7 +82,9 @@
                     {/each}
                 </ul>
             {:else if events}
-                <p class="no-events">There are no events scheduled for today.</p>
+                <p class="no-events">
+                    {$t("home.no-events", "There are no events scheduled for today.")}
+                </p>
             {:else}
                 <SkeletonRow header={false} card={false} rows={10} />
             {/if}
@@ -82,11 +92,11 @@
 
         <div class="wr">
             <h2>
-                World Record
+                {$t("home.world-record", "World Record")}
                 <span
                     class="help"
                     use:tippy={{
-                        content: `Top ${np}score in a FIRST sponsored event.`,
+                        content: wrTooltip,
                         theme: $tippyTheme,
                     }}
                 >

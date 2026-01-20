@@ -14,6 +14,7 @@
     import InfiniteScroll from "svelte-infinite-scroll";
     import { browser } from "$app/environment";
     import Head from "$lib/components/Head.svelte";
+    import { t } from "$lib/i18n";
 
     export let data;
     $: teamsStore = data.teams;
@@ -55,17 +56,17 @@
 
 <WidthProvider>
     <Card>
-        <h1>Teams</h1>
+        <h1>{$t("teams.title", "Teams")}</h1>
 
         <Form id="team-search" style="col">
             <div class="row">
                 <label for="search-select">
-                    Search
+                    {$t("form.search", "Search")}
                     <SearchInput bind:value={$searchText} name="search" id="search-select" />
                 </label>
 
                 <label for="region-select">
-                    Regions
+                    {$t("form.regions", "Regions")}
                     <RegionSelect bind:region={$region} name="regions" id="region-select" />
                 </label>
             </div>
@@ -92,8 +93,8 @@
                     </li>
                 {:else}
                     <div class="no-teams">
-                        <b> No matching Teams. </b>
-                        <p>Try modifying your filters.</p>
+                        <b>{$t("teams.no-matching", "No matching teams.")}</b>
+                        <p>{$t("filters.try-modifying", "Try modifying your filters.")}</p>
                     </div>
                 {/each}
 

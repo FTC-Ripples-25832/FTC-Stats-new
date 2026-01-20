@@ -29,6 +29,7 @@
     import { STRING_EC_DC } from "$lib/util/search-params/string";
     import InfiniteScroll from "svelte-infinite-scroll";
     import Head from "$lib/components/Head.svelte";
+    import { t } from "$lib/i18n";
 
     export let data;
     $: eventsStore = data.events;
@@ -128,7 +129,9 @@
 
 <WidthProvider width={"850px"}>
     <Card>
-        <h1>{DESCRIPTORS[season].seasonName} Events</h1>
+        <h1>
+            {DESCRIPTORS[season].seasonName} {$t("events.title", "Events")}
+        </h1>
         <Options
             bind:season
             bind:region={$region}
@@ -157,7 +160,7 @@
 
                 <section>
                     <h2>
-                        Week {week + 1}
+                        {$t("events.week", "Week")} {week + 1}
                         <span class="date-range">{prettyPrintDateRange(start, end)}</span>
                     </h2>
 
@@ -169,8 +172,10 @@
                 </section>
             {:else}
                 <div class="no-events">
-                    <b> No matching events. </b>
-                    <p class="no-events-help">Try modifying your filters.</p>
+                    <b>{$t("events.no-matching", "No matching events.")}</b>
+                    <p class="no-events-help">
+                        {$t("filters.try-modifying", "Try modifying your filters.")}
+                    </p>
                 </div>
             {/each}
 

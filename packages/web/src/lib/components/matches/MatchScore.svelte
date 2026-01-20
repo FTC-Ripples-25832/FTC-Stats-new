@@ -79,12 +79,18 @@
     $: blueOPR1 = teamOprMap?.[blueTeamNums[0] ?? -1] ?? null;
     $: blueOPR2 = teamOprMap?.[blueTeamNums[1] ?? -1] ?? null;
 
-    $: showPrediction =
-        !match.scores &&
+    $: hasOpr =
         !!teamOprMap &&
-        [redOPR1, redOPR2, blueOPR1, blueOPR2].every(
+        [redOPR1, redOPR2, blueOPR1, blueOPR2].some(
             (val) => typeof val == "number" && !Number.isNaN(val)
         );
+
+    $: safeRedOPR1 = typeof redOPR1 == "number" && !Number.isNaN(redOPR1) ? redOPR1 : 0;
+    $: safeRedOPR2 = typeof redOPR2 == "number" && !Number.isNaN(redOPR2) ? redOPR2 : 0;
+    $: safeBlueOPR1 = typeof blueOPR1 == "number" && !Number.isNaN(blueOPR1) ? blueOPR1 : 0;
+    $: safeBlueOPR2 = typeof blueOPR2 == "number" && !Number.isNaN(blueOPR2) ? blueOPR2 : 0;
+
+    $: showPrediction = hasOpr;
 </script>
 
 <td
@@ -103,39 +109,54 @@
     </div>
     <div class="score">
         {#if match.scores == undefined}
-            <div class="upcoming">
+            <div class="score-row time-row">
                 <span class="time">{prettyPrintTimeString(match.scheduledStartTime, timeZone)}</span>
-                {#if showPrediction}
-                    <MatchPrediction {redOPR1} {redOPR2} {blueOPR1} {blueOPR2} />
-                {/if}
             </div>
         {:else if "red" in match.scores}
-            <div class="left" class:winner={winner == Alliance.Red} class:tie={winner == "Tie"}>
-                <!-- // Help: Season Specific -->
-                {#if match.season == Season.Decode && match.tournamentLevel == TournamentLevel.Quals}
-                    <div class="dots red">
-                        {#each new Array(rps[0] + 3 * +(winner == Alliance.Red) + +(winner == "Tie")) as _, i}
-                            <div class="dot" style="right: calc({i} * var(--dot-stride))" />
-                        {/each}
-                    </div>
-                {/if}
+            <div class="score-row score-values">
+                <div class="left" class:winner={winner == Alliance.Red} class:tie={winner == "Tie"}>
+                    <!-- // Help: Season Specific -->
+                    {#if match.season == Season.Decode && match.tournamentLevel == TournamentLevel.Quals}
+                        <div class="dots red">
+                            {#each new Array(rps[0] + 3 * +(winner == Alliance.Red) + +(winner == "Tie")) as _, i}
+                                <div class="dot" style="right: calc({i} * var(--dot-stride))" />
+                            {/each}
+                        </div>
+                    {/if}
 
-                {match.scores.red.totalPoints}
-            </div>
-            <div class="minus">-</div>
-            <div class="right" class:winner={winner == Alliance.Blue} class:tie={winner == "Tie"}>
-                {match.scores.blue.totalPoints}
+                    {match.scores.red.totalPoints}
+                </div>
+                <div class="minus">-</div>
+                <div
+                    class="right"
+                    class:winner={winner == Alliance.Blue}
+                    class:tie={winner == "Tie"}
+                >
+                    {match.scores.blue.totalPoints}
 
-                {#if match.season == Season.Decode && match.tournamentLevel == TournamentLevel.Quals}
-                    <div class="dots blue">
-                        {#each new Array(rps[1] + 3 * +(winner == Alliance.Blue) + +(winner == "Tie")) as _, i}
-                            <div class="dot" style="left: calc({i} * var(--dot-stride))" />
-                        {/each}
-                    </div>
-                {/if}
+                    {#if match.season == Season.Decode && match.tournamentLevel == TournamentLevel.Quals}
+                        <div class="dots blue">
+                            {#each new Array(rps[1] + 3 * +(winner == Alliance.Blue) + +(winner == "Tie")) as _, i}
+                                <div class="dot" style="left: calc({i} * var(--dot-stride))" />
+                            {/each}
+                        </div>
+                    {/if}
+                </div>
             </div>
         {:else}
-            <b>{match.scores.totalPoints}</b>
+            <div class="score-row score-values">
+                <b>{match.scores.totalPoints}</b>
+            </div>
+        {/if}
+        {#if showPrediction}
+            <div class="prediction-row">
+                <MatchPrediction
+                    redOPR1={safeRedOPR1}
+                    redOPR2={safeRedOPR2}
+                    blueOPR1={safeBlueOPR1}
+                    blueOPR2={safeBlueOPR2}
+                />
+            </div>
         {/if}
     </div>
 </td>
@@ -226,42 +247,46 @@
 
     .score {
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--sm-gap);
+    }
+
+    .score-row {
+        display: flex;
         justify-content: space-around;
         gap: var(--sm-gap);
         align-items: center;
-        flex-wrap: wrap;
+        width: 100%;
     }
 
-    .score .left {
+    .score-row.time-row {
+        justify-content: center;
+    }
+
+    .score-row .left {
         width: 100%;
         text-align: right;
     }
 
-    .score .left.winner {
+    .score-row .left.winner {
         font-weight: bold;
         color: var(--red-team-text-color);
     }
 
-    .score .right {
+    .score-row .right {
         width: 100%;
         text-align: left;
     }
 
-    .score .right.winner {
+    .score-row .right.winner {
         font-weight: bold;
         color: var(--blue-team-text-color);
     }
 
-    .score .tie {
+    .score-row .tie {
         font-weight: bold;
         color: var(--neutral-team-text-color);
-    }
-
-    .upcoming {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--sm-gap);
     }
 
     .time {

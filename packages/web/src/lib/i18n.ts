@@ -18,6 +18,8 @@ export type LocaleOption = {
     label: string;
 };
 
+type Translator = (key: string, fallback?: string) => string;
+
 const LOCALE_LABELS: Record<SupportedLocale, string> = {
     en: "English",
     "zh-Hans": "Chinese (Simplified)",
@@ -61,6 +63,28 @@ function normalizeLocale(value: string | undefined): SupportedLocale {
     if (!value) return DEFAULT_LOCALE as SupportedLocale;
     return resolveSupportedLocale(value);
 }
+
+function translateFromDictionary(
+    currentLocale: string | undefined,
+    key: string,
+    fallback: string
+): string {
+    if (!currentLocale) return fallback;
+    if (currentLocale.toLowerCase().startsWith("en")) return fallback;
+    let normalizedLocale = resolveSupportedLocale(currentLocale);
+    let dictionary = DICTIONARIES[normalizedLocale];
+    return dictionary?.[key] ?? fallback;
+}
+
+export const t = derived(
+    locale,
+    ($locale): Translator =>
+        (key: string, fallback?: string) => {
+            let text = fallback ?? key;
+            if (!text.trim()) return text;
+            return translateFromDictionary($locale, key, text);
+        }
+);
 
 export function initLocale(params?: {
     locale?: string;
@@ -125,7 +149,5 @@ export function loadLocaleCookie() {
 
 export async function translateText(locale: string, key: string, text: string): Promise<string> {
     if (!text.trim()) return text;
-    let normalizedLocale = resolveSupportedLocale(locale);
-    let dictionary = DICTIONARIES[normalizedLocale];
-    return dictionary?.[key] ?? text;
+    return translateFromDictionary(locale, key, text);
 }

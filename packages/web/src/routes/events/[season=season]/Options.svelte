@@ -6,6 +6,7 @@
     import DateRange from "$lib/components/ui/form/DateRange.svelte";
     import SeasonSelect from "$lib/components/ui/form/SeasonSelect.svelte";
     import SearchInput from "$lib/components/ui/form/SearchInput.svelte";
+    import { t } from "$lib/i18n";
 
     export let season: Season;
     export let region: RegionOption;
@@ -18,28 +19,28 @@
 <Form id="season-search" style="col">
     <div class="row">
         <label for="season-select">
-            Season
+            {$t("form.season", "Season")}
             <SeasonSelect bind:season id="season-select" />
         </label>
 
         <label for="region-select">
-            Regions
+            {$t("form.regions", "Regions")}
             <RegionSelect bind:region name="regions" id="region-select" />
         </label>
 
         <label for="event-types-select">
-            Event Types
+            {$t("form.event-types", "Event Types")}
             <EventTypeSelect bind:eventType name="event-types" id="event-types-select" />
         </label>
     </div>
 
     <div>
-        Date Range
+        {$t("form.date-range", "Date Range")}
         <DateRange bind:start bind:end {season} />
     </div>
 
     <label for="search-select">
-        Search
+        {$t("form.search", "Search")}
         <SearchInput bind:value={searchText} name="search" id="search-select" />
     </label>
 

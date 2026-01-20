@@ -1,11 +1,14 @@
 <script lang="ts">
     import { faSearch, faXmark } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
+    import { t } from "$lib/i18n";
 
     export let value: string;
-    export let placeholder = "Search";
+    export let placeholder: string | null = null;
     export let name: string | null = null;
     export let id: string | null = null;
+
+    $: resolvedPlaceholder = placeholder ?? $t("form.search", "Search");
 </script>
 
 <div>
@@ -13,7 +16,14 @@
         <Fa icon={faSearch} />
     </span>
 
-    <input type="search" autocomplete="off" {placeholder} {name} {id} bind:value />
+    <input
+        type="search"
+        autocomplete="off"
+        placeholder={resolvedPlaceholder}
+        {name}
+        {id}
+        bind:value
+    />
 
     <button on:mousedown|preventDefault on:click={() => (value = "")}>
         <Fa icon={faXmark} />

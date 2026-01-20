@@ -18,7 +18,7 @@
     export let data;
 
     let teamNumbers: string[] = [];
-    let newTeamInput = "";
+    let newTeamInput: string | number = "";
     let selectedSeason: Season = CURRENT_SEASON;
 
     $: compareStore = data.compare;
@@ -35,7 +35,7 @@
     }
 
     function addTeam() {
-        const num = newTeamInput.trim();
+        const num = String(newTeamInput).trim();
         if (num && !teamNumbers.includes(num)) {
             teamNumbers = [...teamNumbers, num];
             updateUrl();

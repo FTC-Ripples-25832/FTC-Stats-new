@@ -18,6 +18,7 @@
     import SkeletonRow from "../../skeleton/SkeletonRow.svelte";
     import { afterNavigate, goto, preloadData } from "$app/navigation";
     import { focusWithinOut, watchForFocus } from "../../../util/directives";
+    import { t } from "$lib/i18n";
 
     let searchText = "";
     let shown = false;
@@ -141,7 +142,7 @@
         on:keydown={key}
         use:watchForFocus={{ store: focusNum, myNum: -1 }}
         id="searchbar"
-        placeholder="Search for teams and events"
+        placeholder={$t("search.placeholder", "Search for teams and events")}
         type="search"
         autocomplete="off"
     />
@@ -173,7 +174,7 @@
                 {/each}
             </ul>
         {:else if searchText != ""}
-            <b>No Results</b>
+            <b>{$t("search.no-results", "No Results")}</b>
         {/if}
     </div>
 </form>

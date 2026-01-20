@@ -50,11 +50,12 @@
 
 <style>
     select {
-        padding: calc(var(--sm-pad) * 0.6) var(--sm-pad);
-        border-radius: 6px;
+        padding: calc(var(--navbar-size) / 6) var(--lg-pad);
+        padding-right: 30px;
+        border-radius: 4px;
         border: 1px solid var(--sep-color);
-        background: var(--theme-color);
-        color: var(--theme-text-color);
+        background-color: var(--fg-color);
+        color: var(--text-color);
         font-size: 14px;
     }
 </style>
