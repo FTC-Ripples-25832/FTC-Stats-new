@@ -3,11 +3,14 @@
     import Fa from "svelte-fa";
     import { fade } from "svelte/transition";
     import { clickOutside, quickFocus } from "../util/directives";
+    import { t } from "$lib/i18n";
 
     export let shown = false;
     export let titleText: string;
-    export let closeText = "Close";
+    export let closeText: string | null = null;
     export let close: (() => void) | null = null;
+
+    $: resolvedCloseText = closeText ?? $t("common.close", "Close");
 
     function _close() {
         if (close == null) {
@@ -30,7 +33,7 @@
             <div class="scroll-wrapper" tabindex="-1" use:quickFocus>
                 <slot />
             </div>
-            <button class="close" on:click={_close}> {closeText} </button>
+            <button class="close" on:click={_close}> {resolvedCloseText} </button>
         </div>
     </div>
 {/if}
@@ -55,7 +58,8 @@
     .content-wrapper {
         background: var(--fg-color);
 
-        border-radius: 8px;
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
 
         display: flex;
         flex-direction: column;
@@ -64,7 +68,7 @@
         max-width: 100%;
         position: relative;
 
-        box-shadow: -2px 2px 10px 3px rgba(0, 0, 0, 10%);
+        box-shadow: var(--card-shadow);
     }
 
     .title-wrapper {
@@ -100,12 +104,13 @@
     }
 
     .close {
-        background: var(--theme-color);
-        color: var(--theme-text-color);
+        background: var(--form-bg-color);
+        color: var(--text-color);
         font-weight: bold;
 
         border: none;
-        border-radius: 0 0 8px 8px;
+        border-top: var(--border-width) solid var(--sep-color);
+        border-radius: 0 0 var(--card-radius) var(--card-radius);
 
         padding: var(--lg-pad);
 

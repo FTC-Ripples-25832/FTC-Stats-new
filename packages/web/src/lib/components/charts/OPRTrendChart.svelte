@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { browser } from "$app/environment";
     import type * as HighchartsType from "highcharts";
+    import { t } from "$lib/i18n";
 
     export let teamData: Array<{
         teamNumber: number;
@@ -16,6 +17,11 @@
     type HighchartsModule = typeof import("highcharts");
     let chartContainer: HTMLDivElement;
     let chart: HighchartsType.Chart | null = null;
+
+    $: chartTitle = $t("charts.opr.trends.title", "Team OPR Trends");
+    $: xAxisTitle = $t("charts.opr.trends.x", "Event Date");
+    $: yAxisTitle = $t("charts.opr.trends.y", "OPR (Offensive Power Rating)");
+    $: oprLabel = $t("stats.opr", "OPR");
 
     // Generate colors for teams (using theme colors)
     const teamColors = [
@@ -61,7 +67,7 @@
                 height: 400,
             },
             title: {
-                text: "Team OPR Trends",
+                text: chartTitle,
                 style: {
                     color: "var(--text-color)",
                     fontSize: "18px",
@@ -71,7 +77,7 @@
             xAxis: {
                 type: "datetime",
                 title: {
-                    text: "Event Date",
+                    text: xAxisTitle,
                     style: { color: "var(--text-color)" },
                 },
                 labels: {
@@ -81,7 +87,7 @@
             },
             yAxis: {
                 title: {
-                    text: "OPR (Offensive Power Rating)",
+                    text: yAxisTitle,
                     style: { color: "var(--text-color)" },
                 },
                 labels: {
@@ -103,7 +109,7 @@
                         <div style="padding: 8px;">
                             <strong>${this.series.name}</strong><br/>
                             <strong>${point.name}</strong><br/>
-                            OPR: <strong>${point.y.toFixed(2)}</strong><br/>
+                            ${oprLabel}: <strong>${point.y.toFixed(2)}</strong><br/>
                             ${Highcharts.dateFormat("%b %e, %Y", this.x as number)}
                         </div>
                     `;
@@ -152,7 +158,7 @@
         padding: var(--lg-pad);
         background: var(--fg-color);
         border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border-radius: var(--card-radius);
     }
 
     .chart-container {

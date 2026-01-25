@@ -18,22 +18,26 @@
     button {
         font-size: inherit;
         font-family: inherit;
+        font-weight: 600;
         color: inherit;
 
-        background: var(--form-bg-color);
+        background: var(--fg-color);
 
         padding: calc(var(--md-pad) * 0.9) calc(var(--md-pad) * 2);
 
         border: none;
-        border: 1px solid var(--sep-color);
-        border-radius: var(--pill-border-radius);
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--control-radius);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
 
         white-space: nowrap;
         cursor: pointer;
     }
 
     button:hover:not(:disabled) {
-        background: var(--form-hover-bg-color);
+        background: var(--theme-soft-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
     }
 
     button:active:not(:disabled) {

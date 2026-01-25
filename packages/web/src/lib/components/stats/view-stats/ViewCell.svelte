@@ -6,6 +6,7 @@
         StatSet,
         StatSetSection,
     } from "@ftc-stats/common";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -23,7 +24,7 @@
 <td class={column.color} class:extra>
     <div class:zero={value && "val" in value && !value.val}>
         {#if value == null}
-            <span class="na">N/A</span>
+            <span class="na">{$t("common.na", "N/A")}</span>
         {:else if value.ty == "int"}
             {value.val}
         {:else if value.ty == "float"}

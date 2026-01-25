@@ -3,6 +3,7 @@
     import Card from "../../../lib/components/Card.svelte";
     import type { TeamQuery } from "../../../lib/graphql/generated/graphql-operations";
     import { prettyPrintFloat, prettyPrintOrdinal } from "../../../lib/printers/number";
+    import { t } from "$lib/i18n";
 
     export let stats: NonNullable<NonNullable<TeamQuery["teamByNumber"]>["quickStats"]>;
     export let season: Season;
@@ -10,29 +11,29 @@
 </script>
 
 <Card>
-    <h2 id="quick-stats">Quick Stats</h2>
+    <h2 id="quick-stats">{$t("teams.quick-stats", "Quick Stats")}</h2>
     <hr />
 
     <div class="table">
         <div class="header row-label" />
-        <div class="header">Total {np}</div>
-        <div class="header">Auto</div>
-        <div class="header">Teleop</div>
-        <div class="header">Endgame</div>
+        <div class="header">{$t("common.total", "Total")} {np}</div>
+        <div class="header">{$t("stats.opr.auto-short", "Auto")}</div>
+        <div class="header">{$t("stats.opr.teleop-short", "Teleop")}</div>
+        <div class="header">{$t("stats.opr.endgame-short", "Endgame")}</div>
 
-        <div class="row-label first">Best OPR</div>
+        <div class="row-label first">{$t("teams.best-opr", "Best OPR")}</div>
         <div class="val first">{prettyPrintFloat(stats.tot.value)}</div>
         <div class="val first">{prettyPrintFloat(stats.auto.value)}</div>
         <div class="val first">{prettyPrintFloat(stats.dc.value)}</div>
         <div class="val first">{prettyPrintFloat(stats.eg.value)}</div>
 
-        <div class="row-label thin">World Rank</div>
+        <div class="row-label thin">{$t("teams.world-rank", "World Rank")}</div>
         <div class="val thin">{prettyPrintOrdinal(stats.tot.rank)}</div>
         <div class="val thin">{prettyPrintOrdinal(stats.auto.rank)}</div>
         <div class="val thin">{prettyPrintOrdinal(stats.dc.rank)}</div>
         <div class="val thin">{prettyPrintOrdinal(stats.eg.rank)}</div>
 
-        <div class="row-label thin">Percentile</div>
+        <div class="row-label thin">{$t("teams.percentile", "Percentile")}</div>
         <div class="val thin">
             {prettyPrintFloat((1 - (stats.tot.rank - 1) / (stats.count - 1)) * 100)}%
         </div>
@@ -46,7 +47,7 @@
             {prettyPrintFloat((1 - (stats.eg.rank - 1) / (stats.count - 1)) * 100)}%
         </div>
 
-        <div class="row-label thick">Rank / Percentile</div>
+        <div class="row-label thick">{$t("teams.rank-percentile", "Rank / Percentile")}</div>
         <div class="val thick">
             {prettyPrintOrdinal(stats.tot.rank)} /
             {prettyPrintFloat((1 - (stats.tot.rank - 1) / (stats.count - 1)) * 100)}%
@@ -88,16 +89,19 @@
 
     .header {
         text-align: center;
-        font-weight: bold;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: var(--sm-font-size);
 
-        border-bottom: 1px solid var(--sep-color);
+        border-bottom: var(--border-width) solid var(--sep-color);
         white-space: nowrap;
     }
 
     .row-label {
         text-align: left;
         font-weight: bold;
-        border-right: 1px solid var(--sep-color);
+        border-right: var(--border-width) solid var(--sep-color);
         padding-right: var(--vl-gap);
     }
 

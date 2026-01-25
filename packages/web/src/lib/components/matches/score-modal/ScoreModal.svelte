@@ -15,6 +15,7 @@
     import TradScores from "./TradScores.svelte";
     import { writable, type Writable } from "svelte/store";
     import { ALL_SEASONS, type Season } from "@ftc-stats/common";
+    import { t } from "$lib/i18n";
 
     export let shown = false;
     export let match: FullMatchFragment | null = null;
@@ -31,7 +32,7 @@
 {#if match && scores && matchDescription}
     <Modal
         bind:shown
-        titleText="Match {match.description}"
+        titleText={`${$t("common.match", "Match")} ${match.description}`}
         close={() => {
             shown = false;
             dispatch("close");

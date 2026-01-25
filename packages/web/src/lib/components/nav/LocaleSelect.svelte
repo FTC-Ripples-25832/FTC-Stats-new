@@ -52,9 +52,9 @@
     select {
         padding: calc(var(--navbar-size) / 6) var(--lg-pad);
         padding-right: 30px;
-        border-radius: 4px;
-        border: 1px solid var(--sep-color);
-        background-color: var(--fg-color);
+        border-radius: var(--control-radius);
+        border: var(--border-width) solid var(--sep-color);
+        background-color: var(--form-bg-color);
         color: var(--text-color);
         font-size: 14px;
     }

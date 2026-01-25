@@ -32,7 +32,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:wght@400;600;700&family=Inter:wght@400;600;700&display=swap"
         rel="stylesheet"
     />
 </svelte:head>
@@ -55,8 +55,8 @@
 
         margin-top: var(--navbar-size);
         margin-left: var(--sidebar-size);
-        padding: var(--md-pad);
-        padding-bottom: 80px;
+        padding: var(--lg-gap);
+        padding-bottom: calc(var(--xl-gap) * 2);
 
         overflow: auto;
         max-height: calc(100vh - var(--navbar-size));
@@ -73,8 +73,8 @@
 
     @media (max-width: 550px) {
         #content {
-            padding-left: 0;
-            padding-right: 0;
+            padding-left: var(--md-gap);
+            padding-right: var(--md-gap);
             scrollbar-gutter: initial;
         }
     }
@@ -92,6 +92,9 @@
         position: fixed;
         overflow: hidden;
 
-        background: var(--bg-color);
+        background-color: var(--bg-color);
+        background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 24px 24px;
     }
 </style>

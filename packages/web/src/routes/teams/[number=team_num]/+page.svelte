@@ -38,6 +38,7 @@
     import { setContext } from "svelte";
     import { SHOW_REMOTE_FOCUS_CTX } from "$lib/components/matches/MatchTeam.svelte";
     import QuickStats from "./QuickStats.svelte";
+    import { t } from "$lib/i18n";
 
     const toSeason = (n: number) => n as Season;
 
@@ -68,8 +69,13 @@
 
 <WidthProvider>
     <Loading store={$teamStore} checkExists={(t) => !!t.teamByNumber}>
-        <ErrorPage slot="error" status={404} message="No team with number {$page.params.number}">
-            (Try searching for teams on <a href="/teams">the teams page</a>)
+        <ErrorPage
+            slot="error"
+            status={404}
+            message={`${$t("teams.error.message", "No team with number")} ${$page.params.number}`}
+        >
+            {$t("teams.error.try-prefix", "(Try searching for teams on")}{" "}
+            <a href="/teams">{$t("teams.error.teams-page", "the teams page")}</a>)
         </ErrorPage>
 
         <Card>
@@ -93,7 +99,9 @@
                 <Location {...team.location} />
             </InfoIconRow>
 
-            <InfoIconRow icon={faCakeCandles}>Rookie Year: {team.rookieYear}</InfoIconRow>
+            <InfoIconRow icon={faCakeCandles}>
+                {$t("teams.rookie-year", "Rookie Year")}: {team.rookieYear}
+            </InfoIconRow>
 
             <DataFromFirst />
         </Card>
@@ -147,10 +155,18 @@
                 <div class="no-events">
                     <b>
                         {team.name}
-                        {$season == CURRENT_SEASON ? "has not yet played" : "did not compete"} in any
-                        {DESCRIPTORS[$season].seasonName} events.
+                        {$season == CURRENT_SEASON
+                            ? $t("teams.no-events.current", "has not yet played")
+                            : $t("teams.no-events.past", "did not compete")}{" "}
+                        {$t("teams.no-events.in", "in any")} {DESCRIPTORS[$season].seasonName}{" "}
+                        {$t("common.events", "events")}.
                     </b>
-                    <p>Try choosing a different season from the dropdown menu.</p>
+                    <p>
+                        {$t(
+                            "teams.no-events.hint",
+                            "Try choosing a different season from the dropdown menu."
+                        )}
+                    </p>
                 </div>
             </Card>
         {/each}

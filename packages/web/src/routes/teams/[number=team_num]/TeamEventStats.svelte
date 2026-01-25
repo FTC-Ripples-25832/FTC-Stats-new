@@ -4,6 +4,7 @@
     import type { TeamQuery } from "$lib/graphql/generated/graphql-operations";
     import { prettyPrintFloat, prettyPrintOrdinal } from "$lib/printers/number";
     import { DESCRIPTORS, type Season } from "@ftc-stats/common";
+    import { t } from "$lib/i18n";
 
     type Stats = NonNullable<TeamQuery["teamByNumber"]>["events"][number]["stats"];
 
@@ -15,22 +16,26 @@
     $: hasOpr = stats && "opr" in stats;
     $: hasAvg = stats && "avg" in stats;
     $: np = DESCRIPTORS[season].pensSubtract || remote ? "" : "np";
+    $: placeLabel = $t("stats.place", "place");
+    $: qualsLabel = $t("stats.quals", "quals");
+    $: recordLabel = $t("stats.record-label", "W-L-T");
+    $: rpLabel = $t("stats.rp", "RP");
 </script>
 
 {#if stats}
     <InfoIconRow icon={faTrophy}>
-        <b>{prettyPrintOrdinal(stats.rank)}</b> place (quals)
+        <b>{prettyPrintOrdinal(stats.rank)}</b> {placeLabel} ({qualsLabel})
     </InfoIconRow>
 
     {#if "wins" in stats}
         <InfoIconRow>
-            W-L-T: <b>{stats.wins}-{stats.losses}-{stats.ties}</b>
+            {recordLabel}: <b>{stats.wins}-{stats.losses}-{stats.ties}</b>
         </InfoIconRow>
     {/if}
 
     <InfoIconRow>
         {#if "rp" in stats}
-            <b>{rpFormat(stats.rp)}</b> RP {hasOpr || hasAvg ? " · " : ""}
+            <b>{rpFormat(stats.rp)}</b> {rpLabel} {hasOpr || hasAvg ? " · " : ""}
         {/if}
         {#if "opr" in stats}
             {@const opr =

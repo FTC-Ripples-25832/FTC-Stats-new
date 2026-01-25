@@ -44,11 +44,12 @@
 <style>
     a {
         padding: var(--md-pad);
-        border-radius: var(--pill-border-radius);
+        border-radius: var(--control-radius);
         color: var(--sidebar-text-color);
         font-size: 16px;
 
-        border: 2px solid var(--sep-color);
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
 
         aspect-ratio: 1/1;
         display: flex;
@@ -57,7 +58,8 @@
     }
 
     a:hover {
-        background: var(--hover-color);
+        background: var(--theme-soft-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
         text-decoration: none;
     }
 </style>

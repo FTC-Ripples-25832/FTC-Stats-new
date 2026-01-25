@@ -21,17 +21,30 @@
         --side-gap: var(--lg-gap);
 
         position: relative;
-        width: min-content;
-        max-width: calc(100% - 2 * var(--side-gap));
-        min-width: min(var(--requested-width), 100% - 2 * var(--side-gap));
+        width: 100%;
+        max-width: min(var(--requested-width), calc(100% - 2 * var(--side-gap)));
+        min-width: 0;
     }
 
     .vis {
         background-color: var(--fg-color);
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
+        position: relative;
 
-        padding: var(--lg-pad);
+        padding: calc(var(--lg-pad) * 1.1);
+        padding-left: calc(var(--lg-pad) * 1.1 + 6px);
+    }
+
+    .vis::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 6px;
+        background: var(--theme-color);
     }
 
     @media (max-width: 550px) {

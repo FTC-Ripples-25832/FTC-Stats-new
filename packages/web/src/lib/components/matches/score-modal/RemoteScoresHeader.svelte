@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { RemoteScoresTy } from "../MatchScore.svelte";
+    import { t } from "$lib/i18n";
 
     export let scores: RemoteScoresTy;
     export let teamNumber: number;
@@ -7,7 +8,9 @@
 
 <tr>
     <td />
-    <td class="score">Team {teamNumber} <br /> <b>{scores.totalPoints}</b></td>
+    <td class="score">
+        {$t("common.team", "Team")} {teamNumber} <br /> <b>{scores.totalPoints}</b>
+    </td>
 </tr>
 
 <style>
@@ -21,7 +24,10 @@
         padding-bottom: var(--sm-pad);
 
         text-align: center;
-        color: var(--team-text-color);
+        color: var(--text-color);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: var(--sm-font-size);
     }
 
     b {
@@ -29,6 +35,7 @@
     }
 
     .score {
-        background: var(--neutral-team-color);
+        background: var(--table-header-bg);
+        border-bottom: var(--border-width) solid var(--sep-color);
     }
 </style>

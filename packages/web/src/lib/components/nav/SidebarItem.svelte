@@ -33,27 +33,34 @@
 <style>
     a {
         margin-bottom: var(--lg-gap);
-        padding: var(--lg-pad);
-        font-size: 16px;
+        padding: var(--md-pad) var(--lg-pad);
+        font-size: var(--sm-font-size);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
 
-        border-radius: 8px;
+        border-radius: var(--control-radius);
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
 
         color: var(--sidebar-text-color);
 
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: var(--lg-gap);
+        gap: var(--md-gap);
     }
 
     a:hover {
-        background: var(--hover-color);
+        background: var(--theme-soft-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
         text-decoration: none;
     }
 
     a.active {
         background: var(--theme-color);
         color: var(--theme-text-color);
-        font-weight: bold;
+        border-color: var(--theme-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
     }
 </style>

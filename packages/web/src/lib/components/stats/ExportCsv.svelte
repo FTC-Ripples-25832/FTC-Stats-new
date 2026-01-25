@@ -3,6 +3,7 @@
     import { exportCSV } from "./csv";
     import { faFileDownload } from "@fortawesome/free-solid-svg-icons";
     import Button from "../ui/Button.svelte";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -14,11 +15,11 @@
 <Button
     icon={faFileDownload}
     disabled={shownStats.length == 0
-        ? "Select statistics to export csv."
+        ? $t("stats.export.missing-stats", "Select statistics to export csv.")
         : data.length == 0
-        ? "Select data to export csv."
+        ? $t("stats.export.missing-data", "Select data to export csv.")
         : null}
     on:click={() => exportCSV(data, shownStats, csv.filename, csv.title)}
 >
-    Export CSV
+    {$t("stats.export", "Export CSV")}
 </Button>

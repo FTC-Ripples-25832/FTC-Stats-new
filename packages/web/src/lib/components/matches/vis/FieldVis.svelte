@@ -5,6 +5,7 @@
     import { Season } from "@ftc-stats/common";
     import PowerPlayVisModal from "./2022/PowerPlayVisModal.svelte";
     import type { SimpleTeamMatchParticipation } from "./2022/HoverInfo.svelte";
+    import { t } from "$lib/i18n";
 
     export let scores: FullMatchFragment["scores"];
     export let teams: SimpleTeamMatchParticipation[];
@@ -20,7 +21,9 @@
 <!-- // HELP: Season Specific -->
 {#if scores && scores.season == Season.PowerPlay}
     <div>
-        <Button icon={faBinoculars} on:click={() => (shown2022 = true)}>View Cone Layout</Button>
+        <Button icon={faBinoculars} on:click={() => (shown2022 = true)}>
+            {$t("matches.view-cone-layout", "View Cone Layout")}
+        </Button>
     </div>
 {/if}
 

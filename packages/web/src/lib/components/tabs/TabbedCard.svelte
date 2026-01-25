@@ -54,32 +54,32 @@
     }
 
     .tab {
-        font-size: var(--vl-font-size);
-        font-weight: 600;
-        color: inherit;
+        font-size: var(--sm-font-size);
+        font-weight: 700;
+        color: var(--text-color);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
 
         padding: var(--md-pad);
 
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        border: 1px solid transparent;
-        border-bottom: 1px solid var(--sep-color);
-
-        transform: translate(0, 1px);
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
 
         cursor: pointer;
     }
 
     .tab:hover {
         text-decoration: none;
-        background: var(--tab-hover-color);
+        background: var(--theme-soft-color);
+        color: var(--text-color);
     }
 
     .tab.selected {
-        background: var(--fg-color);
-
-        border: 1px solid var(--sep-color);
-        border-bottom: 1px solid transparent;
+        background: var(--theme-color);
+        color: var(--theme-text-color);
+        border-color: var(--theme-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
     }
 
     .tab:first-child:not(.selected):not(:focus-visible) {
@@ -96,14 +96,14 @@
 
     .card {
         background-color: var(--fg-color);
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
 
         padding: var(--lg-pad);
     }
 
     .flat-top {
-        border-top-left-radius: 0;
+        border-top-left-radius: var(--card-radius);
     }
 
     @media (max-width: 650px) {

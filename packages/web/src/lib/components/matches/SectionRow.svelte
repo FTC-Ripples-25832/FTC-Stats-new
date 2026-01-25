@@ -47,6 +47,6 @@
     .name span {
         background: var(--fg-color);
         padding: var(--sm-pad);
-        border-radius: 8px;
+        border-radius: var(--control-radius);
     }
 </style>

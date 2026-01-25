@@ -3,22 +3,29 @@
     import WidthProvider from "$lib/components/WidthProvider.svelte";
     import Head from "$lib/components/Head.svelte";
     import { EMAIL } from "$lib/constants";
+    import { t } from "$lib/i18n";
 </script>
 
 <Head title="Sponsor Info | FTCStats" description="Become a sponsor of FTCStats" />
 
 <WidthProvider width={"1000px"}>
     <Card>
-        <h1 class="head">Sponsor Info</h1>
+        <h1 class="head">{$t("sponsors.info.title", "Sponsor Info")}</h1>
 
         <div class="rest">
-            <p>If you're interested in sponsoring us, there's some information you should know:</p>
-
-            <h2>What you recieve:</h2>
             <p>
-                As a sponsor, your logo will be placed in the sidebar, and be visible on all pages
-                where the sidebar is present. This includes the team pages, event pages, and the
-                home page. Your logo will be clickable, and will link to your website.
+                {$t(
+                    "sponsors.info.intro",
+                    "If you're interested in sponsoring us, there's some information you should know:"
+                )}
+            </p>
+
+            <h2>{$t("sponsors.info.receive", "What you recieve:")}</h2>
+            <p>
+                {$t(
+                    "sponsors.info.receive.p1",
+                    "As a sponsor, your logo will be placed in the sidebar, and be visible on all pages where the sidebar is present. This includes the team pages, event pages, and the home page. Your logo will be clickable, and will link to your website."
+                )}
             </p>
             <div class="image-wrap">
                 <img
@@ -27,59 +34,62 @@
                     alt="A screenshot of FTCStats's Teams Records page, with a green example logo in the sidebar"
                 />
             </div>
-            <h2>Our expenses:</h2>
+            <h2>{$t("sponsors.info.expenses", "Our expenses:")}</h2>
             <p>
-                Here is a breakdown of what the sponsorship money will be used for, as an estimate:
-                (USD)
+                {$t(
+                    "sponsors.info.expenses.p1",
+                    "Here is a breakdown of what the sponsorship money will be used for, as an estimate: (USD)"
+                )}
             </p>
             <table>
                 <thead>
                     <tr>
-                        <th>Expense</th>
-                        <th>Cost</th>
+                        <th>{$t("sponsors.info.expenses.expense", "Expense")}</th>
+                        <th>{$t("sponsors.info.expenses.cost", "Cost")}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Standard Hosting (Hetzner CPX11)</td>
+                        <td>{$t("sponsors.info.expenses.standard", "Standard Hosting (Hetzner CPX11)")}</td>
                         <td>$5.59/month @ 11 months/year</td>
                     </tr>
                     <tr>
-                        <td>World Championships Upgraded Hosting (Hetzner CPX31)</td>
+                        <td>{$t("sponsors.info.expenses.upgraded", "World Championships Upgraded Hosting (Hetzner CPX31)")}</td>
                         <td>$18.59/month @ 1 month/year</td>
                     </tr>
                     <tr>
-                        <td>Domain (Google Domains)</td>
+                        <td>{$t("sponsors.info.expenses.domain", "Domain (Google Domains)")}</td>
                         <td>$12/year</td>
                     </tr>
                     <tr>
-                        <td><b>Total</b></td>
+                        <td><b>{$t("common.total", "Total")}</b></td>
                         <td><b>$92.08/year</b></td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>Your commitment</h2>
+            <h2>{$t("sponsors.info.commitment", "Your commitment")}</h2>
             <p>
-                The cost to sponsor us for 1 year is $150. This will cover our hosting and domain
-                costs for the year, as well as other miscellaneous costs, like taxes, price
-                fluctuations, and server upgrades if necessary. All money will be used to maintain
-                FTCStats.
+                {$t(
+                    "sponsors.info.commitment.p1",
+                    "The cost to sponsor us for 1 year is $150. This will cover our hosting and domain costs for the year, as well as other miscellaneous costs, like taxes, price fluctuations, and server upgrades if necessary. All money will be used to maintain FTCStats."
+                )}
             </p>
 
-            <h2>Information we need:</h2>
+            <h2>{$t("sponsors.info.need", "Information we need:")}</h2>
             <p>
-                If you're interested in sponsoring us, please <a href={"mailto:" + EMAIL}
-                    >email us</a
-                > with the following information:
+                {@html $t(
+                    "sponsors.info.need.p1",
+                    `If you're interested in sponsoring us, please <a href=\\\"mailto:${EMAIL}\\\">email us</a> with the following information:`
+                )}
             </p>
             <ul>
-                <li>Your company name</li>
-                <li>Link to your company website</li>
-                <li>Logo to place on the sidebar (high-resolution PNG or SVG image)</li>
+                <li>{$t("sponsors.info.need.item1", "Your company name")}</li>
+                <li>{$t("sponsors.info.need.item2", "Link to your company website")}</li>
+                <li>{$t("sponsors.info.need.item3", "Logo to place on the sidebar (high-resolution PNG or SVG image)")}</li>
             </ul>
 
-            <p>Thank you so much for your consideration.</p>
+            <p>{$t("sponsors.info.thanks", "Thank you so much for your consideration.")}</p>
         </div>
     </Card>
 </WidthProvider>

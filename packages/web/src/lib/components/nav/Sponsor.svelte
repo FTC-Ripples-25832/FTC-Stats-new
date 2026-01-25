@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { t } from "$lib/i18n";
+
     // import Fa from "svelte-fa";
 
     // Ensure animations work properly
@@ -42,6 +44,17 @@
             }, 700);
         }, 8000);
     }
+
+    $: poweredBy = $t("sponsor.powered-by", "POWERED BY HCB ⚡");
+    $: bankName = $t("sponsor.bank-name", "Banking platform for robotics!");
+    $: featureNonprofit = $t("sponsor.feature.nonprofit", "Instant 501(c)(3) nonprofit status");
+    $: featureGrants = $t("sponsor.feature.grants", "Eligible to receive grants");
+    $: featureCards = $t("sponsor.feature.cards", "Free physical debit cards");
+    $: rafflePrefix = $t("sponsor.raffle.prefix", "Enter our free raffle for a");
+    $: raffleHighlight = $t("sponsor.raffle.highlight", "13-inch MacBook Air");
+    $: raffleSuffix = $t("sponsor.raffle.suffix", "!");
+    $: darkLogoAlt = $t("sponsor.logo-alt.dark", "HCB Logo");
+    $: lightLogoAlt = $t("sponsor.logo-alt.light", "Hack Club Bank Logo");
 </script>
 
 <div class="container">
@@ -55,14 +68,14 @@
             <div class="logo-container">
                 <img
                     src="/img/hcb-icon-icon-dark.png"
-                    alt="HCB Logo"
+                    alt={darkLogoAlt}
                     width="36"
                     height="36"
                 />
             </div>
             <div class="text-container">
-                <div class="powered-by">POWERED BY HCB ⚡</div>
-                <div class="bank-name">Banking platform for robotics!</div>
+                <div class="powered-by">{poweredBy}</div>
+                <div class="bank-name">{bankName}</div>
             </div>
         </div>
         <div class="feature-container" id="dark-features" use:cycleFeatures>
@@ -72,7 +85,7 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Instant 501(c)(3) nonprofit status</div>
+                <div class="feature-text">{featureNonprofit}</div>
             </div>
             <div class="feature" data-index="1" style="opacity: 0;">
                 <div class="checkmark">
@@ -80,7 +93,7 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Eligible to receive grants</div>
+                <div class="feature-text">{featureGrants}</div>
             </div>
             <div class="feature" data-index="2" style="opacity: 0;">
                 <div class="checkmark">
@@ -88,15 +101,15 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Free physical debit cards</div>
+                <div class="feature-text">{featureCards}</div>
             </div>
         </div>
         <div class="raffle-section">
             <div class="raffle-content">
                 <div class="raffle-icon">🎁</div>
                 <div class="raffle-text">
-                    Enter our free raffle for a
-                    <span class="raffle-highlight">13-inch MacBook Air</span>!
+                    {rafflePrefix}
+                    <span class="raffle-highlight">{raffleHighlight}</span>{raffleSuffix}
                 </div>
             </div>
         </div>
@@ -112,14 +125,14 @@
             <div class="logo-container">
                 <img
                     src="/img/hcb-icon-icon-original.png"
-                    alt="Hack Club Bank Logo"
+                    alt={lightLogoAlt}
                     width="36"
                     height="36"
                 />
             </div>
             <div class="text-container">
-                <div class="powered-by">POWERED BY HCB ⚡</div>
-                <div class="bank-name">Banking platform for robotics!</div>
+                <div class="powered-by">{poweredBy}</div>
+                <div class="bank-name">{bankName}</div>
             </div>
         </div>
         <div class="feature-container" id="light-features" use:cycleFeatures>
@@ -129,7 +142,7 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Instant 501(c)(3) nonprofit status</div>
+                <div class="feature-text">{featureNonprofit}</div>
             </div>
             <div class="feature" data-index="1" style="opacity: 0;">
                 <div class="checkmark">
@@ -137,7 +150,7 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Eligible to receive grants</div>
+                <div class="feature-text">{featureGrants}</div>
             </div>
             <div class="feature" data-index="2" style="opacity: 0;">
                 <div class="checkmark">
@@ -145,15 +158,15 @@
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                     </svg>
                 </div>
-                <div class="feature-text">Free physical debit cards</div>
+                <div class="feature-text">{featureCards}</div>
             </div>
         </div>
         <div class="raffle-section">
             <div class="raffle-content">
                 <div class="raffle-icon">🎁</div>
                 <div class="raffle-text">
-                    Enter our free raffle for a
-                    <span class="raffle-highlight">13-inch MacBook Air</span>!
+                    {rafflePrefix}
+                    <span class="raffle-highlight">{raffleHighlight}</span>{raffleSuffix}
                 </div>
             </div>
         </div>

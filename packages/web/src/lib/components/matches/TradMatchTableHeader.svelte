@@ -1,10 +1,15 @@
+<script lang="ts">
+    import { t } from "$lib/i18n";
+</script>
+
 <thead>
     <tr>
         <th class="s">
-            <div>Match</div>
-            <div>Score</div>
-        </th><th class="r">Red Alliance</th>
-        <th class="b">Blue Alliance</th>
+            <div>{$t("common.match", "Match")}</div>
+            <div>{$t("common.score", "Score")}</div>
+        </th>
+        <th class="r">{$t("matches.red-alliance", "Red Alliance")}</th>
+        <th class="b">{$t("matches.blue-alliance", "Blue Alliance")}</th>
     </tr>
 </thead>
 
@@ -26,9 +31,12 @@
 
     th {
         display: block;
-        font-weight: bold;
+        font-weight: 700;
         text-align: center;
         padding: var(--lg-pad);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: var(--sm-font-size);
     }
 
     .s {
@@ -36,8 +44,8 @@
         grid-template-columns: 1fr 1.4fr;
         justify-content: center;
         padding: 0;
-
-        box-shadow: rgb(0 0 0 / 14%) 0px -4px 4px -2px inset;
+        background: var(--table-header-bg);
+        border-right: var(--border-width) solid var(--sep-color);
     }
 
     .s * {
@@ -45,14 +53,12 @@
     }
 
     .r {
-        background-color: var(--red-team-color);
-        color: var(--team-text-color);
+        background-color: var(--red-team-bg-color);
+        color: var(--text-color);
     }
 
     .b {
-        background-color: var(--blue-team-color);
-        color: var(--team-text-color);
-
-        border-top-right-radius: 7px;
+        background-color: var(--blue-team-bg-color);
+        color: var(--text-color);
     }
 </style>

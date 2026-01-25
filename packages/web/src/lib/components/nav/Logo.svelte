@@ -14,11 +14,17 @@
         align-items: center;
         gap: var(--sm-gap);
         padding: var(--md-pad);
-        font-size: var(--vl-font-size);
-        background-color: var(--theme-color);
-        color: var(--theme-text-color);
-        font-weight: bold;
+        font-size: var(--lg-font-size);
+        color: var(--text-color);
+        font-family: var(--heading-font-family);
+        letter-spacing: 0.12em;
+        font-weight: 800;
+        text-transform: uppercase;
         user-select: none;
+    }
+
+    a :global(svg) {
+        color: var(--theme-color);
     }
 
     a:hover {

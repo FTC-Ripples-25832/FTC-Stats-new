@@ -9,8 +9,8 @@ select {
     padding: var(--md-pad);
 
     border: none;
-    border-radius: 8px;
-    border: 1px solid var(--sep-color);
+    border-radius: var(--control-radius);
+    border: var(--border-width) solid var(--sep-color);
 
     cursor: pointer;
     user-select: none;
@@ -45,8 +45,8 @@ input:focus {
 
 select:focus-visible,
 input:focus-visible {
-    outline: 2px solid var(--text-color);
-    outline-offset: -1px;
+    outline: var(--border-width) solid var(--theme-color);
+    outline-offset: -2px;
 }
 
 input {
@@ -58,8 +58,8 @@ input {
     padding: var(--md-pad);
 
     border: none;
-    border-radius: 8px;
-    border: 1px solid var(--sep-color);
+    border-radius: var(--control-radius);
+    border: var(--border-width) solid var(--sep-color);
 
     cursor: pointer;
 }

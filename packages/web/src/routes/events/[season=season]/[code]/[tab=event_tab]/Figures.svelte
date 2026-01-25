@@ -4,6 +4,7 @@
     import BubbleChart from "$lib/components/charts/BubbleChart.svelte";
     import { prettyPrintFloat } from "$lib/printers/number";
     import type { EventPageQuery } from "$lib/graphql/generated/graphql-operations";
+    import { t } from "$lib/i18n";
 
     type TeamEntry = NonNullable<EventPageQuery["eventByCode"]>["teams"][number];
 
@@ -35,7 +36,9 @@
                 const teleopOPR = getOprNumber(teamEvent.stats, "dcPoints") ?? 0;
                 return {
                     teamNumber: teamEvent.teamNumber,
-                    teamName: teamEvent.team?.name ?? `Team ${teamEvent.teamNumber}`,
+                    teamName:
+                        teamEvent.team?.name ??
+                        `${$t("common.team", "Team")} ${teamEvent.teamNumber}`,
                     autoOPR,
                     teleopOPR,
                     totalOPR,
@@ -47,31 +50,34 @@
 </script>
 
 <Card>
-    <h2>Event Figures</h2>
+    <h2>{$t("events.figures", "Event Figures")}</h2>
     <p class="subtitle">
-        OPR-based visuals for {eventName}. Auto vs. teleop OPR is plotted with bubble size set to
-        total OPR.
+        {$t("events.figures.subtitle-prefix", "OPR-based visuals for")} {eventName}
+        {$t(
+            "events.figures.subtitle-suffix",
+            ". Auto vs. teleop OPR is plotted with bubble size set to total OPR."
+        )}
     </p>
 </Card>
 
 {#if bubbleTeams.length > 0}
     <BubbleChart
         teams={bubbleTeams}
-        xAxisLabel="Teleop OPR"
-        yAxisLabel="Auto OPR"
-        title={`${eventName} - Auto vs Teleop OPR`}
+        xAxisLabel={$t("stats.opr.teleop", "Teleop OPR")}
+        yAxisLabel={$t("stats.opr.auto", "Auto OPR")}
+        title={`${eventName} - ${$t("events.figures.title", "Auto vs Teleop OPR")}`}
     />
 
     <Card>
-        <h3>Top OPR Teams</h3>
+        <h3>{$t("events.figures.top-opr", "Top OPR Teams")}</h3>
         <table class="top-table">
             <thead>
                 <tr>
-                    <th>Rank</th>
-                    <th>Team</th>
-                    <th>Total OPR</th>
-                    <th>Auto OPR</th>
-                    <th>Teleop OPR</th>
+                    <th>{$t("common.rank", "Rank")}</th>
+                    <th>{$t("common.team", "Team")}</th>
+                    <th>{$t("stats.opr.total", "Total OPR")}</th>
+                    <th>{$t("stats.opr.auto", "Auto OPR")}</th>
+                    <th>{$t("stats.opr.teleop", "Teleop OPR")}</th>
                 </tr>
             </thead>
             <tbody>
@@ -92,7 +98,7 @@
     </Card>
 {:else}
     <Card>
-        <p>No OPR data is available for this event yet.</p>
+        <p>{$t("events.figures.no-data", "No OPR data is available for this event yet.")}</p>
     </Card>
 {/if}
 

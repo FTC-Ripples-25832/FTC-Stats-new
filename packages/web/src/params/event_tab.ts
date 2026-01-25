@@ -4,6 +4,7 @@ export function match(param: string): boolean {
         param == "rankings" ||
         param == "insights" ||
         param == "figures" ||
+        param == "sos" ||
         param == "awards" ||
         param == "teams" ||
         param == "simulation"

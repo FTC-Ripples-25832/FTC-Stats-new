@@ -3,6 +3,7 @@
     import { emptyFiler, trimFilterGroup, type FilterGroup, type StatSet } from "@ftc-stats/common";
     import ShowFilterGroup from "./ShowFilterGroup.svelte";
     import { createEventDispatcher } from "svelte";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -20,7 +21,12 @@
     }
 </script>
 
-<Modal bind:shown titleText="Edit Filters" closeText="Save" {close}>
+<Modal
+    bind:shown
+    titleText={$t("stats.filters.edit", "Edit Filters")}
+    closeText={$t("common.save", "Save")}
+    {close}
+>
     <div>
         <ShowFilterGroup {stats} bind:group={editable} />
     </div>

@@ -3,6 +3,7 @@
     import type { EventPageQuery } from "$lib/graphql/generated/graphql-operations";
     import Card from "$lib/components/Card.svelte";
     import { sortString } from "$lib/util/sorters";
+    import { t } from "$lib/i18n";
 
     type RelatedEvent = NonNullable<EventPageQuery["eventByCode"]>["relatedEvents"][number];
 
@@ -13,10 +14,11 @@
     $: allEventNames = [thisEventName, ...relatedEvents.map((e) => e.name)];
     $: mainEventName = longestCommonPrefix(allEventNames);
     $: sorted = [...relatedEvents].sort((a, b) => sortString(a.code, b.code));
+    $: finalsDivisionLabel = $t("events.finals-division", "Finals Division");
 
     function mapName(name: string): string {
         let sliced = name.slice(mainEventName.length).trim().replace(/\-\s*/, "");
-        return sliced.length == 0 ? "Finals Division" : sliced;
+        return sliced.length == 0 ? finalsDivisionLabel : sliced;
     }
 </script>
 

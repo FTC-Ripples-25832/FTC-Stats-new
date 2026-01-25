@@ -6,6 +6,8 @@
  */
 
 import { predictMatchSimple } from "./match-prediction";
+import { DESCRIPTORS } from "../descriptors/descriptor-list";
+import { Season } from "../Season";
 
 export interface TeamRecord {
     teamNumber: number;
@@ -15,6 +17,11 @@ export interface TeamRecord {
     rankingPoints: number;
     totalPoints: number;
     opr: number;
+    rpBonusRates?: {
+        movement: number;
+        goal: number;
+        pattern: number;
+    };
 }
 
 export interface Match {
@@ -26,6 +33,18 @@ export interface Match {
     played: boolean;
     redScore?: number;
     blueScore?: number;
+    scores?: {
+        red?: {
+            movementRp?: boolean;
+            goalRp?: boolean;
+            patternRp?: boolean;
+        };
+        blue?: {
+            movementRp?: boolean;
+            goalRp?: boolean;
+            patternRp?: boolean;
+        };
+    };
 }
 
 export interface SimulationResult {
@@ -46,13 +65,51 @@ export interface EventSimulationConfig {
     currentSeason?: number;
 }
 
+type RpType = "TotalPoints" | "Record" | "DecodeRP";
+
+function getRpType(currentSeason?: number): RpType {
+    if (!currentSeason || !(currentSeason in DESCRIPTORS)) return "Record";
+    return DESCRIPTORS[currentSeason as Season].rankings.rp;
+}
+
+function clampRate(rate: number | undefined): number {
+    if (typeof rate !== "number" || Number.isNaN(rate)) return 0;
+    if (rate < 0) return 0;
+    if (rate > 1) return 1;
+    return rate;
+}
+
+function getAllianceBonusRate(
+    teamNumbers: number[],
+    teamRpRates: Map<number, TeamRecord["rpBonusRates"]>,
+    key: "movement" | "goal" | "pattern"
+): number {
+    if (teamNumbers.length === 0) return 0;
+    const rates = teamNumbers.map((team) => clampRate(teamRpRates.get(team)?.[key]));
+    const total = rates.reduce((sum, value) => sum + value, 0);
+    return clampRate(total / rates.length);
+}
+
+function rollBonus(rate: number): number {
+    return Math.random() < rate ? 1 : 0;
+}
+
 /**
  * Simulate a single match outcome
  */
 function simulateMatch(
     match: Match,
-    teamOPRs: Map<number, number>
-): { redScore: number; blueScore: number; redWins: boolean } {
+    teamOPRs: Map<number, number>,
+    teamRpRates: Map<number, TeamRecord["rpBonusRates"]>,
+    rpType: RpType
+): {
+    redScore: number;
+    blueScore: number;
+    redWins: boolean;
+    tied: boolean;
+    redRp: number;
+    blueRp: number;
+} {
     const redOPR1 = teamOPRs.get(match.redTeam1) || 0;
     const redOPR2 = teamOPRs.get(match.redTeam2) || 0;
     const blueOPR1 = teamOPRs.get(match.blueTeam1) || 0;
@@ -68,28 +125,48 @@ function simulateMatch(
     const redScore = Math.max(0, Math.round(prediction.predictedRedScore + redNoise));
     const blueScore = Math.max(0, Math.round(prediction.predictedBlueScore + blueNoise));
 
+    const redWon = redScore > blueScore;
+    const tied = redScore === blueScore;
+
+    let redRp = 0;
+    let blueRp = 0;
+
+    if (rpType === "TotalPoints") {
+        redRp = redScore;
+        blueRp = blueScore;
+    } else {
+        if (rpType === "DecodeRP") {
+            redRp = redWon ? 3 : tied ? 1 : 0;
+            blueRp = !redWon && !tied ? 3 : tied ? 1 : 0;
+
+            const redTeams = [match.redTeam1, match.redTeam2].filter((team) => team);
+            const blueTeams = [match.blueTeam1, match.blueTeam2].filter((team) => team);
+
+            const redBonus =
+                rollBonus(getAllianceBonusRate(redTeams, teamRpRates, "movement")) +
+                rollBonus(getAllianceBonusRate(redTeams, teamRpRates, "goal")) +
+                rollBonus(getAllianceBonusRate(redTeams, teamRpRates, "pattern"));
+            const blueBonus =
+                rollBonus(getAllianceBonusRate(blueTeams, teamRpRates, "movement")) +
+                rollBonus(getAllianceBonusRate(blueTeams, teamRpRates, "goal")) +
+                rollBonus(getAllianceBonusRate(blueTeams, teamRpRates, "pattern"));
+
+            redRp += redBonus;
+            blueRp += blueBonus;
+        } else {
+            redRp = redWon ? 2 : tied ? 1 : 0;
+            blueRp = !redWon && !tied ? 2 : tied ? 1 : 0;
+        }
+    }
+
     return {
         redScore,
         blueScore,
-        redWins: redScore > blueScore,
+        redWins: redWon,
+        tied,
+        redRp,
+        blueRp,
     };
-}
-
-/**
- * Calculate ranking points for a match (season-specific)
- * This is a simplified version - actual RP calculation varies by season
- */
-function calculateRankingPoints(
-    _score: number,
-    won: boolean,
-    tied: boolean,
-    _season?: number
-): number {
-    // Simplified: 2 RP for win, 1 for tie, 0 for loss
-    // Real implementation would include bonus RPs based on score thresholds
-    if (won) return 2;
-    if (tied) return 1;
-    return 0;
 }
 
 /**
@@ -101,6 +178,12 @@ function runSingleSimulation(
     teamOPRs: Map<number, number>,
     season?: number
 ): Map<number, TeamRecord> {
+    const rpType = getRpType(season);
+    const teamRpRates = new Map<number, TeamRecord["rpBonusRates"]>();
+    teams.forEach((team) => {
+        teamRpRates.set(team.teamNumber, team.rpBonusRates);
+    });
+
     // Clone team records
     const simTeams = new Map<number, TeamRecord>();
     teams.forEach((team) => {
@@ -111,14 +194,14 @@ function runSingleSimulation(
     const unplayedMatches = matches.filter((m) => !m.played);
 
     for (const match of unplayedMatches) {
-        const result = simulateMatch(match, teamOPRs);
+        const result = simulateMatch(match, teamOPRs, teamRpRates, rpType);
 
         const redTeam1 = simTeams.get(match.redTeam1)!;
         const redTeam2 = simTeams.get(match.redTeam2)!;
         const blueTeam1 = simTeams.get(match.blueTeam1)!;
         const blueTeam2 = simTeams.get(match.blueTeam2)!;
 
-        const tied = result.redScore === result.blueScore;
+        const tied = result.tied;
         const redWon = result.redWins;
         const blueWon = !redWon && !tied;
 
@@ -129,7 +212,7 @@ function runSingleSimulation(
             else team.losses++;
 
             team.totalPoints += result.redScore;
-            team.rankingPoints += calculateRankingPoints(result.redScore, redWon, tied, season);
+            team.rankingPoints += result.redRp;
         });
 
         // Update records for blue alliance
@@ -139,7 +222,7 @@ function runSingleSimulation(
             else team.losses++;
 
             team.totalPoints += result.blueScore;
-            team.rankingPoints += calculateRankingPoints(result.blueScore, blueWon, tied, season);
+            team.rankingPoints += result.blueRp;
         });
     }
 

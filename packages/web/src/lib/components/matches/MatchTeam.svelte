@@ -8,6 +8,7 @@
     import { Alliance, type FullMatchFragment } from "../../graphql/generated/graphql-operations";
     import { getContext } from "svelte";
     import { browser } from "$app/environment";
+    import { t } from "$lib/i18n";
 
     export let team: FullMatchFragment["teams"][number];
     export let eventCode: string;
@@ -26,12 +27,17 @@
 
     $: showRemoteFocus = getContext<boolean>(SHOW_REMOTE_FOCUS_CTX) ?? true;
 
+    $: noShowLabel = $t("matches.no-show", "No Show");
+    $: dqLabel = $t("matches.disqualified", "Disqualified");
+    $: notOnFieldLabel = $t("matches.not-on-field", "Not on Field");
+    $: surrogateLabel = $t("matches.surrogate", "Surrogate");
+
     $: title =
         `${number} ${name}` +
-        (noShow ? " (No Show)" : "") +
-        (dq && !noShow ? " (Disqualified)" : "") +
-        (!onField && !dq && !noShow ? " (Not on Field)" : "") +
-        (surrogate ? " (Surrogate)" : "");
+        (noShow ? ` (${noShowLabel})` : "") +
+        (dq && !noShow ? ` (${dqLabel})` : "") +
+        (!onField && !dq && !noShow ? ` (${notOnFieldLabel})` : "") +
+        (surrogate ? ` (${surrogateLabel})` : "");
 
     let clickAction = getContext(TEAM_CLICK_ACTION_CTX) as
         | ((num: number, name: string) => void)

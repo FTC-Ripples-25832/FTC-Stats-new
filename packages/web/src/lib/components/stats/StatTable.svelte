@@ -2,6 +2,7 @@
     import type { SortDir, StatColumn, StatData } from "@ftc-stats/common";
     import StatHeader from "./StatHeader.svelte";
     import StatRow from "./StatRow.svelte";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -21,13 +22,17 @@
     {#if !stats.length}
         <tbody>
             <tr class="no-data">
-                <td colspan="999"> <b>Choose statistics.</b> </td>
+                <td colspan="999">
+                    <b>{$t("stats.choose", "Choose statistics.")}</b>
+                </td>
             </tr>
         </tbody>
     {:else if !data.length}
         <tbody>
             <tr class="no-data">
-                <td colspan="999"> <b>No items match your current filters.</b> </td>
+                <td colspan="999">
+                    <b>{$t("stats.no-items", "No items match your current filters.")}</b>
+                </td>
             </tr>
         </tbody>
     {:else}
@@ -42,8 +47,9 @@
 <style>
     table {
         border-spacing: 0;
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
+        background-color: var(--fg-color);
 
         display: block;
         min-width: 100%;
@@ -52,46 +58,50 @@
         overflow-x: auto;
 
         position: relative;
+    }
 
-        /* Adapted from: https://lea.verou.me/2012/04/background-attachment-local/ */
-        --fade-len: 120px;
-        --shadow-len: 25px;
-        background: linear-gradient(to right, var(--fg-color) 30%, rgba(255, 255, 255, 0)),
-            linear-gradient(to left, var(--fg-color), rgba(255, 255, 255, 0)) 100% 0,
-            linear-gradient(to right, var(--fade-shadow), var(--fg-color)),
-            linear-gradient(to left, var(--fade-shadow), var(--fg-color)) 100% 0;
-        background-repeat: no-repeat;
-        background-color: var(--fg-color);
-        background-size: var(--fade-len) 100%, var(--fade-len) 100%, var(--shadow-len) 100%,
-            var(--shadow-len) 100%;
-        background-attachment: local, local, scroll, scroll;
+    table :global(th),
+    table :global(td) {
+        border-right: var(--border-width) solid var(--sep-color);
+    }
+
+    table :global(tr) > :global(:last-child) {
+        border-right: none;
+    }
+
+    table :global(tbody tr) {
+        border-bottom: var(--border-width) solid var(--sep-color);
+    }
+
+    table :global(tbody tr:last-child) {
+        border-bottom: none;
     }
 
     table :global(thead) {
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
+        border-top-left-radius: var(--card-radius);
+        border-top-right-radius: var(--card-radius);
     }
     table :global(thead:not(.sticking) th:first-child) {
-        border-top-left-radius: 7px;
+        border-top-left-radius: var(--card-radius);
     }
     table :global(thead:not(.sticking) th:last-child) {
-        border-top-right-radius: 7px;
+        border-top-right-radius: var(--card-radius);
     }
 
     table tbody,
     table tbody :global(tr:last-child) {
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: var(--card-radius);
+        border-bottom-right-radius: var(--card-radius);
     }
     table tbody :global(tr:last-child td:first-child) {
-        border-bottom-left-radius: 7px;
+        border-bottom-left-radius: var(--card-radius);
     }
     table tbody :global(tr:last-child td:last-child) {
-        border-bottom-right-radius: 7px;
+        border-bottom-right-radius: var(--card-radius);
     }
 
     tbody > :global(:nth-child(even)) {
-        background-color: var(--zebra-stripe-opacity);
+        background-color: var(--zebra-stripe-color);
     }
 
     .no-data b {

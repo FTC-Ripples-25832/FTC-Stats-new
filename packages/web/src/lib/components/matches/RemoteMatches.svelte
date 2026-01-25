@@ -6,6 +6,7 @@
     import { tippyTheme } from "../nav/DarkModeToggle.svelte";
     import { SHOW_MATCH_SCORE, type ShowMatchFn } from "./MatchTable.svelte";
     import { getContext } from "svelte";
+    import { t } from "$lib/i18n";
 
     function matchScore(match: FullMatchFragment | undefined | null): number | null {
         if (!match) return null;
@@ -52,7 +53,7 @@
 
         <td class="total">{totalPoints}</td>
     {:else}
-        <td class="msg">Scores have not yet been reported.</td>
+        <td class="msg">{$t("matches.scores-not-reported", "Scores have not yet been reported.")}</td>
     {/if}
 </tr>
 

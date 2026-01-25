@@ -159,25 +159,27 @@
         gap: var(--sm-gap) var(--lg-gap);
 
         background: var(--fg-color);
-        border-radius: 8px;
-        border: 1px solid var(--sep-color);
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
         padding: var(--lg-pad);
         font-size: var(--lg-font-size);
+        box-shadow: var(--card-shadow);
 
         color: inherit;
     }
 
     .info-box:hover {
         text-decoration: none;
-        background: var(--hover-color);
+        background: var(--theme-soft-color);
     }
 
     .info-box .icon {
-        background: var(--theme-color);
-        color: var(--theme-text-color);
-        border-radius: var(--pill-border-radius);
+        background: var(--theme-soft-color);
+        color: var(--theme-color);
+        border-radius: var(--control-radius);
         padding: var(--lg-pad);
         font-size: var(--vl-font-size);
+        border: var(--border-width) solid var(--sep-color);
 
         display: flex;
         align-items: center;
@@ -216,9 +218,10 @@
 
     .events {
         padding: var(--lg-pad);
-        border-radius: 8px;
-        border: 1px solid var(--sep-color);
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
         background: var(--fg-color);
+        box-shadow: var(--card-shadow);
 
         margin-bottom: var(--vl-gap);
     }
@@ -252,12 +255,14 @@
         flex-direction: column;
         gap: var(--sm-gap);
         padding: var(--md-pad);
-        border-radius: 8px;
+        border-radius: var(--control-radius);
+        border: var(--border-width) solid transparent;
     }
 
     .events ul a:hover {
         text-decoration: none;
-        background: var(--hover-color);
+        background: var(--theme-soft-color);
+        border-color: var(--sep-color);
     }
 
     .events ul a .loc {
@@ -266,9 +271,10 @@
 
     .wr {
         background: var(--fg-color);
-        border-radius: 8px;
-        border: 1px solid var(--sep-color);
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
         padding: var(--lg-pad);
+        box-shadow: var(--card-shadow);
     }
 
     .wr h2 {

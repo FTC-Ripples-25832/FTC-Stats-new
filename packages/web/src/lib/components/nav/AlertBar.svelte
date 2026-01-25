@@ -56,7 +56,8 @@
         font-size: var(--lg-font-size);
         font-weight: bold;
 
-        border-radius: 8px;
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
     }
 
     .show {

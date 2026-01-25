@@ -200,15 +200,20 @@
 
 <style>
     th {
-        padding: var(--lg-pad);
-        font-weight: bold;
+        padding: var(--md-pad);
+        font-weight: 700;
         text-align: center;
         white-space: nowrap;
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
 
         user-select: none;
         cursor: grab;
 
         color: var(--stat-text-color);
+        background: var(--table-header-bg);
+        border-bottom: var(--border-width) solid var(--sep-color);
 
         position: relative;
     }
@@ -238,31 +243,30 @@
 
     .white {
         color: var(--text-color);
-        box-shadow: rgb(0 0 0 / 14%) 0px -4px 4px -2px inset;
-        background: var(--fg-color);
+        background: var(--table-header-bg);
     }
     .white::after {
-        background: var(--fg-color);
+        background: var(--table-header-bg);
     }
 
     .red,
     .red::after {
-        background: var(--red-stat-color);
+        background: rgba(var(--red-stat-color-vs), var(--stat-header-opacity));
     }
     .blue,
     .blue::after {
-        background: var(--blue-stat-color);
+        background: rgba(var(--blue-stat-color-vs), var(--stat-header-opacity));
     }
     .light-blue,
     .light-blue::after {
-        background: var(--light-blue-stat-color);
+        background: rgba(var(--light-blue-stat-color-vs), var(--stat-header-opacity));
     }
     .purple,
     .purple::after {
-        background: var(--purple-stat-color);
+        background: rgba(var(--purple-stat-color-vs), var(--stat-header-opacity));
     }
     .green,
     .green::after {
-        background: var(--green-stat-color);
+        background: rgba(var(--green-stat-color-vs), var(--stat-header-opacity));
     }
 </style>

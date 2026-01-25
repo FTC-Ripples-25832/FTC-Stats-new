@@ -29,10 +29,10 @@
         width: var(--sidebar-size);
 
         background: var(--fg-color);
-        border-right: 1px solid var(--sep-color);
+        border-right: var(--border-width) solid var(--sep-color);
+        box-shadow: var(--card-shadow);
 
-        padding: var(--md-pad);
-        padding-top: var(--lg-pad);
+        padding: var(--lg-pad);
 
         overflow-y: auto;
     }

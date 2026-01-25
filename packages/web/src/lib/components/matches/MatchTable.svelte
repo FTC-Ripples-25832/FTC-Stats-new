@@ -22,6 +22,7 @@
     import { faHeart, faHeartBroken } from "@fortawesome/free-solid-svg-icons";
     import { faHeart as faHeartOutline } from "@fortawesome/free-regular-svg-icons";
     import Fa from "svelte-fa";
+    import { t } from "$lib/i18n";
 
     export let matches: FullMatchFragment[];
     export let event: {
@@ -78,6 +79,25 @@
         let m = matches.find((m) => $modalMatchId?.[1] == m.id);
         if (m) show(m);
     }
+
+    $: sectionPlayoffs = $t("matches.section.playoffs", "Playoffs");
+    $: sectionFinals = $t("matches.section.finals", "Finals");
+    $: sectionSemifinals = $t("matches.section.semifinals", "Semifinals");
+    $: sectionQuals = $t("matches.section.quals", "Qualification Matches");
+    $: notStarted = $t("matches.event-not-started", "This event has not yet begun.");
+    $: noTeamMatches = $t(
+        "matches.team-no-matches",
+        "This team did not play any matches at this event."
+    );
+    $: noMatchesReported = $t(
+        "matches.event-no-matches",
+        "Matches have not yet been reported for this event."
+    );
+    $: surrogateLabel = $t("matches.surrogate", "Surrogate");
+    $: dqLabel = $t("matches.dq-no-show", "Disqualified or No Show");
+    $: elimRemaining = $t("matches.elim-remaining", "Elimination Remaining");
+    $: lostThisMatch = $t("matches.lost-this", "Lost This Match");
+    $: lostPreviousMatch = $t("matches.lost-previous", "Lost Previous Match");
 </script>
 
 <ScoreModal
@@ -108,7 +128,7 @@
                 {/each}
             {:else}
                 {#if doubleElim.length}
-                    <SectionRow name={"Playoffs"} />
+                    <SectionRow name={sectionPlayoffs} />
                 {/if}
                 {#each doubleElim as match, i}
                     <TradMatchRow
@@ -123,7 +143,7 @@
                     />
                 {/each}
                 {#if finals.length}
-                    <SectionRow name={"Finals"} />
+                    <SectionRow name={sectionFinals} />
                 {/if}
                 {#each finals as match, i}
                     <TradMatchRow
@@ -137,7 +157,7 @@
                     />
                 {/each}
                 {#if semis.length}
-                    <SectionRow name={"Semifinals"} />
+                    <SectionRow name={sectionSemifinals} />
                 {/if}
                 {#each semis as match, i}
                     <TradMatchRow
@@ -151,7 +171,7 @@
                     />
                 {/each}
                 {#if quals.length && (finals.length || semis.length || doubleElim.length)}
-                    <SectionRow name={"Qualification Matches"} />
+                    <SectionRow name={sectionQuals} />
                 {/if}
                 {#each quals as match, i}
                     <TradMatchRow
@@ -167,15 +187,15 @@
             {/if}
         {:else if !event.started}
             <tr class="info">
-                <td>This event has not yet begun.</td>
+                <td>{notStarted}</td>
             </tr>
         {:else if event.published && $page.route.id?.startsWith("/teams")}
             <tr class="info">
-                <td> This team did not play any matches at this event. </td>
+                <td>{noTeamMatches}</td>
             </tr>
         {:else}
             <tr class="info">
-                <td> Matches have not yet been reported for this event. </td>
+                <td>{noMatchesReported}</td>
             </tr>
         {/if}
     </tbody>
@@ -184,22 +204,22 @@
 {#if (anySurrogate || anyDq) && !event.remote}
     <div style:margin-top="var(--sm-gap)">
         {#if anySurrogate}
-            <div>* Surrogate</div>
+            <div>* {surrogateLabel}</div>
         {/if}
         {#if anyDq}
-            <div style:text-decoration="line-through">Disqualified or No Show</div>
+            <div style:text-decoration="line-through">{dqLabel}</div>
         {/if}
     </div>
 {/if}
 
 {#if doubleElim.length > 0}
     <div style:margin-top="var(--md-gap)" style="display: flex; gap: var(--vl-gap)">
-        <div><Fa icon={faHeart} style="color: var(--red-team-color)" /> Elimination Remaining</div>
+        <div><Fa icon={faHeart} style="color: var(--red-team-color)" /> {elimRemaining}</div>
         <div>
-            <Fa icon={faHeartBroken} style="color: var(--grayed-out-text-color)" /> Lost This Match
+            <Fa icon={faHeartBroken} style="color: var(--grayed-out-text-color)" /> {lostThisMatch}
         </div>
         <div>
-            <Fa icon={faHeartOutline} style="color: var(--grayed-out-text-color)" /> Lost Previous Match
+            <Fa icon={faHeartOutline} style="color: var(--grayed-out-text-color)" /> {lostPreviousMatch}
         </div>
     </div>
 {/if}
@@ -208,8 +228,10 @@
     table {
         display: block;
 
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
+        background: var(--fg-color);
+        box-shadow: var(--card-shadow);
     }
 
     tbody {
@@ -217,14 +239,14 @@
     }
 
     table tbody :global(tr:last-child) {
-        border-bottom-left-radius: 7px;
-        border-bottom-right-radius: 7px;
+        border-bottom-left-radius: var(--card-radius);
+        border-bottom-right-radius: var(--card-radius);
     }
     table tbody :global(tr:last-child) :global(td:first-child) {
-        border-bottom-left-radius: 7px;
+        border-bottom-left-radius: var(--card-radius);
     }
     table tbody :global(tr:last-child) :global(td:last-child) {
-        border-bottom-right-radius: 7px;
+        border-bottom-right-radius: var(--card-radius);
     }
 
     .info {

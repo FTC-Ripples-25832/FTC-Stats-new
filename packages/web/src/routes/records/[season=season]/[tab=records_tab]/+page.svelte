@@ -35,6 +35,7 @@
     import Head from "$lib/components/Head.svelte";
     import Match from "./Match.svelte";
     import EventTypeSelect from "../../../../lib/components/ui/form/EventTypeSelect.svelte";
+    import { t } from "$lib/i18n";
 
     function go(tab: string, season: Season) {
         let tabChanged = tab != $page.params.tab;
@@ -116,17 +117,19 @@
 
 <WidthProvider width={"850px"}>
     <Card>
-        <h1>{DESCRIPTORS[season].seasonName} Season Records</h1>
+        <h1>
+            {DESCRIPTORS[season].seasonName} {$t("records.title", "Season Records")}
+        </h1>
 
         <Form id="records-options" style="col">
             <div class="row">
                 <label for="season-select">
-                    Season
+                    {$t("form.season", "Season")}
                     <SeasonSelect bind:season id="season-select" />
                 </label>
 
                 <label for="region-select">
-                    Regions
+                    {$t("form.regions", "Regions")}
                     <RegionSelect
                         bind:region={$region}
                         name="regions"
@@ -137,13 +140,13 @@
 
                 {#if DESCRIPTORS[season].hasRemote}
                     <label for="remote-select">
-                        Events
+                        {$t("form.events", "Events")}
                         <RemoteSelect bind:remote={$remote} id="remote-select" on:change={change} />
                     </label>
                 {:else}
                     <!-- TODO: better layout -->
                     <label for="type-select">
-                        Event Types
+                        {$t("form.event-types", "Event Types")}
                         <EventTypeSelect
                             bind:eventType={$eventType}
                             id="type-select"
@@ -155,7 +158,7 @@
             </div>
 
             <div>
-                Date Range
+                {$t("form.date-range", "Date Range")}
                 <DateRange bind:start={$start} bind:end={$end} {season} on:change={change} />
             </div>
 
@@ -167,8 +170,8 @@
 <WidthProvider>
     <TabbedCard
         tabs={[
-            [faHashtag, "Teams", "teams", true],
-            [faBolt, "Matches", "matches", true],
+            [faHashtag, $t("common.teams", "Teams"), "teams", true],
+            [faBolt, $t("common.matches", "Matches"), "matches", true],
         ]}
         bind:selectedTab
     >

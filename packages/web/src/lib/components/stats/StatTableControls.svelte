@@ -17,6 +17,7 @@
     import FilterModal from "./filter/FilterModal.svelte";
     import Select from "../ui/form/Select.svelte";
     import ExportCsv from "./ExportCsv.svelte";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -66,6 +67,15 @@
 
     $: updateRankComponents(rankTy);
     $: computeRankTy(skip, rankAfterFilters);
+
+    $: rankFilterOptions = [
+        { value: "no", name: $t("stats.rank.pre-filter", "Pre Filter Rank") },
+        { value: "yes", name: $t("stats.rank.post-filter", "Post Filter Rank") },
+    ];
+    $: skipRankOptions = [
+        { value: "skip", name: $t("stats.rank.best", "Rank Best Results") },
+        { value: "keep", name: $t("stats.rank.all", "Rank All Results") },
+    ];
 </script>
 
 <ViewStatsModal bind:shown={viewStatsModalShown} {stats} data={viewStatsData?.data} />
@@ -78,30 +88,32 @@
 <FilterModal bind:shown={filtersShown} root={filter} {stats} on:new-filter />
 
 <div class="controls" class:extras={!isDefaultStats || filter != null}>
-    <Button icon={faEdit} on:click={() => (chooseStatsModalShown = true)}>Statistics</Button>
+    <Button icon={faEdit} on:click={() => (chooseStatsModalShown = true)}>
+        {$t("stats.statistics", "Statistics")}
+    </Button>
     {#if !isDefaultStats}
-        <Button icon={faXmark} on:click={() => dispatch("reset-stats")}>Reset Stats</Button>
+        <Button icon={faXmark} on:click={() => dispatch("reset-stats")}>
+            {$t("stats.reset", "Reset Stats")}
+        </Button>
     {/if}
 
-    <Button icon={faFilter} on:click={() => (filtersShown = true)}>Filters</Button>
+    <Button icon={faFilter} on:click={() => (filtersShown = true)}>
+        {$t("stats.filters", "Filters")}
+    </Button>
 
     {#if filter != null}
-        <Button icon={faXmark} on:click={() => dispatch("new-filter", null)}>Clear Filters</Button>
+        <Button icon={faXmark} on:click={() => dispatch("new-filter", null)}>
+            {$t("stats.filters.clear", "Clear Filters")}
+        </Button>
         <Select
             bind:value={rankAfterFilters}
-            options={[
-                { value: "no", name: "Pre Filter Rank" },
-                { value: "yes", name: "Post Filter Rank" },
-            ]}
+            options={rankFilterOptions}
         />
     {/if}
     {#if includeSkipRankTys}
         <Select
             bind:value={skip}
-            options={[
-                { value: "skip", name: "Rank Best Results" },
-                { value: "keep", name: "Rank All Results" },
-            ]}
+            options={skipRankOptions}
         />
     {/if}
     <div>

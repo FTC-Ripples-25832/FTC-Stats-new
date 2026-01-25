@@ -3,6 +3,7 @@
     import Fa from "svelte-fa";
     import { queryParamUrl } from "../util/search-params/search-params";
     import { PAGE_EC_DC } from "../util/search-params/int";
+    import { t } from "$lib/i18n";
 
     export let page: number;
     export let totalPageCount: number;
@@ -28,7 +29,7 @@
         class:disabled={page == 1}
         aria-disabled={page == 1}
         on:click|preventDefault={() => (page = previousPage)}
-        aria-label="Previous Page"
+        aria-label={$t("pagination.previous", "Previous Page")}
     >
         <Fa icon={faArrowLeft} />
     </a>
@@ -52,7 +53,7 @@
         class:disabled={page == totalPageCount}
         aria-disabled={page == totalPageCount}
         on:click|preventDefault={() => (page = nextPage)}
-        aria-label="Next Page"
+        aria-label={$t("pagination.next", "Next Page")}
     >
         <Fa icon={faArrowRight} />
     </a>
@@ -70,10 +71,12 @@
         font-size: inherit;
         font-family: inherit;
 
-        background: var(--theme-color);
-        color: var(--theme-text-color);
+        background: var(--fg-color);
+        color: var(--text-color);
         padding: var(--md-pad);
         cursor: pointer;
+
+        border: var(--border-width) solid var(--sep-color);
     }
 
     a.disabled {
@@ -81,14 +84,19 @@
         cursor: not-allowed;
     }
 
+    a:not(.disabled):hover {
+        background: var(--theme-soft-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
+    }
+
     .left {
-        border-top-left-radius: var(--pill-border-radius);
-        border-bottom-left-radius: var(--pill-border-radius);
+        border-top-left-radius: var(--control-radius);
+        border-bottom-left-radius: var(--control-radius);
     }
 
     .right {
-        border-top-right-radius: var(--pill-border-radius);
-        border-bottom-right-radius: var(--pill-border-radius);
+        border-top-right-radius: var(--control-radius);
+        border-bottom-right-radius: var(--control-radius);
     }
 
     .count {

@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import { browser } from "$app/environment";
     import type * as HighchartsType from "highcharts";
+    import { t } from "$lib/i18n";
 
     export let teams: Array<{
         teamNumber: number;
@@ -11,9 +12,19 @@
         totalOPR: number;
     }>;
 
-    export let xAxisLabel = "Teleop OPR";
-    export let yAxisLabel = "Auto OPR";
-    export let title = "Team Performance Comparison";
+    export let xAxisLabel: string | null = null;
+    export let yAxisLabel: string | null = null;
+    export let title: string | null = null;
+
+    $: resolvedXAxisLabel = xAxisLabel ?? $t("charts.opr.teleop", "Teleop OPR");
+    $: resolvedYAxisLabel = yAxisLabel ?? $t("charts.opr.auto", "Auto OPR");
+    $: resolvedTitle = title ?? $t("charts.opr.comparison", "Team Performance Comparison");
+    $: teamLabel = $t("common.team", "Team");
+    $: totalOprLabel = $t("charts.opr.total", "Total OPR");
+    $: chartNote = $t(
+        "charts.bubble.note",
+        "Bubble size represents total OPR. Click and drag to zoom. Double-click to reset."
+    );
 
     let chartContainer: HTMLDivElement;
     type HighchartsModule = typeof import("highcharts");
@@ -59,7 +70,7 @@
                 },
             },
             title: {
-                text: title,
+                text: resolvedTitle,
                 style: {
                     color: "var(--text-color)",
                     fontSize: "18px",
@@ -68,7 +79,7 @@
             },
             xAxis: {
                 title: {
-                    text: xAxisLabel,
+                    text: resolvedXAxisLabel,
                     style: { color: "var(--text-color)" },
                 },
                 labels: {
@@ -79,7 +90,7 @@
             },
             yAxis: {
                 title: {
-                    text: yAxisLabel,
+                    text: resolvedYAxisLabel,
                     style: { color: "var(--text-color)" },
                 },
                 labels: {
@@ -98,11 +109,11 @@
                     const point = this.point as any;
                     return `
                         <div style="padding: 8px;">
-                            <strong>Team ${point.name}</strong><br/>
+                            <strong>${teamLabel} ${point.name}</strong><br/>
                             ${point.teamName}<br/><br/>
-                            ${xAxisLabel}: <strong>${point.x.toFixed(2)}</strong><br/>
-                            ${yAxisLabel}: <strong>${point.y.toFixed(2)}</strong><br/>
-                            Total OPR: <strong>${point.z.toFixed(2)}</strong>
+                            ${resolvedXAxisLabel}: <strong>${point.x.toFixed(2)}</strong><br/>
+                            ${resolvedYAxisLabel}: <strong>${point.y.toFixed(2)}</strong><br/>
+                            ${totalOprLabel}: <strong>${point.z.toFixed(2)}</strong>
                         </div>
                     `;
                 },
@@ -154,7 +165,7 @@
 <div class="chart-wrapper">
     <div bind:this={chartContainer} class="chart-container"></div>
     <p class="chart-note">
-        Bubble size represents total OPR. Click and drag to zoom. Double-click to reset.
+        {chartNote}
     </p>
 </div>
 
@@ -164,7 +175,7 @@
         padding: var(--lg-pad);
         background: var(--fg-color);
         border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border-radius: var(--card-radius);
     }
 
     .chart-container {

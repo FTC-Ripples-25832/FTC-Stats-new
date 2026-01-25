@@ -1,5 +1,6 @@
 <script lang="ts">
     import Card from "$lib/components/Card.svelte";
+    import { t } from "$lib/i18n";
 
     export let slug: string;
 </script>
@@ -8,15 +9,20 @@
     <article>
         <div class="head">
             <h1 id={slug}><a href="#{slug}"><slot name="title" /></a></h1>
-            <div class="info">By <slot name="author" /> on <slot name="date" /></div>
+            <div class="info">
+                {$t("blog.by", "By")} <slot name="author" /> {$t("blog.on", "on")}{" "}
+                <slot name="date" />
+            </div>
         </div>
 
         <div class="rest">
             <slot />
 
             <p class="suggestions">
-                If you have any suggestions for topics you would like us to cover email us at
-                <a href="mailto:suggestions@ftcscout.org"> suggestions@ftcscout.org</a>.
+                {@html $t(
+                    "blog.suggestions",
+                    "If you have any suggestions for topics you would like us to cover email us at <a href=\\\"mailto:suggestions@ftcscout.org\\\">suggestions@ftcscout.org</a>."
+                )}
             </p>
         </div>
     </article>

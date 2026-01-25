@@ -3,6 +3,7 @@
     import { createTippy } from "svelte-tippy";
     import { tippyTheme } from "../nav/DarkModeToggle.svelte";
     import "tippy.js/dist/tippy.css";
+    import { t } from "$lib/i18n";
 
     export let redOPR1: number;
     export let redOPR2: number;
@@ -17,10 +18,22 @@
     $: tip = {
         content: `
             <div style="text-align: center;">
-                <div style="margin-bottom: 4px;"><strong>Predicted Scores</strong></div>
-                <div style="color: var(--red-team-text-color);">Red: ${Math.round(prediction.predictedRedScore)}</div>
-                <div style="color: var(--blue-team-text-color);">Blue: ${Math.round(prediction.predictedBlueScore)}</div>
-                <div style="margin-top: 4px; font-size: 0.9em; opacity: 0.8;">Based on team OPR</div>
+                <div style="margin-bottom: 4px;"><strong>${$t(
+                    "matches.predicted-scores",
+                    "Predicted Scores"
+                )}</strong></div>
+                <div style="color: var(--red-team-text-color);">${$t(
+                    "common.red",
+                    "Red"
+                )}: ${Math.round(prediction.predictedRedScore)}</div>
+                <div style="color: var(--blue-team-text-color);">${$t(
+                    "common.blue",
+                    "Blue"
+                )}: ${Math.round(prediction.predictedBlueScore)}</div>
+                <div style="margin-top: 4px; font-size: 0.9em; opacity: 0.8;">${$t(
+                    "matches.predicted-scores.note",
+                    "Based on team OPR"
+                )}</div>
             </div>
         `,
         allowHTML: true,

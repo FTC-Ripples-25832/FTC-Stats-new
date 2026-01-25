@@ -3,6 +3,7 @@
     import StatEvent from "./StatEvent.svelte";
     import StatTeam from "./StatTeam.svelte";
     import type { StatColumn, StatData } from "@ftc-stats/common";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -15,7 +16,7 @@
 </script>
 
 {#if val == null}
-    <td class="{stat.color} na" title={stat.titleName}> N/A </td>
+    <td class="{stat.color} na" title={stat.titleName}>{$t("common.na", "N/A")}</td>
 {:else if val.ty == "team"}
     <StatTeam {val} {eventCode} {focusedTeam} />
 {:else if val.ty == "event"}
@@ -38,7 +39,8 @@
     td {
         text-align: center;
         min-width: 75px;
-        padding: var(--md-pad);
+        padding: var(--sm-pad) var(--md-pad);
+        font-size: var(--sm-font-size);
     }
 
     @media (max-width: 600px) {
@@ -48,7 +50,8 @@
     }
 
     .rank {
-        font-weight: bold;
+        font-weight: 700;
+        letter-spacing: 0.03em;
     }
 
     .na {

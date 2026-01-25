@@ -86,10 +86,14 @@
 <style>
     button {
         padding: 0;
-        border: none;
-        background: none;
-        color: var(--theme-text-color);
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
+        color: var(--text-color);
 
         cursor: pointer;
+    }
+
+    button:hover {
+        background: var(--theme-soft-color);
     }
 </style>

@@ -20,6 +20,7 @@
         faVideo,
         faChartBar,
         faChartLine,
+        faScaleBalanced,
     } from "@fortawesome/free-solid-svg-icons";
     import { prettyPrintDateRangeString } from "$lib/printers/dateRange";
     import { prettyPrintURL } from "$lib/printers/url";
@@ -36,6 +37,7 @@
     import Rankings from "./Rankings.svelte";
     import Awards from "./Awards.svelte";
     import Figures from "./Figures.svelte";
+    import Sos from "./Sos.svelte";
     import Simulation from "./Simulation.svelte";
     import { isNonCompetition } from "$lib/util/event-type";
     import Head from "$lib/components/Head.svelte";
@@ -45,6 +47,7 @@
     import { getClient } from "../../../../../lib/graphql/client";
     import { getDataSync } from "../../../../../lib/graphql/getData";
     import { EventPageDocument } from "../../../../../lib/graphql/generated/graphql-operations";
+    import { t } from "$lib/i18n";
 
     export let data;
 
@@ -55,7 +58,10 @@
     $: insights = event?.matches?.flatMap(getMatchScores) ?? [];
 
     $: season = +$page.params.season as Season;
-    $: errorMessage = `No ${DESCRIPTORS[season].seasonName} event with code ${$page.params.code}`;
+    $: errorMessage = `${$t("events.error.prefix", "No")} ${DESCRIPTORS[season].seasonName} ${$t(
+        "events.error.suffix",
+        "event with code"
+    )} ${$page.params.code}`;
 
     function getOprValue(stats: any, season: Season): number | null {
         if (!stats || !("opr" in stats) || !stats.opr) return null;
@@ -119,7 +125,8 @@
 <WidthProvider>
     <Loading store={$eventStore} checkExists={(e) => !!e.eventByCode}>
         <ErrorPage slot="error" status={404} message={errorMessage}>
-            (Try searching for events on <a href="/events">the events page</a>)
+            {$t("events.error.try-prefix", "(Try searching for events on")}{" "}
+            <a href="/events">{$t("events.error.events-page", "the events page")}</a>)
         </ErrorPage>
 
         {#if focusedTeam && focusedTeamData}
@@ -165,23 +172,34 @@
 
         <TabbedCard
             tabs={[
-                [faBolt, "Matches", "matches", !!event.matches.length],
-                [faTrophy, "Rankings", "rankings", !!stats.length],
-                [faBolt, "Insights", "insights", !!insights.length],
-                [faChartLine, "Figures", "figures", !!stats.length],
-                [faMedal, "Awards", "awards", !!event.awards.length],
-                [faHashtag, "Teams", "teams", !!event.teams.length],
-                [faChartBar, "Simulation", "simulation", !!stats.length && !!event.matches.length],
+                [faBolt, $t("common.matches", "Matches"), "matches", !!event.matches.length],
+                [faTrophy, $t("events.rankings", "Rankings"), "rankings", !!stats.length],
+                [faBolt, $t("events.insights", "Insights"), "insights", !!insights.length],
+                [faChartLine, $t("events.figures", "Figures"), "figures", !!stats.length],
+                [faScaleBalanced, $t("events.sos", "SOS"), "sos", !!stats.length && !!event.matches.length],
+                [faMedal, $t("events.awards", "Awards"), "awards", !!event.awards.length],
+                [faHashtag, $t("common.teams", "Teams"), "teams", !!event.teams.length],
+                [faChartBar, $t("events.simulation", "Simulation"), "simulation", !!stats.length && !!event.matches.length],
             ]}
             bind:selectedTab
         >
             <Card slot="empty">
                 <div class="empty">
                     {#if isNonCompetition(event.type)}
-                        <p>This event is not a competition; no matches will be played.</p>
+                        <p>
+                            {$t(
+                                "events.empty.non-competition",
+                                "This event is not a competition; no matches will be played."
+                            )}
+                        </p>
                     {:else}
-                        <b>No information has been published about this event.</b>
-                        <p>Please check back later.</p>
+                        <b>
+                            {$t(
+                                "events.empty.no-info",
+                                "No information has been published about this event."
+                            )}
+                        </b>
+                        <p>{$t("events.empty.check-back", "Please check back later.")}</p>
                     {/if}
                 </div>
             </Card>
@@ -220,6 +238,16 @@
                     {season}
                     eventName={event.name}
                     teams={stats}
+                />
+            </TabContent>
+
+            <TabContent name="sos">
+                <Sos
+                    teams={event.teams}
+                    matches={event.matches}
+                    {teamOprMap}
+                    eventName={event.name}
+                    {season}
                 />
             </TabContent>
 

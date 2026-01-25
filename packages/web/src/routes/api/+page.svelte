@@ -3,6 +3,7 @@
     import Head from "$lib/components/Head.svelte";
     import WidthProvider from "$lib/components/WidthProvider.svelte";
     import { DISCORD } from "$lib/constants";
+    import { t } from "$lib/i18n";
 </script>
 
 <Head
@@ -12,51 +13,63 @@
 
 <WidthProvider width="100ch">
     <Card>
-        <h1 class="head">FTC<em>Scout</em> APIs</h1>
+        <h1 class="head">FTC<em>Scout</em> {$t("api.title", "APIs")}</h1>
 
         <div class="rest">
             <p>
-                FTC<em>Scout</em> has two APIs for you to choose between: a fully featured GraphQL API
-                and a simple to use REST API.
+                {$t(
+                    "api.intro",
+                    "FTCScout has two APIs for you to choose between: a fully featured GraphQL API and a simple to use REST API."
+                )}
             </p>
 
             <p>
-                If you ever need help with either API, feel free to ask for assistance on our <a
-                    href={DISCORD}>Discord</a
-                >.
+                {$t(
+                    "api.help-prefix",
+                    "If you ever need help with either API, feel free to ask for assistance on our"
+                )}
+                <a href={DISCORD}>Discord</a>.
             </p>
 
-            <h2>GraphQL</h2>
+            <h2>{$t("api.graphql.title", "GraphQL")}</h2>
             <p>
-                The FTC<em>Scout</em> GraphQL API provides access to all of the FTC<em>Scout</em>'s
-                data and statistics. It is used internally by the website.
+                {$t(
+                    "api.graphql.intro",
+                    "The FTCScout GraphQL API provides access to all of the FTCScout's data and statistics. It is used internally by the website."
+                )}
             </p>
             <p>
-                Because it uses
-                <a href="https://graphql.org/" target="_blank" rel="noreferrer">GraphQL</a>, you can
-                access as much or as little data as you need.
+                {$t("api.graphql.uses-prefix", "Because it uses")}
+                <a href="https://graphql.org/" target="_blank" rel="noreferrer">GraphQL</a>,{" "}
+                {$t("api.graphql.uses-suffix", "you can access as much or as little data as you need.")}
             </p>
             <p>
-                You can query this API at
-                <a href="https://api.ftcscout.org/graphql">api.ftcscout.org/graphql</a> or you can
-                try the playground <span class="maybe-hide">below or</span> in a new tab by clicking
-                <a href="https://api.ftcscout.org/graphql" target="_blank" rel="noreferrer">here</a
-                >.
+                {$t("api.graphql.query-prefix", "You can query this API at")}
+                <a href="https://api.ftcscout.org/graphql">api.ftcscout.org/graphql</a>{" "}
+                {$t("api.graphql.query-middle", "or you can try the playground")}{" "}
+                <span class="maybe-hide">{$t("api.graphql.query-below", "below or")}</span>{" "}
+                {$t("api.graphql.query-suffix", "in a new tab by clicking")}{" "}
+                <a href="https://api.ftcscout.org/graphql" target="_blank" rel="noreferrer">
+                    {$t("common.here", "here")}
+                </a>
+                .
             </p>
 
-            <h2>REST</h2>
+            <h2>{$t("api.rest.title", "REST")}</h2>
             <p>
-                The REST API is best used for simpler cases. It is not used internally, and thus it
-                doesn't provide access to all of our data. For example, you can't perform season
-                record queries using it. However, if you just need team data, match data, or single
-                event statistics, it provides an easy way to access those.
+                {$t(
+                    "api.rest.intro",
+                    "The REST API is best used for simpler cases. It is not used internally, and thus it doesn't provide access to all of our data. For example, you can't perform season record queries using it. However, if you just need team data, match data, or single event statistics, it provides an easy way to access those."
+                )}
             </p>
             <p>
-                Query the API at <a href="https://api.ftcscout.org/rest/v1"
-                    >api.ftcscout.org/rest/v1</a
-                >.
+                {$t("api.rest.query-prefix", "Query the API at")}{" "}
+                <a href="https://api.ftcscout.org/rest/v1">api.ftcscout.org/rest/v1</a>.
             </p>
-            <p>You can view the full documentation for this API <a href="/api/rest">here</a>.</p>
+            <p>
+                {$t("api.rest.docs-prefix", "You can view the full documentation for this API")}{" "}
+                <a href="/api/rest">{$t("common.here", "here")}</a>.
+            </p>
         </div>
     </Card>
 </WidthProvider>
@@ -64,7 +77,10 @@
 <div class="maybe-hide">
     <WidthProvider width="1600px">
         <Card>
-            <iframe src="https://api.ftcscout.org/graphql" title="FTCStats API Playground" />
+            <iframe
+                src="https://api.ftcscout.org/graphql"
+                title={$t("api.graphql.playground-title", "FTCStats API Playground")}
+            />
         </Card>
     </WidthProvider>
 </div>

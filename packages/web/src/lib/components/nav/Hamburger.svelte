@@ -25,19 +25,19 @@
     }
 
     button {
-        border: none;
-        background: none;
-        color: var(--theme-text-color);
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
+        color: var(--text-color);
 
         cursor: pointer;
 
         aspect-ratio: 1 / 1;
         padding: var(--sm-pad);
-        border-radius: var(--pill-border-radius);
+        border-radius: var(--control-radius);
     }
 
     button:hover {
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--theme-soft-color);
     }
 
     @media (min-width: 1500px) {

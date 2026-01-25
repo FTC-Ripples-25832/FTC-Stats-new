@@ -11,6 +11,7 @@
     } from "@ftc-stats/common";
     import Select from "../../ui/form/Select.svelte";
     import { createEventDispatcher } from "svelte";
+    import { t } from "$lib/i18n";
 
     type T = $$Generic;
 
@@ -31,7 +32,9 @@
     />
     <FilterValInput bind:val={cond.rhs} {stats} />
 
-    <button title="Remove" on:click={() => dispatch("remove")}> <Fa icon={faXmark} fw /> </button>
+    <button title={$t("common.remove", "Remove")} on:click={() => dispatch("remove")}>
+        <Fa icon={faXmark} fw />
+    </button>
 </li>
 
 <style>

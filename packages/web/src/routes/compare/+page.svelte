@@ -14,6 +14,7 @@
     import type { CompareTeamsQuery } from "$lib/graphql/generated/graphql-operations";
     import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
+    import { t } from "$lib/i18n";
 
     export let data;
 
@@ -110,8 +111,13 @@
 <WidthProvider>
     <Card>
         <div class="header">
-            <h1>Compare Teams</h1>
-            <p class="subtitle">Compare multiple teams side-by-side with historical OPR data</p>
+            <h1>{$t("compare.title", "Compare Teams")}</h1>
+            <p class="subtitle">
+                {$t(
+                    "compare.subtitle",
+                    "Compare multiple teams side-by-side with historical OPR data"
+                )}
+            </p>
         </div>
 
         <div class="team-selector">
@@ -120,12 +126,12 @@
                     type="number"
                     bind:value={newTeamInput}
                     on:keydown={handleKeydown}
-                    placeholder="Enter team number..."
+                    placeholder={$t("compare.placeholder", "Enter team number...")}
                     class="team-input"
                 />
                 <button on:click={addTeam} class="add-btn">
                     <Fa icon={faPlus} />
-                    Add Team
+                    {$t("compare.add-team", "Add Team")}
                 </button>
             </div>
 
@@ -137,7 +143,7 @@
                 <div class="selected-teams">
                     {#each teamNumbers as num}
                         <div class="team-chip">
-                            <span>Team {num}</span>
+                            <span>{$t("common.team", "Team")} {num}</span>
                             <button on:click={() => removeTeam(num)} class="remove-btn">
                                 <Fa icon={faTimes} />
                             </button>
@@ -152,14 +158,16 @@
     {#if teamNumbers.length === 0}
         <Card>
             <div class="empty-state">
-                <p>Add teams above to start comparing</p>
-                <p class="hint">Try adding teams like 9794, 18219, or 16896</p>
+                <p>{$t("compare.empty", "Add teams above to start comparing")}</p>
+                <p class="hint">
+                    {$t("compare.hint", "Try adding teams like 9794, 18219, or 16896")}
+                </p>
             </div>
         </Card>
     {:else if teamNumbers.length === 1}
         <Card>
             <div class="empty-state">
-                <p>Add at least one more team to compare</p>
+                <p>{$t("compare.need-more", "Add at least one more team to compare")}</p>
             </div>
         </Card>
     {:else}
@@ -167,16 +175,21 @@
             <Card>
                 {#if compareTeams.length === 0}
                     <div class="empty-state">
-                        <p>No matching teams found for the selected season.</p>
+                        <p>
+                            {$t(
+                                "compare.no-matching",
+                                "No matching teams found for the selected season."
+                            )}
+                        </p>
                     </div>
                 {:else}
                     <div class="comparison-content">
-                        <h2>Team Summary</h2>
+                        <h2>{$t("compare.summary", "Team Summary")}</h2>
                         <div class="summary-grid">
                             {#each compareTeams as team}
                                 <div class="summary-card">
                                     <div class="team-title">
-                                        Team {team.number} - {team.name}
+                                        {$t("common.team", "Team")} {team.number} - {team.name}
                                     </div>
                                     <div class="team-location">
                                         <Location {...team.location} link={false} />
@@ -184,7 +197,7 @@
                                     {#if team.quickStats}
                                         <div class="stats-grid">
                                             <div class="stat">
-                                                <span>Total OPR</span>
+                                                <span>{$t("stats.opr.total", "Total OPR")}</span>
                                                 <strong>
                                                     {prettyPrintFloat(team.quickStats.tot.value)}
                                                 </strong>
@@ -202,7 +215,7 @@
                                                 </em>
                                             </div>
                                             <div class="stat">
-                                                <span>Auto OPR</span>
+                                                <span>{$t("stats.opr.auto", "Auto OPR")}</span>
                                                 <strong>
                                                     {prettyPrintFloat(
                                                         team.quickStats.auto.value
@@ -224,7 +237,7 @@
                                                 </em>
                                             </div>
                                             <div class="stat">
-                                                <span>Teleop OPR</span>
+                                                <span>{$t("stats.opr.teleop", "Teleop OPR")}</span>
                                                 <strong>
                                                     {prettyPrintFloat(team.quickStats.dc.value)}
                                                 </strong>
@@ -242,7 +255,7 @@
                                                 </em>
                                             </div>
                                             <div class="stat">
-                                                <span>Endgame OPR</span>
+                                                <span>{$t("stats.opr.endgame", "Endgame OPR")}</span>
                                                 <strong>
                                                     {prettyPrintFloat(team.quickStats.eg.value)}
                                                 </strong>
@@ -261,7 +274,9 @@
                                             </div>
                                         </div>
                                     {:else}
-                                        <div class="no-stats">No stats available yet.</div>
+                                        <div class="no-stats">
+                                            {$t("compare.no-stats", "No stats available yet.")}
+                                        </div>
                                     {/if}
                                 </div>
                             {/each}
@@ -272,7 +287,10 @@
 
             {#if trendTeams.length > 0}
                 <Card>
-                    <h2>OPR Trend (Season {selectedSeason})</h2>
+                    <h2>
+                        {$t("compare.trend", "OPR Trend")} ({$t("form.season", "Season")}{" "}
+                        {selectedSeason})
+                    </h2>
                     {#key `${teamNumbers.join(",")}-${selectedSeason}`}
                         <OPRTrendChart teamData={trendTeams} />
                     {/key}
@@ -280,7 +298,12 @@
             {:else}
                 <Card>
                     <div class="empty-state">
-                        <p>No event stats available for the selected season.</p>
+                        <p>
+                            {$t(
+                                "compare.no-event-stats",
+                                "No event stats available for the selected season."
+                            )}
+                        </p>
                     </div>
                 </Card>
             {/if}
@@ -291,8 +314,10 @@
 <style>
     .header {
         padding: var(--lg-pad);
-        background: var(--hover-color);
-        border-radius: 8px;
+        background: var(--fg-color);
+        border-radius: var(--card-radius);
+        border: var(--border-width) solid var(--sep-color);
+        box-shadow: var(--card-shadow);
         margin-bottom: var(--vl-gap);
     }
 
@@ -309,8 +334,9 @@
     .team-selector {
         padding: var(--lg-pad);
         background: var(--fg-color);
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
+        box-shadow: var(--card-shadow);
         margin-bottom: var(--vl-gap);
     }
 
@@ -324,8 +350,8 @@
         flex: 1;
         padding: var(--md-pad);
         font-size: var(--md-font-size);
-        border: 1px solid var(--sep-color);
-        border-radius: 4px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--control-radius);
         background: var(--form-bg-color);
         color: var(--text-color);
     }
@@ -340,17 +366,19 @@
         align-items: center;
         gap: var(--sm-gap);
         padding: var(--md-pad) var(--lg-pad);
-        background: var(--theme-color);
-        color: var(--theme-text-color);
+        background: var(--fg-color);
+        color: var(--text-color);
         border: none;
-        border-radius: 4px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--control-radius);
         font-size: var(--md-font-size);
         cursor: pointer;
         transition: opacity 0.2s;
     }
 
     .add-btn:hover {
-        opacity: 0.9;
+        background: var(--theme-soft-color);
+        box-shadow: 4px 4px 0 var(--sep-color);
     }
 
     .selected-teams {
@@ -364,8 +392,9 @@
         align-items: center;
         gap: var(--sm-gap);
         padding: var(--sm-pad) var(--md-pad);
-        background: var(--theme-color);
-        color: var(--theme-text-color);
+        background: var(--fg-color);
+        color: var(--text-color);
+        border: var(--border-width) solid var(--sep-color);
         border-radius: var(--pill-border-radius);
         font-size: var(--md-font-size);
     }
@@ -373,7 +402,7 @@
     .remove-btn {
         background: none;
         border: none;
-        color: var(--theme-text-color);
+        color: var(--text-color);
         cursor: pointer;
         padding: 0;
         display: flex;
@@ -415,9 +444,10 @@
 
     .summary-card {
         padding: var(--md-pad);
-        border: 1px solid var(--sep-color);
-        border-radius: 8px;
+        border: var(--border-width) solid var(--sep-color);
+        border-radius: var(--card-radius);
         background: var(--fg-color);
+        box-shadow: var(--card-shadow);
     }
 
     .team-title {

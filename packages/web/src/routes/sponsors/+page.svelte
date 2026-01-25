@@ -2,22 +2,21 @@
     import Card from "$lib/components/Card.svelte";
     import WidthProvider from "$lib/components/WidthProvider.svelte";
     import Head from "$lib/components/Head.svelte";
+    import { t } from "$lib/i18n";
 </script>
 
 <Head title="Sponsors | FTCStats" description="Our Sponors this season" />
 
 <WidthProvider width={"1000px"}>
     <Card>
-        <h1 class="head">Our Sponsors</h1>
+        <h1 class="head">{$t("sponsors.title", "Our Sponsors")}</h1>
 
         <div class="rest">
             <p>
-                We are currently sponsored by <a
-                    href="https://hackclub.com/first?utm_source=ftcscout&utm_content=banner&tub_program=ftcscout"
-                    >HCB</a
-                >
-                for this season, but we we may be available for future sponsorship. See sponsorship
-                details <a href="/sponsors/info">here</a>.
+                {@html $t(
+                    "sponsors.p1",
+                    "We are currently sponsored by <a href=\\\"https://hackclub.com/first?utm_source=ftcscout&utm_content=banner&tub_program=ftcscout\\\">HCB</a> for this season, but we we may be available for future sponsorship. See sponsorship details <a href=\\\"/sponsors/info\\\">here</a>."
+                )}
             </p>
         </div></Card
     >

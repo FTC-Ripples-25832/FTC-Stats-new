@@ -27,14 +27,25 @@
         right: 0;
         height: var(--navbar-size);
 
-        padding: var(--md-pad);
+        padding: var(--md-pad) var(--lg-pad);
 
-        background: var(--theme-color);
+        background: var(--fg-color);
+        border-bottom: var(--border-width) solid var(--sep-color);
         z-index: var(--navbar-zi);
 
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    nav::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 6px;
+        background: var(--theme-color);
     }
 
     .left {
@@ -45,6 +56,6 @@
     .right {
         display: flex;
         align-items: center;
-        gap: calc(var(--lg-gap) * 1.75);
+        gap: var(--lg-gap);
     }
 </style>

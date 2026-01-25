@@ -189,25 +189,25 @@
         align-items: center;
         padding: 0 var(--lg-pad);
 
-        background: var(--fg-color);
+        background: var(--form-bg-color);
 
         transition: width 0.3s ease 0s;
 
-        border: 1px solid var(--sep-color);
+        border: var(--border-width) solid var(--sep-color);
         outline-offset: -1px;
-        border-radius: 4px;
+        border-radius: var(--control-radius);
 
         position: relative;
     }
 
     form:focus-within {
-        background: var(--zebra-stripe-color);
+        background: var(--fg-color);
     }
 
     form:focus-within.has-text {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
-        box-shadow: -2px 2px 10px 3px rgba(0, 0, 0, 10%);
+        box-shadow: var(--card-shadow);
     }
 
     input {
@@ -215,7 +215,6 @@
         --expanded-width: 600px;
         transition: width 300ms 0s cubic-bezier(0.4, 0, 0.2, 1);
 
-        border-radius: 4px;
         padding: calc(var(--navbar-size) / 6);
         padding-right: 0;
         border: none;
@@ -237,7 +236,7 @@
         font-family: inherit;
 
         padding: var(--sm-pad) var(--md-pad);
-        border-radius: var(--pill-border-radius);
+        border-radius: var(--control-radius);
 
         cursor: pointer;
     }
@@ -270,13 +269,13 @@
 
         background: var(--fg-color);
 
-        border: 1px solid var(--sep-color);
+        border: var(--border-width) solid var(--sep-color);
         border-top: none;
-        border-bottom-left-radius: 4px;
-        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: var(--control-radius);
+        border-bottom-right-radius: var(--control-radius);
         z-index: 1;
 
-        box-shadow: -2px 2px 10px 3px rgba(0, 0, 0, 10%);
+        box-shadow: var(--card-shadow);
 
         /* Hide border */
         clip-path: inset(1px 1px 1px 1px);
@@ -321,9 +320,9 @@
     }
 
     .shortcut {
-        color: gray;
-        outline: 1px solid gray;
-        border-radius: 4px;
+        color: var(--secondary-text-color);
+        outline: var(--border-width) solid var(--sep-color);
+        border-radius: var(--control-radius);
         padding: 1px var(--sm-pad);
     }
 
@@ -347,10 +346,10 @@
     .search-btn {
         display: none;
 
-        background: none;
-        border: none;
+        background: var(--fg-color);
+        border: var(--border-width) solid var(--sep-color);
         font-family: inherit;
-        color: var(--theme-text-color);
+        color: var(--text-color);
         cursor: pointer;
 
         margin-right: var(--sm-gap);

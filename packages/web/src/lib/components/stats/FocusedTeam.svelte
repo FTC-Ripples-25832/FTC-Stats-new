@@ -6,6 +6,7 @@
     import { preloadData } from "$app/navigation";
     import { fly } from "svelte/transition";
     import { prettyPrintFloat, prettyPrintOrdinal } from "$lib/printers/number";
+    import { t } from "$lib/i18n";
 
     type Team = Omit<NonNullable<EventPageQuery["eventByCode"]>["teams"][number], "__typename">;
 
@@ -28,19 +29,22 @@
     $: useNp = !(DESCRIPTORS[season].pensSubtract || remote);
     $: np = useNp ? "np" : "";
     $: npStat = useNp ? ("totalPointsNp" as const) : ("totalPoints" as const);
+    $: viewTeamLabel = $t("common.view-team", "View Team");
+    $: placeLabel = $t("stats.place", "place");
+    $: recordLabel = $t("stats.record-label", "W-L-T");
 </script>
 
 <a {href} transition:fly={{ y: 100, duration: 300 }}>
     <div class="top-row">
         <b class="name"> {number} - <em> {name} </em> </b>
-        <span class="view-team"> View Team <Fa icon={faAngleRight} /></span>
+        <span class="view-team"> {viewTeamLabel} <Fa icon={faAngleRight} /></span>
     </div>
 
     {#if stats}
         <div class="stats">
-            <b>{prettyPrintOrdinal(stats.rank)}</b> place ·
+            <b>{prettyPrintOrdinal(stats.rank)}</b> {placeLabel} ·
             {#if "wins" in stats}
-                <b>{stats.wins}-{stats.losses}-{stats.ties}</b> W-L-T ·
+                <b>{stats.wins}-{stats.losses}-{stats.ties}</b> {recordLabel} ·
             {/if}
             <b>{prettyPrintFloat(stats.opr[npStat])}</b>
             {np}OPR ·

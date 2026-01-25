@@ -1,13 +1,17 @@
+<script lang="ts">
+    import { t } from "$lib/i18n";
+</script>
+
 <thead>
     <tr>
-        <th class="team">Team</th>
+        <th class="team">{$t("common.team", "Team")}</th>
         <th>Q-1</th>
         <th>Q-2</th>
         <th>Q-3</th>
         <th>Q-4</th>
         <th>Q-5</th>
         <th>Q-6</th>
-        <th class="total">Total</th>
+        <th class="total">{$t("common.total", "Total")}</th>
     </tr>
 </thead>
 
@@ -21,9 +25,7 @@
         display: grid;
         grid-template-columns: 17em repeat(7, minmax(0, 1fr));
 
-        background-color: var(--neutral-team-color);
-        border-top-left-radius: 7px;
-        border-top-right-radius: 7px;
+        background-color: var(--table-header-bg);
 
         width: 100%;
         max-width: 100%;
@@ -37,11 +39,11 @@
     }
 
     tr :nth-child(2) {
-        border-left: 2px solid var(--sep-color);
+        border-left: var(--border-width) solid var(--sep-color);
     }
 
     .total {
-        border-left: 2px solid var(--sep-color);
+        border-left: var(--border-width) solid var(--sep-color);
     }
 
     th {
@@ -51,10 +53,10 @@
 
         padding: var(--lg-pad);
 
-        color: white;
-
-        font-weight: bold;
-
-        box-shadow: rgb(0 0 0 / 14%) 0px -4px 4px -2px inset;
+        color: var(--text-color);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: var(--sm-font-size);
     }
 </style>

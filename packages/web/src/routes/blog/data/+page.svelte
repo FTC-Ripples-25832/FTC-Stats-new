@@ -4,6 +4,7 @@
     import { getClient } from "$lib/graphql/client";
     import { EventPageDocument } from "$lib/graphql/generated/graphql-operations";
     import { CURRENT_SEASON } from "@ftc-stats/common";
+    import { t } from "$lib/i18n";
 
     let season = CURRENT_SEASON;
     let code = "";
@@ -25,17 +26,21 @@
     <Card>
         <form>
             <label for="season">
-                Season: <input id="season" type="number" bind:value={season} />
+                {$t("form.season", "Season")}: <input id="season" type="number" bind:value={season} />
             </label>
 
-            <label for="code">Event Code: <input id="code" bind:value={code} /> </label>
-            <label for="code">Match Id: <input id="match" bind:value={matchId} /> </label>
+            <label for="code">
+                {$t("blog.data.event-code", "Event Code")}: <input id="code" bind:value={code} />
+            </label>
+            <label for="code">
+                {$t("blog.data.match-id", "Match Id")}: <input id="match" bind:value={matchId} />
+            </label>
         </form>
     </Card>
 
     <Card>
         {#await qp}
-            ...Loading
+            ...{$t("common.loading", "Loading")}
         {:then q}
             {@const matches = q.data.eventByCode?.matches.filter((m) => m.id == +matchId)}
             {@const event = {
@@ -45,7 +50,7 @@
                 awards: undefined,
             }}
 
-            <button on:click={() => copy({ matches, event })}>Copy</button>
+            <button on:click={() => copy({ matches, event })}>{$t("common.copy", "Copy")}</button>
             <pre>{JSON.stringify({ matches, event }, null, 2)}</pre>
         {/await}
     </Card>

@@ -4,6 +4,7 @@
     import Card from "./Card.svelte";
     import Head from "./Head.svelte";
     import WidthProvider from "./WidthProvider.svelte";
+    import { t } from "$lib/i18n";
 
     export let status: number | null = null;
     export let message: string | null = null;
@@ -12,7 +13,7 @@
     $: computedMessage = message ?? $page?.error?.message;
 </script>
 
-<Head title="FTCScout" />
+<Head title="FTCStats" />
 
 <WidthProvider width="800px">
     <Card vis={false}>
@@ -20,9 +21,12 @@
             <h1>{computedStatus}</h1>
 
             {#if computedStatus == 404 && computedMessage == "Not Found"}
-                <p class="top">Not Found: {$page.url.pathname}</p>
+                <p class="top">{$t("error.not-found", "Not Found:")} {$page.url.pathname}</p>
                 <p class="bottom">
-                    The page you are looking for doesn't exist. If we linked you here, reach out at
+                    {$t(
+                        "error.not-found-desc",
+                        "The page you are looking for doesn't exist. If we linked you here, reach out at"
+                    )}
                     <a href="mailto:{EMAIL}">{EMAIL}</a>.
                 </p>
             {:else if computedStatus == 404}
@@ -30,7 +34,10 @@
             {:else}
                 <p class="top">{computedMessage}</p>
                 <p class="bottom">
-                    There appears to be an error. If the issue persists, reach out at
+                    {$t(
+                        "error.generic",
+                        "There appears to be an error. If the issue persists, reach out at"
+                    )}
                     <a href="mailto:{EMAIL}">{EMAIL}</a>.
                 </p>
             {/if}
