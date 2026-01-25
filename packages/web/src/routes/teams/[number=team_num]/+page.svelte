@@ -33,6 +33,7 @@
     import SeasonSelect from "$lib/components/ui/form/SeasonSelect.svelte";
     import Form from "$lib/components/ui/form/Form.svelte";
     import type { Writable } from "svelte/store";
+    import PageShell from "$lib/components/layout/PageShell.svelte";
     import { queryParam } from "$lib/util/search-params/search-params";
     import Head from "$lib/components/Head.svelte";
     import { setContext } from "svelte";
@@ -60,14 +61,14 @@
 </script>
 
 <Head
-    title={!!team ? `${team.number} ${team.name} | FTCStats` : "Team Page | FtcScout"}
+    title={!!team ? `${team.number} ${team.name} | FTCStats` : "Team Page | FTCStats"}
     description={!!team
         ? `Information and matches for team ${team.number} ${team.name}.`
         : `Information and matches for team ${$page.params.number}`}
     image="https://api.ftcscout.org/banners/teams/{$page.params.number}"
 />
 
-<WidthProvider>
+<WidthProvider width={"1200px"}>
     <Loading store={$teamStore} checkExists={(t) => !!t.teamByNumber}>
         <ErrorPage
             slot="error"
@@ -78,98 +79,112 @@
             <a href="/teams">{$t("teams.error.teams-page", "the teams page")}</a>)
         </ErrorPage>
 
-        <Card>
-            <h1>{team.number} - {team.name}</h1>
+        <PageShell railWidth="360px">
+            <div slot="rail" class="rail">
+                <Card style="margin: 0;">
+                    <h1>{team.number} - {team.name}</h1>
 
-            <InfoIconRow icon={faSchool}>{team.schoolName}</InfoIconRow>
+                    <InfoIconRow icon={faSchool}>{team.schoolName}</InfoIconRow>
 
-            {#if team.sponsors.length}
-                <InfoIconRow icon={faHeart}>{team.sponsors.join(", ")}</InfoIconRow>
-            {/if}
+                    {#if team.sponsors.length}
+                        <InfoIconRow icon={faHeart}>{team.sponsors.join(", ")}</InfoIconRow>
+                    {/if}
 
-            {#if team.website}
-                <InfoIconRow icon={faLink}>
-                    <a href={team.website} target="_blank" rel="noreferrer" class="norm-link">
-                        {prettyPrintURL(team.website)}
-                    </a>
-                </InfoIconRow>
-            {/if}
+                    {#if team.website}
+                        <InfoIconRow icon={faLink}>
+                            <a
+                                href={team.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                class="norm-link"
+                            >
+                                {prettyPrintURL(team.website)}
+                            </a>
+                        </InfoIconRow>
+                    {/if}
 
-            <InfoIconRow icon={faLocationDot}>
-                <Location {...team.location} />
-            </InfoIconRow>
-
-            <InfoIconRow icon={faCakeCandles}>
-                {$t("teams.rookie-year", "Rookie Year")}: {team.rookieYear}
-            </InfoIconRow>
-
-            <DataFromFirst />
-        </Card>
-
-        <Card vis={false}>
-            <Form id="season" noscriptSubmit>
-                <SeasonSelect bind:season={$season} nonForm />
-            </Form>
-        </Card>
-
-        {#if team.quickStats}
-            <QuickStats stats={team.quickStats} season={$season} />
-        {/if}
-
-        {#each sortedEvents as tep}
-            {@const event = tep.event}
-            {@const href = `/events/${event.season}/${event.code}/matches`}
-            <Card>
-                <h2 id={event.code}><a {href}>{event.name}</a></h2>
-
-                <InfoIconRow icon={faCalendarAlt}>
-                    {prettyPrintDateRangeString(event.start, event.end)}
-                </InfoIconRow>
-
-                <InfoIconRow icon={faLocationDot}>
-                    <Location {...event.location} />
-                </InfoIconRow>
-
-                <TeamEventStats
-                    stats={tep.stats}
-                    season={toSeason(event.season)}
-                    remote={event.remote}
-                />
-
-                {#if tep.awards.length}
-                    <InfoIconRow icon={faMedal}>
-                        {#each tep.awards as award, i}
-                            <Award {award} comma={i != tep.awards.length - 1} />
-                        {/each}
+                    <InfoIconRow icon={faLocationDot}>
+                        <Location {...team.location} />
                     </InfoIconRow>
-                {/if}
 
-                <MatchTable
-                    matches={tep.matches.map((m) => m.match)}
-                    {event}
-                    focusedTeam={team.number}
-                />
-            </Card>
-        {:else}
-            <Card>
-                <div class="no-events">
-                    <b>
-                        {team.name}
-                        {$season == CURRENT_SEASON
-                            ? $t("teams.no-events.current", "has not yet played")
-                            : $t("teams.no-events.past", "did not compete")}{" "}
-                        {$t("teams.no-events.in", "in any")} {DESCRIPTORS[$season].seasonName}{" "}
-                        {$t("common.events", "events")}.
-                    </b>
-                    <p>
-                        {$t(
-                            "teams.no-events.hint",
-                            "Try choosing a different season from the dropdown menu."
-                        )}
-                    </p>
-                </div>
-            </Card>
-        {/each}
+                    <InfoIconRow icon={faCakeCandles}>
+                        {$t("teams.rookie-year", "Rookie Year")}: {team.rookieYear}
+                    </InfoIconRow>
+
+                    <DataFromFirst />
+                </Card>
+
+                <Card style="margin: var(--lg-gap) 0 0;">
+                    <Form id="season" noscriptSubmit>
+                        <SeasonSelect bind:season={$season} nonForm />
+                    </Form>
+                </Card>
+
+                {#if team.quickStats}
+                    <div class="quick-stats">
+                        <QuickStats stats={team.quickStats} season={$season} />
+                    </div>
+                {/if}
+            </div>
+
+            <div class="main">
+                {#each sortedEvents as tep}
+                    {@const event = tep.event}
+                    {@const href = `/events/${event.season}/${event.code}/matches`}
+                    <Card>
+                        <h2 id={event.code}><a {href}>{event.name}</a></h2>
+
+                        <InfoIconRow icon={faCalendarAlt}>
+                            {prettyPrintDateRangeString(event.start, event.end)}
+                        </InfoIconRow>
+
+                        <InfoIconRow icon={faLocationDot}>
+                            <Location {...event.location} />
+                        </InfoIconRow>
+
+                        <TeamEventStats
+                            stats={tep.stats}
+                            season={toSeason(event.season)}
+                            remote={event.remote}
+                        />
+
+                        {#if tep.awards.length}
+                            <InfoIconRow icon={faMedal}>
+                                {#each tep.awards as award, i}
+                                    <Award {award} comma={i != tep.awards.length - 1} />
+                                {/each}
+                            </InfoIconRow>
+                        {/if}
+
+                        <MatchTable
+                            matches={tep.matches.map((m) => m.match)}
+                            {event}
+                            focusedTeam={team.number}
+                        />
+                    </Card>
+                {:else}
+                    <Card>
+                        <div class="no-events">
+                            <b>
+                                {team.name}
+                                {$season == CURRENT_SEASON
+                                    ? $t("teams.no-events.current", "has not yet played")
+                                    : $t("teams.no-events.past", "did not compete")}{" "}
+                                {$t("teams.no-events.in", "in any")}{" "}
+                                {DESCRIPTORS[$season].seasonName}{" "}
+                                {$t("common.events", "events")}.
+                            </b>
+                            <p>
+                                {$t(
+                                    "teams.no-events.hint",
+                                    "Try choosing a different season from the dropdown menu."
+                                )}
+                            </p>
+                        </div>
+                    </Card>
+                {/each}
+            </div>
+        </PageShell>
     </Loading>
 </WidthProvider>
 

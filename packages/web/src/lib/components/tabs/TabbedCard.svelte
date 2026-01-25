@@ -23,22 +23,24 @@
 
 {#if shownTabs.length}
     <Card vis={false}>
-        <div class="tabs">
-            {#each shownTabs as [icon, name, id]}
-                <a
-                    class="tab"
-                    class:selected={id == selectedTab}
-                    on:click|preventDefault={() => (selectedTab = id)}
-                    href={id}
-                >
-                    <Fa {icon} scale="0.75x" />
-                    <span class="maybe-hide"> {name} </span>
-                </a>
-            {/each}
-        </div>
+        <div class="tab-layout">
+            <div class="tabs">
+                {#each shownTabs as [icon, name, id]}
+                    <a
+                        class="tab"
+                        class:selected={id == selectedTab}
+                        on:click|preventDefault={() => (selectedTab = id)}
+                        href={id}
+                    >
+                        <Fa {icon} scale="0.75x" />
+                        <span class="maybe-hide"> {name} </span>
+                    </a>
+                {/each}
+            </div>
 
-        <div class="card" class:flat-top={shownTabs[0][2] == selectedTab}>
-            <slot />
+            <div class="card">
+                <slot />
+            </div>
         </div>
     </Card>
 {:else}
@@ -46,11 +48,18 @@
 {/if}
 
 <style>
+    .tab-layout {
+        display: grid;
+        grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+        gap: var(--lg-gap);
+        align-items: start;
+    }
+
     .tabs {
         display: flex;
-        gap: var(--md-gap);
-        align-items: center;
-        justify-content: left;
+        flex-direction: column;
+        gap: var(--sm-gap);
+        align-items: stretch;
     }
 
     .tab {
@@ -67,6 +76,9 @@
         background: var(--fg-color);
 
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: var(--sm-gap);
     }
 
     .tab:hover {
@@ -82,18 +94,6 @@
         box-shadow: 4px 4px 0 var(--sep-color);
     }
 
-    .tab:first-child:not(.selected):not(:focus-visible) {
-        /* Fix extra border */
-        clip-path: polygon(
-            0 0,
-            100% 0,
-            100% 100%,
-            8px 100%,
-            8px calc(100% - 1px),
-            0 calc(100% - 1px)
-        );
-    }
-
     .card {
         background-color: var(--fg-color);
         border: var(--border-width) solid var(--sep-color);
@@ -102,8 +102,15 @@
         padding: var(--lg-pad);
     }
 
-    .flat-top {
-        border-top-left-radius: var(--card-radius);
+    @media (max-width: 900px) {
+        .tab-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
     }
 
     @media (max-width: 650px) {

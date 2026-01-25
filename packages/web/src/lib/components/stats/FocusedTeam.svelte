@@ -63,7 +63,7 @@
         bottom: 0;
         margin: var(--md-gap);
         --team-bar-width: 350px;
-        --team-bar-ss: var(--sidebar-size);
+        --team-bar-ss: 0px;
         left: max(0px, calc(50% + var(--team-bar-ss) / 2 - var(--team-bar-width)));
         right: max(0px, calc(50% + var(--team-bar-ss) / 2 + var(--team-bar-width)));
         width: min(
@@ -83,11 +83,6 @@
         outline-color: var(--inverse-text-color);
     }
 
-    @media (max-width: 1500px) {
-        a {
-            --team-bar-ss: 0px;
-        }
-    }
 
     .top-row {
         display: flex;

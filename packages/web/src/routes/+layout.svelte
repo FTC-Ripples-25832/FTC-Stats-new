@@ -54,7 +54,6 @@
         position: relative;
 
         margin-top: var(--navbar-size);
-        margin-left: var(--sidebar-size);
         padding: var(--lg-gap);
         padding-bottom: calc(var(--xl-gap) * 2);
 
@@ -63,12 +62,6 @@
         scrollbar-gutter: stable both-edges;
 
         scroll-padding-top: var(--lg-gap);
-    }
-
-    @media (max-width: 1500px) {
-        #content {
-            margin-left: 0;
-        }
     }
 
     @media (max-width: 550px) {

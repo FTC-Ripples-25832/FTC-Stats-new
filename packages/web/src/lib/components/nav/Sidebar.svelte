@@ -6,9 +6,6 @@
     export let sidebarOpen = writable(false);
 </script>
 
-<div class="sidebar normal">
-    <SidebarContent />
-</div>
 {#if $sidebarOpen}
     <div
         aria-hidden="true"
@@ -16,7 +13,7 @@
         on:click={() => ($sidebarOpen = false)}
         transition:fade={{ duration: 300 }}
     />
-    <div class="sidebar small" transition:fly={{ duration: 300, x: -300, opacity: 1 }}>
+    <div class="sidebar drawer" transition:fly={{ duration: 300, x: -300, opacity: 1 }}>
         <SidebarContent />
     </div>
 {/if}
@@ -24,6 +21,7 @@
 <style>
     .sidebar {
         position: fixed;
+        top: 0;
         left: 0;
         bottom: 0;
         width: var(--sidebar-size);
@@ -32,20 +30,9 @@
         border-right: var(--border-width) solid var(--sep-color);
         box-shadow: var(--card-shadow);
 
-        padding: var(--lg-pad);
+        padding: calc(var(--navbar-size) + var(--md-gap)) var(--lg-pad) var(--lg-pad);
 
         overflow-y: auto;
-    }
-
-    .normal {
-        top: var(--navbar-size);
-        z-index: var(--sidebar-zi);
-    }
-
-    .small {
-        display: none;
-
-        top: 0;
         z-index: var(--mobile-sidebar-zi);
     }
 
@@ -59,20 +46,5 @@
         z-index: var(--mobile-sidebar-bg-zi);
         background: var(--modal-bg-color);
 
-        display: none;
-    }
-
-    @media (max-width: 1500px) {
-        .normal {
-            display: none;
-        }
-
-        .small {
-            display: block;
-        }
-
-        .cover {
-            display: block;
-        }
     }
 </style>

@@ -18,6 +18,7 @@
     import { prettyPrintDateRange } from "$lib/printers/dateRange";
     import SingleEvent from "./SingleEvent.svelte";
     import Options from "./Options.svelte";
+    import PageShell from "$lib/components/layout/PageShell.svelte";
     import { queryParam } from "$lib/util/search-params/search-params";
     import { REGION_EC_DC } from "$lib/util/search-params/region";
     import { regionMatches } from "$lib/util/regions";
@@ -127,61 +128,73 @@
     description="Find and search for FTC events in the {$page.params.season} season."
 />
 
-<WidthProvider width={"850px"}>
-    <Card>
-        <h1>
-            {DESCRIPTORS[season].seasonName} {$t("events.title", "Events")}
-        </h1>
-        <Options
-            bind:season
-            bind:region={$region}
-            bind:eventType={$eventTy}
-            bind:start={$start}
-            bind:end={$end}
-            bind:searchText={$searchText}
-        />
-    </Card>
-</WidthProvider>
-
-<WidthProvider>
-    <Loading store={$eventsStore} checkExists={() => true}>
-        <div slot="loading">
-            <SkeletonRow rows={5} header={true} />
-            <SkeletonRow rows={6} header={true} />
-            <SkeletonRow rows={5} header={true} />
-            <SkeletonRow rows={5} header={true} />
-            <SkeletonRow rows={5} header={true} />
-        </div>
-
-        <Card>
-            {#each grouped.slice(0, take) as [week, es] (week)}
-                {@const start = addDays(firstMonday, 7 * week)}
-                {@const end = addDays(firstMonday, 7 * week + 6)}
-
-                <section>
-                    <h2>
-                        {$t("events.week", "Week")} {week + 1}
-                        <span class="date-range">{prettyPrintDateRange(start, end)}</span>
-                    </h2>
-
-                    <ul>
-                        {#each es as event}
-                            <SingleEvent {event} />
-                        {/each}
-                    </ul>
-                </section>
-            {:else}
-                <div class="no-events">
-                    <b>{$t("events.no-matching", "No matching events.")}</b>
-                    <p class="no-events-help">
-                        {$t("filters.try-modifying", "Try modifying your filters.")}
+<WidthProvider width={"1200px"}>
+    <PageShell railWidth="360px">
+        <div slot="rail" class="rail">
+            <Card style="margin: 0;">
+                <div class="rail-title">
+                    <p class="eyebrow">{$t("form.season", "Season")}</p>
+                    <h1>
+                        {DESCRIPTORS[season].seasonName} {$t("events.title", "Events")}
+                    </h1>
+                    <p class="subtitle">
+                        {$t(
+                            "events.subtitle",
+                            "Filter by region, date, or event type to find the right competition."
+                        )}
                     </p>
                 </div>
-            {/each}
+                <Options
+                    compact
+                    bind:season
+                    bind:region={$region}
+                    bind:eventType={$eventTy}
+                    bind:start={$start}
+                    bind:end={$end}
+                    bind:searchText={$searchText}
+                />
+            </Card>
+        </div>
 
-            <InfiniteScroll threshold={500} on:loadMore={() => (take += 10)} {elementScroll} />
-        </Card>
-    </Loading>
+        <Loading store={$eventsStore} checkExists={() => true}>
+            <div slot="loading" class="loading-stack">
+                <SkeletonRow rows={5} header={true} />
+                <SkeletonRow rows={6} header={true} />
+                <SkeletonRow rows={5} header={true} />
+                <SkeletonRow rows={5} header={true} />
+                <SkeletonRow rows={5} header={true} />
+            </div>
+
+            <Card style="margin: 0;">
+                {#each grouped.slice(0, take) as [week, es] (week)}
+                    {@const start = addDays(firstMonday, 7 * week)}
+                    {@const end = addDays(firstMonday, 7 * week + 6)}
+
+                    <section>
+                        <h2>
+                            {$t("events.week", "Week")} {week + 1}
+                            <span class="date-range">{prettyPrintDateRange(start, end)}</span>
+                        </h2>
+
+                        <ul>
+                            {#each es as event}
+                                <SingleEvent {event} />
+                            {/each}
+                        </ul>
+                    </section>
+                {:else}
+                    <div class="no-events">
+                        <b>{$t("events.no-matching", "No matching events.")}</b>
+                        <p class="no-events-help">
+                            {$t("filters.try-modifying", "Try modifying your filters.")}
+                        </p>
+                    </div>
+                {/each}
+
+                <InfiniteScroll threshold={500} on:loadMore={() => (take += 10)} {elementScroll} />
+            </Card>
+        </Loading>
+    </PageShell>
 </WidthProvider>
 
 <style>
@@ -205,6 +218,31 @@
         padding: var(--md-gap);
         margin-bottom: var(--md-gap);
         border-radius: 8px;
+    }
+
+    .rail-title {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sm-gap);
+        margin-bottom: var(--lg-gap);
+    }
+
+    .eyebrow {
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: var(--secondary-text-color);
+        margin: 0 0 var(--md-gap);
+        font-size: var(--md-font-size);
+    }
+
+    .loading-stack {
+        display: grid;
+        gap: var(--lg-gap);
     }
 
     .date-range {

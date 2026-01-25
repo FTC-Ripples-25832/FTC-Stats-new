@@ -40,7 +40,7 @@
         background: var(--theme-soft-color);
     }
 
-    @media (min-width: 1500px) {
+    @media (min-width: 1200px) {
         .wrapper {
             display: none;
         }

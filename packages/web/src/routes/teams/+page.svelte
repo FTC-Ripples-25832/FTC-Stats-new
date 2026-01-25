@@ -1,5 +1,6 @@
 <script lang="ts">
     import Card from "../../lib/components/Card.svelte";
+    import PageShell from "$lib/components/layout/PageShell.svelte";
     import WidthProvider from "../../lib/components/WidthProvider.svelte";
     import Form from "../../lib/components/ui/form/Form.svelte";
     import SearchInput from "../../lib/components/ui/form/SearchInput.svelte";
@@ -54,54 +55,83 @@
 
 <Head title="Teams | FTCStats" description="Find and search for FTC teams." />
 
-<WidthProvider>
-    <Card>
-        <h1>{$t("teams.title", "Teams")}</h1>
+<WidthProvider width={"1200px"}>
+    <PageShell railWidth="340px">
+        <div slot="rail" class="rail">
+            <Card style="margin: 0;">
+                <div class="rail-title">
+                    <p class="eyebrow">{$t("form.search", "Search")}</p>
+                    <h1>{$t("teams.title", "Teams")}</h1>
+                    <p class="subtitle">
+                        {$t(
+                            "teams.subtitle",
+                            "Find active teams fast with search and region filters."
+                        )}
+                    </p>
+                </div>
 
-        <Form id="team-search" style="col">
-            <div class="row">
-                <label for="search-select">
-                    {$t("form.search", "Search")}
-                    <SearchInput bind:value={$searchText} name="search" id="search-select" />
-                </label>
+                <Form id="team-search" style="col">
+                    <div class="row">
+                        <label for="search-select">
+                            {$t("form.search", "Search")}
+                            <SearchInput
+                                bind:value={$searchText}
+                                name="search"
+                                id="search-select"
+                            />
+                        </label>
 
-                <label for="region-select">
-                    {$t("form.regions", "Regions")}
-                    <RegionSelect bind:region={$region} name="regions" id="region-select" />
-                </label>
-            </div>
-
-            <noscript> <input type="submit" /> </noscript>
-        </Form>
-    </Card>
-
-    <Loading store={$teamsStore} checkExists={() => true}>
-        <SkeletonRow rows={50} header={false} slot="loading" />
-
-        <Card>
-            <ul>
-                {#each search.slice(0, take) as { document, highlights } (document.number)}
-                    {@const href = `/teams/${document.number}`}
-                    {@const team = document}
-
-                    <li>
-                        <a {href}>
-                            <span class="number"> {@html highlightNum(team.number)} </span>
-                            <span class="name">{@html highlight(team.name, highlights)} </span>
-                            <em class="location"> <Location {...team.location} link={false} /> </em>
-                        </a>
-                    </li>
-                {:else}
-                    <div class="no-teams">
-                        <b>{$t("teams.no-matching", "No matching teams.")}</b>
-                        <p>{$t("filters.try-modifying", "Try modifying your filters.")}</p>
+                        <label for="region-select">
+                            {$t("form.regions", "Regions")}
+                            <RegionSelect
+                                bind:region={$region}
+                                name="regions"
+                                id="region-select"
+                            />
+                        </label>
                     </div>
-                {/each}
 
-                <InfiniteScroll threshold={200} on:loadMore={() => (take += 100)} {elementScroll} />
-            </ul>
-        </Card>
-    </Loading>
+                    <noscript> <input type="submit" /> </noscript>
+                </Form>
+            </Card>
+        </div>
+
+        <Loading store={$teamsStore} checkExists={() => true}>
+            <SkeletonRow rows={50} header={false} slot="loading" />
+
+            <Card style="margin: 0;">
+                <ul>
+                    {#each search.slice(0, take) as { document, highlights } (document.number)}
+                        {@const href = `/teams/${document.number}`}
+                        {@const team = document}
+
+                        <li>
+                            <a {href}>
+                                <span class="number"> {@html highlightNum(team.number)} </span>
+                                <span class="name">
+                                    {@html highlight(team.name, highlights)}
+                                </span>
+                                <em class="location">
+                                    <Location {...team.location} link={false} />
+                                </em>
+                            </a>
+                        </li>
+                    {:else}
+                        <div class="no-teams">
+                            <b>{$t("teams.no-matching", "No matching teams.")}</b>
+                            <p>{$t("filters.try-modifying", "Try modifying your filters.")}</p>
+                        </div>
+                    {/each}
+
+                    <InfiniteScroll
+                        threshold={200}
+                        on:loadMore={() => (take += 100)}
+                        {elementScroll}
+                    />
+                </ul>
+            </Card>
+        </Loading>
+    </PageShell>
 </WidthProvider>
 
 <style>
@@ -120,15 +150,8 @@
 
     .row {
         display: flex;
-        flex-direction: row;
-        gap: var(--vl-gap);
-    }
-
-    @media (max-width: 800px) {
-        .row {
-            flex-direction: column;
-            gap: var(--md-gap);
-        }
+        flex-direction: column;
+        gap: var(--md-gap);
     }
 
     noscript {
@@ -193,5 +216,25 @@
         grid-column: span 2;
 
         width: 100%;
+    }
+
+    .rail-title {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sm-gap);
+        margin-bottom: var(--lg-gap);
+    }
+
+    .eyebrow {
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        color: var(--secondary-text-color);
+        margin: 0 0 var(--md-gap);
+        font-size: var(--md-font-size);
     }
 </style>

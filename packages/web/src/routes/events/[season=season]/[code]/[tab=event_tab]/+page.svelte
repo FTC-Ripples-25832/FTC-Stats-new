@@ -47,6 +47,7 @@
     import { getClient } from "../../../../../lib/graphql/client";
     import { getDataSync } from "../../../../../lib/graphql/getData";
     import { EventPageDocument } from "../../../../../lib/graphql/generated/graphql-operations";
+    import PageShell from "$lib/components/layout/PageShell.svelte";
     import { t } from "$lib/i18n";
 
     export let data;
@@ -113,7 +114,7 @@
 </script>
 
 <Head
-    title={!!event ? `${event.name} | FTCStats` : "Event Page | FtcScout"}
+    title={!!event ? `${event.name} | FTCStats` : "Event Page | FTCStats"}
     description={!!event
         ? `Matches, awards, and statistics for the ${new Date(event.start).getFullYear()} ${
               event.name
@@ -122,7 +123,7 @@
     image="https://api.ftcscout.org/banners/events/{$page.params.season}/{$page.params.code}"
 />
 
-<WidthProvider>
+<WidthProvider width={"1200px"}>
     <Loading store={$eventStore} checkExists={(e) => !!e.eventByCode}>
         <ErrorPage slot="error" status={404} message={errorMessage}>
             {$t("events.error.try-prefix", "(Try searching for events on")}{" "}
@@ -133,136 +134,166 @@
             <FocusedTeam team={focusedTeamData} remote={event.remote} />
         {/if}
 
-        <Card>
-            <h1>{new Date(event.start).getFullYear()} {event.name}</h1>
+        <PageShell railWidth="360px">
+            <div slot="rail" class="rail">
+                <Card style="margin: 0;">
+                    <p class="eyebrow">
+                        {$t("events.event-code", "Event")} · {event.code}
+                    </p>
+                    <h1>{new Date(event.start).getFullYear()} {event.name}</h1>
 
-            <InfoIconRow icon={faCalendarAlt}>
-                {prettyPrintDateRangeString(event.start, event.end)}
-            </InfoIconRow>
+                    <InfoIconRow icon={faCalendarAlt}>
+                        {prettyPrintDateRangeString(event.start, event.end)}
+                    </InfoIconRow>
 
-            {#if event.website}
-                <InfoIconRow icon={faLink}>
-                    <a href={event.website} target="_blank" rel="noreferrer" class="norm-link">
-                        {prettyPrintURL(event.website)}
-                    </a>
-                </InfoIconRow>
-            {/if}
-
-            {#if event.liveStreamURL}
-                <InfoIconRow icon={faVideo}>
-                    <a
-                        href={event.liveStreamURL}
-                        target="_blank"
-                        rel="noreferrer"
-                        class="norm-link"
-                    >
-                        {prettyPrintURL(event.liveStreamURL)}
-                    </a>
-                </InfoIconRow>
-            {/if}
-
-            <InfoIconRow icon={faLocationDot}>
-                <Location {...event.location} />
-            </InfoIconRow>
-
-            <DataFromFirst />
-        </Card>
-
-        <RelatedEvents relatedEvents={event.relatedEvents} thisEventName={event.name} {season} />
-
-        <TabbedCard
-            tabs={[
-                [faBolt, $t("common.matches", "Matches"), "matches", !!event.matches.length],
-                [faTrophy, $t("events.rankings", "Rankings"), "rankings", !!stats.length],
-                [faBolt, $t("events.insights", "Insights"), "insights", !!insights.length],
-                [faChartLine, $t("events.figures", "Figures"), "figures", !!stats.length],
-                [faScaleBalanced, $t("events.sos", "SOS"), "sos", !!stats.length && !!event.matches.length],
-                [faMedal, $t("events.awards", "Awards"), "awards", !!event.awards.length],
-                [faHashtag, $t("common.teams", "Teams"), "teams", !!event.teams.length],
-                [faChartBar, $t("events.simulation", "Simulation"), "simulation", !!stats.length && !!event.matches.length],
-            ]}
-            bind:selectedTab
-        >
-            <Card slot="empty">
-                <div class="empty">
-                    {#if isNonCompetition(event.type)}
-                        <p>
-                            {$t(
-                                "events.empty.non-competition",
-                                "This event is not a competition; no matches will be played."
-                            )}
-                        </p>
-                    {:else}
-                        <b>
-                            {$t(
-                                "events.empty.no-info",
-                                "No information has been published about this event."
-                            )}
-                        </b>
-                        <p>{$t("events.empty.check-back", "Please check back later.")}</p>
+                    {#if event.website}
+                        <InfoIconRow icon={faLink}>
+                            <a
+                                href={event.website}
+                                target="_blank"
+                                rel="noreferrer"
+                                class="norm-link"
+                            >
+                                {prettyPrintURL(event.website)}
+                            </a>
+                        </InfoIconRow>
                     {/if}
+
+                    {#if event.liveStreamURL}
+                        <InfoIconRow icon={faVideo}>
+                            <a
+                                href={event.liveStreamURL}
+                                target="_blank"
+                                rel="noreferrer"
+                                class="norm-link"
+                            >
+                                {prettyPrintURL(event.liveStreamURL)}
+                            </a>
+                        </InfoIconRow>
+                    {/if}
+
+                    <InfoIconRow icon={faLocationDot}>
+                        <Location {...event.location} />
+                    </InfoIconRow>
+
+                    <DataFromFirst />
+                </Card>
+
+                <div class="related">
+                    <RelatedEvents
+                        relatedEvents={event.relatedEvents}
+                        thisEventName={event.name}
+                        {season}
+                    />
                 </div>
-            </Card>
+            </div>
 
-            <TabContent name="matches">
-                <MatchTable
-                    matches={event.matches}
-                    {event}
-                    {focusedTeam}
-                    {teamOprMap}
-                />
-            </TabContent>
+            <div class="main">
+                <TabbedCard
+                    tabs={[
+                        [faBolt, $t("common.matches", "Matches"), "matches", !!event.matches.length],
+                        [faTrophy, $t("events.rankings", "Rankings"), "rankings", !!stats.length],
+                        [faBolt, $t("events.insights", "Insights"), "insights", !!insights.length],
+                        [faChartLine, $t("events.figures", "Figures"), "figures", !!stats.length],
+                        [
+                            faScaleBalanced,
+                            $t("events.sos", "SOS"),
+                            "sos",
+                            !!stats.length && !!event.matches.length,
+                        ],
+                        [faMedal, $t("events.awards", "Awards"), "awards", !!event.awards.length],
+                        [faHashtag, $t("common.teams", "Teams"), "teams", !!event.teams.length],
+                        [
+                            faChartBar,
+                            $t("events.simulation", "Simulation"),
+                            "simulation",
+                            !!stats.length && !!event.matches.length,
+                        ],
+                    ]}
+                    bind:selectedTab
+                >
+                    <Card slot="empty">
+                        <div class="empty">
+                            {#if isNonCompetition(event.type)}
+                                <p>
+                                    {$t(
+                                        "events.empty.non-competition",
+                                        "This event is not a competition; no matches will be played."
+                                    )}
+                                </p>
+                            {:else}
+                                <b>
+                                    {$t(
+                                        "events.empty.no-info",
+                                        "No information has been published about this event."
+                                    )}
+                                </b>
+                                <p>{$t("events.empty.check-back", "Please check back later.")}</p>
+                            {/if}
+                        </div>
+                    </Card>
 
-            <TabContent name="rankings">
-                <Rankings
-                    {season}
-                    remote={event.remote}
-                    eventName={event.name}
-                    data={stats}
-                    {focusedTeam}
-                />
-            </TabContent>
+                    <TabContent name="matches">
+                        <MatchTable
+                            matches={event.matches}
+                            {event}
+                            {focusedTeam}
+                            {teamOprMap}
+                        />
+                    </TabContent>
 
-            <TabContent name="insights">
-                <Insights
-                    {season}
-                    remote={event.remote}
-                    eventName={event.name}
-                    data={insights}
-                    {focusedTeam}
-                />
-            </TabContent>
+                    <TabContent name="rankings">
+                        <Rankings
+                            {season}
+                            remote={event.remote}
+                            eventName={event.name}
+                            data={stats}
+                            {focusedTeam}
+                        />
+                    </TabContent>
 
-            <TabContent name="figures">
-                <Figures
-                    {season}
-                    eventName={event.name}
-                    teams={stats}
-                />
-            </TabContent>
+                    <TabContent name="insights">
+                        <Insights
+                            {season}
+                            remote={event.remote}
+                            eventName={event.name}
+                            data={insights}
+                            {focusedTeam}
+                        />
+                    </TabContent>
 
-            <TabContent name="sos">
-                <Sos
-                    teams={event.teams}
-                    matches={event.matches}
-                    {teamOprMap}
-                    eventName={event.name}
-                    {season}
-                />
-            </TabContent>
+                    <TabContent name="figures">
+                        <Figures
+                            {season}
+                            eventName={event.name}
+                            teams={stats}
+                        />
+                    </TabContent>
 
-            <TabContent name="awards">
-                <Awards awards={event.awards} {season} eventCode={event.code} {focusedTeam} />
-            </TabContent>
+                    <TabContent name="sos">
+                        <Sos
+                            teams={event.teams}
+                            matches={event.matches}
+                            {teamOprMap}
+                            eventName={event.name}
+                            {season}
+                        />
+                    </TabContent>
 
-            <TabContent name="teams">
-                <Teams teams={event.teams} {focusedTeam} />
-            </TabContent>
+                    <TabContent name="awards">
+                        <Awards awards={event.awards} {season} eventCode={event.code} {focusedTeam} />
+                    </TabContent>
 
-            <TabContent name="simulation">
-                <Simulation teams={event.teams} matches={event.matches} {season} />
-            </TabContent>
-        </TabbedCard>
+                    <TabContent name="teams">
+                        <Teams teams={event.teams} {focusedTeam} />
+                    </TabContent>
+
+                    <TabContent name="simulation">
+                        <Simulation teams={event.teams} matches={event.matches} {season} />
+                    </TabContent>
+                </TabbedCard>
+            </div>
+        </PageShell>
     </Loading>
 </WidthProvider>
 
@@ -270,6 +301,18 @@
     h1 {
         margin-top: var(--sm-gap);
         margin-bottom: var(--lg-gap);
+    }
+
+    .eyebrow {
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
+        margin-bottom: var(--sm-gap);
+    }
+
+    .related {
+        margin-top: var(--lg-gap);
     }
 
     .empty {

@@ -9,6 +9,7 @@
     import { t } from "$lib/i18n";
 
     export let season: Season;
+    export let compact = false;
     export let region: RegionOption;
     export let eventType: EventTypeOption;
     export let start: Date | null;
@@ -16,36 +17,38 @@
     export let searchText: string;
 </script>
 
-<Form id="season-search" style="col">
-    <div class="row">
-        <label for="season-select">
-            {$t("form.season", "Season")}
-            <SeasonSelect bind:season id="season-select" />
+<div class:compact>
+    <Form id="season-search" style="col">
+        <div class="row">
+            <label for="season-select">
+                {$t("form.season", "Season")}
+                <SeasonSelect bind:season id="season-select" />
+            </label>
+
+            <label for="region-select">
+                {$t("form.regions", "Regions")}
+                <RegionSelect bind:region name="regions" id="region-select" />
+            </label>
+
+            <label for="event-types-select">
+                {$t("form.event-types", "Event Types")}
+                <EventTypeSelect bind:eventType name="event-types" id="event-types-select" />
+            </label>
+        </div>
+
+        <div>
+            {$t("form.date-range", "Date Range")}
+            <DateRange bind:start bind:end {season} />
+        </div>
+
+        <label for="search-select">
+            {$t("form.search", "Search")}
+            <SearchInput bind:value={searchText} name="search" id="search-select" />
         </label>
 
-        <label for="region-select">
-            {$t("form.regions", "Regions")}
-            <RegionSelect bind:region name="regions" id="region-select" />
-        </label>
-
-        <label for="event-types-select">
-            {$t("form.event-types", "Event Types")}
-            <EventTypeSelect bind:eventType name="event-types" id="event-types-select" />
-        </label>
-    </div>
-
-    <div>
-        {$t("form.date-range", "Date Range")}
-        <DateRange bind:start bind:end {season} />
-    </div>
-
-    <label for="search-select">
-        {$t("form.search", "Search")}
-        <SearchInput bind:value={searchText} name="search" id="search-select" />
-    </label>
-
-    <noscript> <input type="submit" /> </noscript>
-</Form>
+        <noscript> <input type="submit" /> </noscript>
+    </Form>
+</div>
 
 <style>
     label,
@@ -60,6 +63,11 @@
         display: flex;
         flex-direction: row;
         gap: var(--vl-gap);
+    }
+
+    .compact .row {
+        flex-direction: column;
+        gap: var(--md-gap);
     }
 
     @media (max-width: 800px) {
