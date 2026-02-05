@@ -12,16 +12,36 @@
     import { TournamentLevel } from "$lib/graphql/generated/graphql-operations";
     import { onDestroy } from "svelte";
     import { t } from "$lib/i18n";
+    import Select from "$lib/components/ui/form/Select.svelte";
+    import { getOprValue } from "$lib/components/matches/prediction-maps";
 
     export let teams: any[];
     export let matches: any[];
     export let season: number;
+    export let teamOprMap: Record<number, number> = {};
 
     let isSimulating = false;
     let simulationResults: SimulationResult[] = [];
     let numSimulations = 1000;
+    let numSimulationsStr = "1000";
+    const i = (x: number) => (numSimulationsStr = `${x}`);
+    const o = (x: string) => (numSimulations = +x);
+    $: i(numSimulations);
+    $: o(numSimulationsStr);
+
+    let simOptions: { value: string; name: string }[] = [];
+    $: simOptions = [
+        { value: "100", name: `100 (${$t("simulation.speed.fast", "Fast")})` },
+        { value: "1000", name: `1,000 (${$t("simulation.speed.recommended", "Recommended")})` },
+        { value: "5000", name: `5,000 (${$t("simulation.speed.accurate", "Accurate")})` },
+        { value: "10000", name: `10,000 (${$t("simulation.speed.very-accurate", "Very Accurate")})` },
+    ];
     let simulationError: string | null = null;
     let matchSummary = { total: 0, played: 0 };
+    $: hasOprData =
+        teams?.some(
+            (t) => (teamOprMap[t.teamNumber] ?? getOprValue(t.stats ?? null, season)) != null
+        ) ?? false;
 
     type SimulationMessage =
         | { type: "run"; config: EventSimulationConfig }
@@ -73,7 +93,7 @@
             ties: 0,
             rankingPoints: 0,
             totalPoints: 0,
-            opr: t.stats?.tot?.opr?.value || 0,
+            opr: teamOprMap[t.teamNumber] ?? getOprValue(t.stats ?? null, season) ?? 0,
             rpBonusRates: getTeamRpRates(t.stats, season),
         }));
 
@@ -141,6 +161,11 @@
         if (isSimulating) return;
         isSimulating = true;
         simulationError = null;
+        if (!hasOprData) {
+            simulationError = "OPR ratings are not available for this event yet.";
+            isSimulating = false;
+            return;
+        }
 
         try {
             const { teams: teamRecords, matches: matchData } = prepareSimulationData();
@@ -267,16 +292,13 @@
     <div class="controls">
         <div class="control-group">
             <label for="num-sims">{$t("simulation.count", "Number of Simulations:")}</label>
-            <select id="num-sims" bind:value={numSimulations} disabled={isSimulating}>
-                <option value={100}>100 ({$t("simulation.speed.fast", "Fast")})</option>
-                <option value={1000}>
-                    1,000 ({$t("simulation.speed.recommended", "Recommended")})
-                </option>
-                <option value={5000}>5,000 ({$t("simulation.speed.accurate", "Accurate")})</option>
-                <option value={10000}>
-                    10,000 ({$t("simulation.speed.very-accurate", "Very Accurate")})
-                </option>
-            </select>
+            <Select
+                id="num-sims"
+                bind:value={numSimulationsStr}
+                options={simOptions}
+                nonForm
+                disabled={isSimulating}
+            />
         </div>
 
         <button class="run-btn" on:click={runSimulation} disabled={isSimulating}>

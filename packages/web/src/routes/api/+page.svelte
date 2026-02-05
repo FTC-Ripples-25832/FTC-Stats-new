@@ -7,19 +7,19 @@
 </script>
 
 <Head
-    title="API | FTCStats"
-    description="The developer APIs for FTCStats providing access to all our statistics and data."
+    title="API | FTC Stats"
+    description="The developer APIs for FTC Stats providing access to all our statistics and data."
 />
 
 <WidthProvider width="100ch">
     <Card>
-        <h1 class="head">FTC<em>Scout</em> {$t("api.title", "APIs")}</h1>
+        <h1 class="head">FTC<em>Stats</em> {$t("api.title", "APIs")}</h1>
 
         <div class="rest">
             <p>
                 {$t(
                     "api.intro",
-                    "FTCScout has two APIs for you to choose between: a fully featured GraphQL API and a simple to use REST API."
+                    "FTC Stats has two APIs for you to choose between: a fully featured GraphQL API and a simple to use REST API."
                 )}
             </p>
 
@@ -35,7 +35,7 @@
             <p>
                 {$t(
                     "api.graphql.intro",
-                    "The FTCScout GraphQL API provides access to all of the FTCScout's data and statistics. It is used internally by the website."
+                    "The FTC Stats GraphQL API provides access to all of the FTC Stats data and statistics. It is used internally by the website."
                 )}
             </p>
             <p>
@@ -79,7 +79,7 @@
         <Card>
             <iframe
                 src="https://api.ftcscout.org/graphql"
-                title={$t("api.graphql.playground-title", "FTCStats API Playground")}
+                title={$t("api.graphql.playground-title", "FTC Stats API Playground")}
             />
         </Card>
     </WidthProvider>

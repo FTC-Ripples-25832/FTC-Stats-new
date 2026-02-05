@@ -1,7 +1,13 @@
 <script lang="ts">
     import RelatedEvents from "./RelatedEvents.svelte";
 
-    import { DESCRIPTORS, Season, notEmpty } from "@ftc-stats/common";
+    import {
+        DESCRIPTORS,
+        Season,
+        TournamentLevel,
+        notEmpty,
+        calculateEpaRatings,
+    } from "@ftc-stats/common";
     import ErrorPage from "$lib/components/ErrorPage.svelte";
     import Loading from "$lib/components/Loading.svelte";
     import WidthProvider from "$lib/components/WidthProvider.svelte";
@@ -28,8 +34,7 @@
     import TabbedCard from "$lib/components/tabs/TabbedCard.svelte";
     import TabContent from "$lib/components/tabs/TabContent.svelte";
     import MatchTable from "$lib/components/matches/MatchTable.svelte";
-    import { goto } from "$app/navigation";
-    import { browser } from "$app/environment";
+    import { afterNavigate } from "$app/navigation";
     import { onMount, setContext } from "svelte";
     import { TEAM_CLICK_ACTION_CTX } from "$lib/components/matches/MatchTeam.svelte";
     import FocusedTeam from "$lib/components/stats/FocusedTeam.svelte";
@@ -39,10 +44,12 @@
     import Figures from "./Figures.svelte";
     import Sos from "./Sos.svelte";
     import Simulation from "./Simulation.svelte";
+    import Forecast from "./Forecast.svelte";
     import { isNonCompetition } from "$lib/util/event-type";
     import Head from "$lib/components/Head.svelte";
     import Insights from "./Insights.svelte";
     import { getMatchScores } from "$lib/components/stats/getMatchScores";
+    import { buildOprMapFromMatches, hasEntries } from "$lib/components/matches/prediction-maps";
     import { unsubscribe, watchEvent } from "./watchEvent";
     import { getClient } from "../../../../../lib/graphql/client";
     import { getDataSync } from "../../../../../lib/graphql/getData";
@@ -73,24 +80,66 @@
         return opr.totalPointsNp ?? opr.totalPoints ?? null;
     }
 
-    $: teamOprMap =
-        stats?.reduce((acc, teamEvent) => {
-            const opr = getOprValue(teamEvent.stats, season);
-            if (opr != null) {
-                acc[teamEvent.teamNumber] = opr;
-            }
-            return acc;
-        }, {} as Record<number, number>) ?? {};
+    function buildEpaMap(matches: typeof event.matches, season: Season): Record<number, number> {
+        if (!matches?.length) return {};
+        return calculateEpaRatings(
+            matches.map((m) => ({
+                tournamentLevel: m.tournamentLevel as unknown as TournamentLevel,
+                scheduledStartTime: m.scheduledStartTime,
+                actualStartTime: m.actualStartTime,
+                teams: m.teams.map((t) => ({
+                    teamNumber: t.teamNumber ?? t.team?.number ?? null,
+                    alliance: t.alliance,
+                    surrogate: t.surrogate,
+                })),
+                scores:
+                    m.scores && "red" in m.scores
+                        ? {
+                              red: {
+                                  totalPoints: m.scores.red.totalPoints,
+                                  totalPointsNp: m.scores.red.totalPointsNp,
+                              },
+                              blue: {
+                                  totalPoints: m.scores.blue.totalPoints,
+                                  totalPointsNp: m.scores.blue.totalPointsNp,
+                              },
+                          }
+                        : null,
+            })),
+            season
+        );
+    }
 
-    function gotoTab(tab: string) {
-        if (browser) {
-            let url = $page.url.searchParams.size ? `${tab}?${$page.url.searchParams}` : tab;
-            goto(url, { replaceState: true });
+    let teamOprMap: Record<number, number> = {};
+    $: {
+        const fromStats =
+            stats?.reduce((acc, teamEvent) => {
+                const opr = getOprValue(teamEvent.stats, season);
+                if (opr != null) {
+                    acc[teamEvent.teamNumber] = opr;
+                }
+                return acc;
+            }, {} as Record<number, number>) ?? {};
+        if (hasEntries(fromStats)) {
+            teamOprMap = fromStats;
+        } else if (event?.matches?.length) {
+            teamOprMap = buildOprMapFromMatches(
+                event.matches,
+                season,
+                event.code,
+                !!event.remote
+            );
+        } else {
+            teamOprMap = {};
         }
     }
 
+    $: teamEpaMap = event?.matches?.length ? buildEpaMap(event.matches, season) : {};
+
     let selectedTab = $page.params.tab;
-    $: gotoTab(selectedTab);
+    afterNavigate(() => {
+        selectedTab = $page.params.tab;
+    });
 
     let focusedTeam: number | null = null;
     $: focusedTeamData =
@@ -114,7 +163,7 @@
 </script>
 
 <Head
-    title={!!event ? `${event.name} | FTCStats` : "Event Page | FTCStats"}
+    title={!!event ? `${event.name} | FTC Stats` : "Event Page | FTC Stats"}
     description={!!event
         ? `Matches, awards, and statistics for the ${new Date(event.start).getFullYear()} ${
               event.name
@@ -159,16 +208,28 @@
                         </InfoIconRow>
                     {/if}
 
-                    {#if event.liveStreamURL}
+                    {#if event.liveStreamURL || (event.webcasts && event.webcasts.length)}
                         <InfoIconRow icon={faVideo}>
-                            <a
-                                href={event.liveStreamURL}
-                                target="_blank"
-                                rel="noreferrer"
-                                class="norm-link"
-                            >
-                                {prettyPrintURL(event.liveStreamURL)}
-                            </a>
+                            {#if event.liveStreamURL}
+                                <a
+                                    href={event.liveStreamURL}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    class="norm-link"
+                                >
+                                    {$t("events.livestream", "Live Stream")}
+                                </a>
+                            {/if}
+                            {#if event.webcasts?.length}
+                                <a
+                                    href={event.webcasts[0]}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    class="norm-link"
+                                >
+                                    {$t("events.webcast", "Webcast")}
+                                </a>
+                            {/if}
                         </InfoIconRow>
                     {/if}
 
@@ -192,6 +253,12 @@
                 <TabbedCard
                     tabs={[
                         [faBolt, $t("common.matches", "Matches"), "matches", !!event.matches.length],
+                        [
+                            faChartLine,
+                            $t("events.forecast", "Forecast"),
+                            "forecast",
+                            true,
+                        ],
                         [faTrophy, $t("events.rankings", "Rankings"), "rankings", !!stats.length],
                         [faBolt, $t("events.insights", "Insights"), "insights", !!insights.length],
                         [faChartLine, $t("events.figures", "Figures"), "figures", !!stats.length],
@@ -239,6 +306,18 @@
                             {event}
                             {focusedTeam}
                             {teamOprMap}
+                            {teamEpaMap}
+                        />
+                    </TabContent>
+
+                    <TabContent name="forecast">
+                        <Forecast
+                            {event}
+                            {season}
+                            matches={event.matches}
+                            teams={event.teams}
+                            {teamOprMap}
+                            {teamEpaMap}
                         />
                     </TabContent>
 
@@ -289,7 +368,7 @@
                     </TabContent>
 
                     <TabContent name="simulation">
-                        <Simulation teams={event.teams} matches={event.matches} {season} />
+                        <Simulation teams={event.teams} matches={event.matches} {season} {teamOprMap} />
                     </TabContent>
                 </TabbedCard>
             </div>

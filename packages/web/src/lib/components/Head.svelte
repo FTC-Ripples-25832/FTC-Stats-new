@@ -4,7 +4,7 @@
 
     export let title: string;
     export let description: string =
-        "FTCStats is a new way to track and scout FIRST Tech Challenge, providing advanced statistics and data on all aspects of FTC.";
+        "FTC Stats is a new way to track and scout FIRST Tech Challenge, providing advanced statistics and data on all aspects of FTC.";
     export let image = "/head/banner.png";
     export let url: string | null = null;
 </script>
@@ -24,7 +24,7 @@
     <link rel="mask-icon" href="/head/safari-pinned-tab.svg" color="#f57e25" />
     <meta name="msapplication-TileColor" content="#f57e25" />
     <meta name="theme-color" content="#ffffff" />
-    <meta property="og:site_name" content="FTCStats" />
+    <meta property="og:site_name" content="FTC Stats" />
 
     <title>{IS_DEV ? "*" : ""}{title}</title>
     <meta name="description" content={description} />

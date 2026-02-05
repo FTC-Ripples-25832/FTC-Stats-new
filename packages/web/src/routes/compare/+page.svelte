@@ -1,13 +1,16 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
+    import { browser } from "$app/environment";
     import { CURRENT_SEASON, DESCRIPTORS, type Season } from "@ftc-stats/common";
+    import { onMount } from "svelte";
     import Card from "$lib/components/Card.svelte";
     import Head from "$lib/components/Head.svelte";
     import WidthProvider from "$lib/components/WidthProvider.svelte";
     import Loading from "$lib/components/Loading.svelte";
     import SeasonSelect from "$lib/components/ui/form/SeasonSelect.svelte";
     import Form from "$lib/components/ui/form/Form.svelte";
+    import PageShell from "$lib/components/layout/PageShell.svelte";
     import OPRTrendChart from "$lib/components/charts/OPRTrendChart.svelte";
     import Location from "$lib/components/Location.svelte";
     import { prettyPrintFloat, prettyPrintOrdinal } from "$lib/printers/number";
@@ -104,221 +107,466 @@
                 };
             })
             .filter((team) => team.events.length > 0) ?? [];
+
+    type PinnedComparison = {
+        id: string;
+        name: string;
+        teams: string[];
+        season: Season;
+    };
+
+    const PIN_STORAGE_KEY = "ftcstats:compare-pins";
+    const RECENT_STORAGE_KEY = "ftcstats:compare-recent";
+    let pinnedComparisons: PinnedComparison[] = [];
+    let recentComparisons: PinnedComparison[] = [];
+    let recentsReady = false;
+    let lastRecentSignature = "";
+
+    const quickSets = [
+        {
+            key: "compare.quickset.sample-1",
+            name: "Sample: 9794, 18219, 16896",
+            teams: ["9794", "18219", "16896"],
+        },
+        {
+            key: "compare.quickset.sample-2",
+            name: "Sample: 11115, 16072, 16460",
+            teams: ["11115", "16072", "16460"],
+        },
+    ];
+
+    onMount(() => {
+        if (!browser) return;
+        try {
+            pinnedComparisons = JSON.parse(
+                localStorage.getItem(PIN_STORAGE_KEY) ?? "[]"
+            ) as PinnedComparison[];
+        } catch {
+            pinnedComparisons = [];
+        }
+        try {
+            recentComparisons = JSON.parse(
+                localStorage.getItem(RECENT_STORAGE_KEY) ?? "[]"
+            ) as PinnedComparison[];
+        } catch {
+            recentComparisons = [];
+        }
+        recentsReady = true;
+    });
+
+    function persistPins() {
+        if (!browser) return;
+        localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pinnedComparisons));
+    }
+
+    function persistRecents() {
+        if (!browser) return;
+        localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(recentComparisons));
+    }
+
+    function recentSignature(teams: string[], season: Season) {
+        return `${season}|${teams.join(",")}`;
+    }
+
+    function applyTeamSet(teams: string[], season: Season = selectedSeason) {
+        const params = new URLSearchParams();
+        if (teams.length > 0) params.set("teams", teams.join(","));
+        if (season !== CURRENT_SEASON) params.set("season", season.toString());
+        goto(`?${params.toString()}`, { replaceState: false, noScroll: true });
+    }
+
+    function pinCurrent() {
+        if (!browser || teamNumbers.length < 2) return;
+        const defaultName = `${selectedSeason} · ${teamNumbers.join(", ")}`;
+        const name = window.prompt(
+            $t("compare.pin-name", "Pinned comparison name"),
+            defaultName
+        );
+        if (!name) return;
+        const pin: PinnedComparison = {
+            id: (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`) + Math.random().toString(16),
+            name: name.trim() || defaultName,
+            teams: [...teamNumbers],
+            season: selectedSeason,
+        };
+        pinnedComparisons = [pin, ...pinnedComparisons].slice(0, 10);
+        persistPins();
+    }
+
+    function applyPin(pin: PinnedComparison) {
+        applyTeamSet(pin.teams, pin.season);
+    }
+
+    function removePin(id: string) {
+        pinnedComparisons = pinnedComparisons.filter((pin) => pin.id !== id);
+        persistPins();
+    }
+
+    function updateRecents() {
+        if (!browser || !recentsReady) return;
+        if (teamNumbers.length === 0) return;
+        const signature = recentSignature(teamNumbers, selectedSeason);
+        if (signature === lastRecentSignature) return;
+        lastRecentSignature = signature;
+        const recent: PinnedComparison = {
+            id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            name: teamNumbers.join(", "),
+            teams: [...teamNumbers],
+            season: selectedSeason,
+        };
+        recentComparisons = [
+            recent,
+            ...recentComparisons.filter(
+                (entry) => recentSignature(entry.teams, entry.season) !== signature
+            ),
+        ].slice(0, 8);
+        persistRecents();
+    }
+
+    function applyRecent(entry: PinnedComparison) {
+        applyTeamSet(entry.teams, entry.season);
+    }
+
+    function clearRecent(id: string) {
+        recentComparisons = recentComparisons.filter((entry) => entry.id !== id);
+        persistRecents();
+    }
+
+    $: updateRecents();
 </script>
 
-<Head title="Compare Teams | FTCStats" description="Compare multiple FTC teams side-by-side" />
+<Head title="Compare Teams | FTC Stats" description="Compare multiple FTC teams side-by-side" />
 
-<WidthProvider>
-    <Card>
-        <div class="header">
-            <h1>{$t("compare.title", "Compare Teams")}</h1>
-            <p class="subtitle">
-                {$t(
-                    "compare.subtitle",
-                    "Compare multiple teams side-by-side with historical OPR data"
-                )}
-            </p>
-        </div>
-
-        <div class="team-selector">
-            <div class="input-group">
-                <input
-                    type="number"
-                    bind:value={newTeamInput}
-                    on:keydown={handleKeydown}
-                    placeholder={$t("compare.placeholder", "Enter team number...")}
-                    class="team-input"
-                />
-                <button on:click={addTeam} class="add-btn">
-                    <Fa icon={faPlus} />
-                    {$t("compare.add-team", "Add Team")}
-                </button>
-            </div>
-
-            <Form id="compare-season" noscriptSubmit>
-                <SeasonSelect bind:season={selectedSeason} nonForm on:change={updateUrl} />
-            </Form>
-
-            {#if teamNumbers.length > 0}
-                <div class="selected-teams">
-                    {#each teamNumbers as num}
-                        <div class="team-chip">
-                            <span>{$t("common.team", "Team")} {num}</span>
-                            <button on:click={() => removeTeam(num)} class="remove-btn">
-                                <Fa icon={faTimes} />
-                            </button>
-                        </div>
-                    {/each}
+<WidthProvider width={"1200px"}>
+    <PageShell railWidth="360px">
+        <div slot="rail" class="rail">
+            <Card style="margin: 0;">
+                <div class="header">
+                    <p class="eyebrow">{$t("compare.title", "Compare Teams")}</p>
+                    <h1>{$t("compare.title", "Compare Teams")}</h1>
+                    <p class="subtitle">
+                        {$t(
+                            "compare.subtitle",
+                            "Compare multiple teams side-by-side with historical OPR data"
+                        )}
+                    </p>
                 </div>
-            {/if}
-        </div>
 
-    </Card>
-
-    {#if teamNumbers.length === 0}
-        <Card>
-            <div class="empty-state">
-                <p>{$t("compare.empty", "Add teams above to start comparing")}</p>
-                <p class="hint">
-                    {$t("compare.hint", "Try adding teams like 9794, 18219, or 16896")}
-                </p>
-            </div>
-        </Card>
-    {:else if teamNumbers.length === 1}
-        <Card>
-            <div class="empty-state">
-                <p>{$t("compare.need-more", "Add at least one more team to compare")}</p>
-            </div>
-        </Card>
-    {:else}
-        <Loading store={$compareStore} checkExists={() => true}>
-            <Card>
-                {#if compareTeams.length === 0}
-                    <div class="empty-state">
-                        <p>
-                            {$t(
-                                "compare.no-matching",
-                                "No matching teams found for the selected season."
-                            )}
-                        </p>
+                <div class="team-selector">
+                    <div class="input-group">
+                        <input
+                            type="number"
+                            bind:value={newTeamInput}
+                            on:keydown={handleKeydown}
+                            placeholder={$t("compare.placeholder", "Enter team number...")}
+                            class="team-input"
+                        />
+                        <button on:click={addTeam} class="add-btn">
+                            <Fa icon={faPlus} />
+                            {$t("compare.add-team", "Add Team")}
+                        </button>
                     </div>
-                {:else}
-                    <div class="comparison-content">
-                        <h2>{$t("compare.summary", "Team Summary")}</h2>
-                        <div class="summary-grid">
-                            {#each compareTeams as team}
-                                <div class="summary-card">
-                                    <div class="team-title">
-                                        {$t("common.team", "Team")} {team.number} - {team.name}
-                                    </div>
-                                    <div class="team-location">
-                                        <Location {...team.location} link={false} />
-                                    </div>
-                                    {#if team.quickStats}
-                                        <div class="stats-grid">
-                                            <div class="stat">
-                                                <span>{$t("stats.opr.total", "Total OPR")}</span>
-                                                <strong>
-                                                    {prettyPrintFloat(team.quickStats.tot.value)}
-                                                </strong>
-                                                <em>
-                                                    {prettyPrintOrdinal(team.quickStats.tot.rank)}
-                                                    {statPercent(
-                                                        team.quickStats.tot.rank,
-                                                        team.quickStats.count
-                                                    )
-                                                        ? ` - ${statPercent(
-                                                              team.quickStats.tot.rank,
-                                                              team.quickStats.count
-                                                          )}`
-                                                        : ""}
-                                                </em>
-                                            </div>
-                                            <div class="stat">
-                                                <span>{$t("stats.opr.auto", "Auto OPR")}</span>
-                                                <strong>
-                                                    {prettyPrintFloat(
-                                                        team.quickStats.auto.value
-                                                    )}
-                                                </strong>
-                                                <em>
-                                                    {prettyPrintOrdinal(
-                                                        team.quickStats.auto.rank
-                                                    )}
-                                                    {statPercent(
-                                                        team.quickStats.auto.rank,
-                                                        team.quickStats.count
-                                                    )
-                                                        ? ` - ${statPercent(
-                                                              team.quickStats.auto.rank,
-                                                              team.quickStats.count
-                                                          )}`
-                                                        : ""}
-                                                </em>
-                                            </div>
-                                            <div class="stat">
-                                                <span>{$t("stats.opr.teleop", "Teleop OPR")}</span>
-                                                <strong>
-                                                    {prettyPrintFloat(team.quickStats.dc.value)}
-                                                </strong>
-                                                <em>
-                                                    {prettyPrintOrdinal(team.quickStats.dc.rank)}
-                                                    {statPercent(
-                                                        team.quickStats.dc.rank,
-                                                        team.quickStats.count
-                                                    )
-                                                        ? ` - ${statPercent(
-                                                              team.quickStats.dc.rank,
-                                                              team.quickStats.count
-                                                          )}`
-                                                        : ""}
-                                                </em>
-                                            </div>
-                                            <div class="stat">
-                                                <span>{$t("stats.opr.endgame", "Endgame OPR")}</span>
-                                                <strong>
-                                                    {prettyPrintFloat(team.quickStats.eg.value)}
-                                                </strong>
-                                                <em>
-                                                    {prettyPrintOrdinal(team.quickStats.eg.rank)}
-                                                    {statPercent(
-                                                        team.quickStats.eg.rank,
-                                                        team.quickStats.count
-                                                    )
-                                                        ? ` - ${statPercent(
-                                                              team.quickStats.eg.rank,
-                                                              team.quickStats.count
-                                                          )}`
-                                                        : ""}
-                                                </em>
-                                            </div>
-                                        </div>
-                                    {:else}
-                                        <div class="no-stats">
-                                            {$t("compare.no-stats", "No stats available yet.")}
-                                        </div>
-                                    {/if}
+
+                    <Form id="compare-season" noscriptSubmit>
+                        <SeasonSelect bind:season={selectedSeason} nonForm on:change={updateUrl} />
+                    </Form>
+
+                    {#if teamNumbers.length > 0}
+                        <div class="selected-teams">
+                            {#each teamNumbers as num}
+                                <div class="team-chip">
+                                    <span>{$t("common.team", "Team")} {num}</span>
+                                    <button on:click={() => removeTeam(num)} class="remove-btn">
+                                        <Fa icon={faTimes} />
+                                    </button>
                                 </div>
                             {/each}
                         </div>
-                    </div>
+                    {/if}
+                </div>
+            </Card>
+
+            <Card style="margin: var(--lg-gap) 0 0;">
+                <h2 class="rail-head">{$t("compare.quick-sets", "Quick Sets")}</h2>
+                <div class="chip-group">
+                    {#each quickSets as set}
+                        <button class="chip" on:click={() => applyTeamSet(set.teams)}>
+                            {$t(set.key, set.name)}
+                        </button>
+                    {/each}
+                </div>
+            </Card>
+
+            <Card style="margin: var(--lg-gap) 0 0;">
+                <div class="rail-row">
+                    <h2 class="rail-head">{$t("compare.recent", "Recently Used")}</h2>
+                </div>
+
+                {#if recentComparisons.length}
+                    <ul class="preset-list">
+                        {#each recentComparisons as entry (entry.id)}
+                            <li>
+                                <button class="preset" on:click={() => applyRecent(entry)}>
+                                    <b>{entry.name}</b>
+                                    <span>
+                                        {entry.season} · {entry.teams.length}
+                                        {$t("compare.teams", "teams")}
+                                    </span>
+                                </button>
+                                <button
+                                    class="preset-remove"
+                                    on:click={() => clearRecent(entry.id)}
+                                    aria-label={$t("compare.remove-recent", "Remove recent")}
+                                >
+                                    ×
+                                </button>
+                            </li>
+                        {/each}
+                    </ul>
+                {:else}
+                    <p class="preset-empty">
+                        {$t(
+                            "compare.no-recents",
+                            "Your recent comparisons will show up here."
+                        )}
+                    </p>
                 {/if}
             </Card>
 
-            {#if trendTeams.length > 0}
+            <Card style="margin: var(--lg-gap) 0 0;">
+                <div class="rail-row">
+                    <h2 class="rail-head">{$t("compare.pinned", "Pinned Comparisons")}</h2>
+                    <button
+                        class="preset-save"
+                        on:click={pinCurrent}
+                        disabled={teamNumbers.length < 2}
+                    >
+                        {$t("compare.pin-current", "Pin current")}
+                    </button>
+                </div>
+
+                {#if pinnedComparisons.length}
+                    <ul class="preset-list">
+                        {#each pinnedComparisons as pin (pin.id)}
+                            <li>
+                                <button class="preset" on:click={() => applyPin(pin)}>
+                                    <b>{pin.name}</b>
+                                    <span>
+                                        {pin.season} · {pin.teams.length}
+                                        {$t("compare.teams", "teams")}
+                                    </span>
+                                </button>
+                                <button
+                                    class="preset-remove"
+                                    on:click={() => removePin(pin.id)}
+                                    aria-label={$t("compare.unpin", "Remove pin")}
+                                >
+                                    ×
+                                </button>
+                            </li>
+                        {/each}
+                    </ul>
+                {:else}
+                    <p class="preset-empty">
+                        {$t(
+                            "compare.no-pins",
+                            "No pinned comparisons yet. Pin your current set to save it."
+                        )}
+                    </p>
+                {/if}
+            </Card>
+        </div>
+
+        {#if teamNumbers.length === 0}
+            <Card>
+                <div class="empty-state">
+                    <p>{$t("compare.empty", "Add teams above to start comparing")}</p>
+                    <p class="hint">
+                        {$t("compare.hint", "Try adding teams like 9794, 18219, or 16896")}
+                    </p>
+                </div>
+            </Card>
+        {:else if teamNumbers.length === 1}
+            <Card>
+                <div class="empty-state">
+                    <p>{$t("compare.need-more", "Add at least one more team to compare")}</p>
+                </div>
+            </Card>
+        {:else}
+            <Loading store={$compareStore} checkExists={() => true}>
                 <Card>
-                    <h2>
-                        {$t("compare.trend", "OPR Trend")} ({$t("form.season", "Season")}{" "}
-                        {selectedSeason})
-                    </h2>
-                    {#key `${teamNumbers.join(",")}-${selectedSeason}`}
-                        <OPRTrendChart teamData={trendTeams} />
-                    {/key}
+                    {#if compareTeams.length === 0}
+                        <div class="empty-state">
+                            <p>
+                                {$t(
+                                    "compare.no-matching",
+                                    "No matching teams found for the selected season."
+                                )}
+                            </p>
+                        </div>
+                    {:else}
+                        <div class="comparison-content">
+                            <h2>{$t("compare.summary", "Team Summary")}</h2>
+                            <div class="summary-grid">
+                                {#each compareTeams as team}
+                                    <div class="summary-card">
+                                        <div class="team-title">
+                                            {$t("common.team", "Team")} {team.number} - {team.name}
+                                        </div>
+                                        <div class="team-location">
+                                            <Location {...team.location} link={false} />
+                                        </div>
+                                        {#if team.quickStats}
+                                            <div class="stats-grid">
+                                                <div class="stat">
+                                                    <span>{$t("stats.opr.total", "Total OPR")}</span>
+                                                    <strong>
+                                                        {prettyPrintFloat(
+                                                            team.quickStats.tot.value
+                                                        )}
+                                                    </strong>
+                                                    <em>
+                                                        {prettyPrintOrdinal(
+                                                            team.quickStats.tot.rank
+                                                        )}
+                                                        {statPercent(
+                                                            team.quickStats.tot.rank,
+                                                            team.quickStats.count
+                                                        )
+                                                            ? ` - ${statPercent(
+                                                                  team.quickStats.tot.rank,
+                                                                  team.quickStats.count
+                                                              )}`
+                                                            : ""}
+                                                    </em>
+                                                </div>
+                                                <div class="stat">
+                                                    <span>{$t("stats.opr.auto", "Auto OPR")}</span>
+                                                    <strong>
+                                                        {prettyPrintFloat(
+                                                            team.quickStats.auto.value
+                                                        )}
+                                                    </strong>
+                                                    <em>
+                                                        {prettyPrintOrdinal(
+                                                            team.quickStats.auto.rank
+                                                        )}
+                                                        {statPercent(
+                                                            team.quickStats.auto.rank,
+                                                            team.quickStats.count
+                                                        )
+                                                            ? ` - ${statPercent(
+                                                                  team.quickStats.auto.rank,
+                                                                  team.quickStats.count
+                                                              )}`
+                                                            : ""}
+                                                    </em>
+                                                </div>
+                                                <div class="stat">
+                                                    <span>{$t("stats.opr.teleop", "Teleop OPR")}</span>
+                                                    <strong>
+                                                        {prettyPrintFloat(team.quickStats.dc.value)}
+                                                    </strong>
+                                                    <em>
+                                                        {prettyPrintOrdinal(team.quickStats.dc.rank)}
+                                                        {statPercent(
+                                                            team.quickStats.dc.rank,
+                                                            team.quickStats.count
+                                                        )
+                                                            ? ` - ${statPercent(
+                                                                  team.quickStats.dc.rank,
+                                                                  team.quickStats.count
+                                                              )}`
+                                                            : ""}
+                                                    </em>
+                                                </div>
+                                                <div class="stat">
+                                                    <span>{$t("stats.opr.endgame", "Endgame OPR")}</span>
+                                                    <strong>
+                                                        {prettyPrintFloat(team.quickStats.eg.value)}
+                                                    </strong>
+                                                    <em>
+                                                        {prettyPrintOrdinal(team.quickStats.eg.rank)}
+                                                        {statPercent(
+                                                            team.quickStats.eg.rank,
+                                                            team.quickStats.count
+                                                        )
+                                                            ? ` - ${statPercent(
+                                                                  team.quickStats.eg.rank,
+                                                                  team.quickStats.count
+                                                              )}`
+                                                            : ""}
+                                                    </em>
+                                                </div>
+                                            </div>
+                                        {:else}
+                                            <div class="no-stats">
+                                                {$t("compare.no-stats", "No stats available yet.")}
+                                            </div>
+                                        {/if}
+                                    </div>
+                                {/each}
+                            </div>
+                        </div>
+                    {/if}
                 </Card>
-            {:else}
-                <Card>
-                    <div class="empty-state">
-                        <p>
-                            {$t(
-                                "compare.no-event-stats",
-                                "No event stats available for the selected season."
-                            )}
-                        </p>
-                    </div>
-                </Card>
-            {/if}
-        </Loading>
-    {/if}
+
+                {#if trendTeams.length > 0}
+                    <Card>
+                        <h2>
+                            {$t("compare.trend", "OPR Trend")} ({$t("form.season", "Season")}{" "}
+                            {selectedSeason})
+                        </h2>
+                        {#key `${teamNumbers.join(",")}-${selectedSeason}`}
+                            <OPRTrendChart teamData={trendTeams} />
+                        {/key}
+                    </Card>
+                {:else}
+                    <Card>
+                        <div class="empty-state">
+                            <p>
+                                {$t(
+                                    "compare.no-event-stats",
+                                    "No event stats available for the selected season."
+                                )}
+                            </p>
+                        </div>
+                    </Card>
+                {/if}
+            </Loading>
+        {/if}
+    </PageShell>
 </WidthProvider>
 
 <style>
     .header {
-        padding: var(--lg-pad);
-        background: var(--fg-color);
-        border-radius: var(--card-radius);
-        border: var(--border-width) solid var(--sep-color);
-        box-shadow: var(--card-shadow);
-        margin-bottom: var(--vl-gap);
+        display: flex;
+        flex-direction: column;
+        gap: var(--sm-gap);
+        margin-bottom: var(--lg-gap);
+    }
+
+    .rail-head {
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
+        margin-bottom: var(--md-gap);
+    }
+
+    .rail-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--md-gap);
+        margin-bottom: var(--md-gap);
+    }
+
+    .eyebrow {
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-weight: 700;
     }
 
     h1 {
@@ -332,12 +580,32 @@
     }
 
     .team-selector {
-        padding: var(--lg-pad);
-        background: var(--fg-color);
+        display: flex;
+        flex-direction: column;
+        gap: var(--md-gap);
+    }
+
+    .chip-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sm-gap);
+    }
+
+    .chip {
         border: var(--border-width) solid var(--sep-color);
-        border-radius: var(--card-radius);
-        box-shadow: var(--card-shadow);
-        margin-bottom: var(--vl-gap);
+        background: var(--form-bg-color);
+        color: var(--text-color);
+        padding: var(--sm-pad) var(--md-pad);
+        border-radius: var(--control-radius);
+        font-size: var(--sm-font-size);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+    }
+
+    .chip:hover {
+        background: var(--theme-soft-color);
+        box-shadow: 3px 3px 0 var(--sep-color);
     }
 
     .input-group {
@@ -413,6 +681,86 @@
 
     .remove-btn:hover {
         opacity: 1;
+    }
+
+    .preset-save {
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
+        color: var(--text-color);
+        padding: var(--sm-pad) var(--md-pad);
+        border-radius: var(--control-radius);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: var(--xs-font-size);
+        cursor: pointer;
+    }
+
+    .preset-save:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .preset-save:hover:not(:disabled) {
+        background: var(--theme-soft-color);
+        box-shadow: 3px 3px 0 var(--sep-color);
+    }
+
+    .preset-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sm-gap);
+    }
+
+    .preset-list li {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--sm-gap);
+        align-items: center;
+    }
+
+    .preset {
+        width: 100%;
+        text-align: left;
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--form-bg-color);
+        color: var(--text-color);
+        padding: var(--sm-pad) var(--md-pad);
+        border-radius: var(--control-radius);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        cursor: pointer;
+    }
+
+    .preset span {
+        font-size: var(--xs-font-size);
+        color: var(--secondary-text-color);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .preset:hover {
+        background: var(--theme-soft-color);
+    }
+
+    .preset-remove {
+        border: var(--border-width) solid var(--sep-color);
+        background: var(--fg-color);
+        color: var(--text-color);
+        padding: var(--sm-pad);
+        border-radius: var(--control-radius);
+        cursor: pointer;
+    }
+
+    .preset-remove:hover {
+        background: var(--theme-soft-color);
+    }
+
+    .preset-empty {
+        font-size: var(--sm-font-size);
+        color: var(--secondary-text-color);
+        margin: 0;
     }
 
     .empty-state {

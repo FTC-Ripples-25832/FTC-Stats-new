@@ -16,7 +16,7 @@
     <svelte:fragment slot="date">March 10, 2023</svelte:fragment>
 
     <p>
-        FTCStats recently started tracking the exact positions of all cones scored in every Power
+        FTC Stats recently started tracking the exact positions of all cones scored in every Power
         Play match which means I now have extra data to analyze for Scouting Reports!
     </p>
 

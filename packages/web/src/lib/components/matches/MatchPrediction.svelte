@@ -1,18 +1,23 @@
 <script lang="ts">
-    import { predictMatchSimple, formatWinProbability } from "@ftc-stats/common";
+    import { predictMatchFromScores, formatWinProbability } from "@ftc-stats/common";
     import { createTippy } from "svelte-tippy";
     import { tippyTheme } from "../nav/DarkModeToggle.svelte";
     import "tippy.js/dist/tippy.css";
     import { t } from "$lib/i18n";
 
-    export let redOPR1: number;
-    export let redOPR2: number;
-    export let blueOPR1: number;
-    export let blueOPR2: number;
+    export let redScore: number;
+    export let blueScore: number;
+    export let label = "OPR";
+    export let note = "";
+    export let variance = 100;
 
-    $: prediction = predictMatchSimple(redOPR1, redOPR2, blueOPR1, blueOPR2);
+    $: prediction = predictMatchFromScores(redScore, blueScore, variance);
     $: redProb = formatWinProbability(prediction.redWinProbability);
     $: blueProb = formatWinProbability(prediction.blueWinProbability);
+    $: priorityNote = $t(
+        "matches.predicted-scores.priority",
+        "Model priority: XGB -> EPA -> OPR"
+    );
 
     const tippy = createTippy({ placement: "top", delay: [500, 0] });
     $: tip = {
@@ -22,6 +27,10 @@
                     "matches.predicted-scores",
                     "Predicted Scores"
                 )}</strong></div>
+                <div style="margin-bottom: 4px; font-size: 0.85em; opacity: 0.7;">${label} · ${$t(
+                    "matches.variance",
+                    "Variance"
+                )}: ${variance}</div>
                 <div style="color: var(--red-team-text-color);">${$t(
                     "common.red",
                     "Red"
@@ -30,10 +39,16 @@
                     "common.blue",
                     "Blue"
                 )}: ${Math.round(prediction.predictedBlueScore)}</div>
-                <div style="margin-top: 4px; font-size: 0.9em; opacity: 0.8;">${$t(
-                    "matches.predicted-scores.note",
-                    "Based on team OPR"
-                )}</div>
+                ${
+                    note
+                        ? `<div style=\"margin-top: 4px; font-size: 0.9em; opacity: 0.8;\">${note}</div>`
+                        : ""
+                }
+                ${
+                    priorityNote
+                        ? `<div style=\"margin-top: 4px; font-size: 0.85em; opacity: 0.7;\">${priorityNote}</div>`
+                        : ""
+                }
             </div>
         `,
         allowHTML: true,
@@ -42,6 +57,7 @@
 </script>
 
 <div class="prediction" use:tippy={tip}>
+    <div class="label">{label}</div>
     <div class="prob red" class:favorite={prediction.redWinProbability > 0.5}>
         {redProb}
     </div>
@@ -59,6 +75,15 @@
         gap: var(--sm-gap);
         font-size: 0.85em;
         cursor: help;
+        flex-wrap: wrap;
+    }
+
+    .label {
+        font-size: 0.75em;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.6;
     }
 
     .prob {

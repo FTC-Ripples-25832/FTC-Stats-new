@@ -12,6 +12,7 @@
         { href: "/", label: "Home", key: "nav.home" },
         { href: "/teams", label: "Teams", key: "nav.teams" },
         { href: `/events/${CURRENT_SEASON}`, label: "Events", key: "nav.events" },
+        { href: "/matches", label: "Matches", key: "nav.matches" },
         { href: "/compare", label: "Compare Teams", key: "nav.compare-teams" },
         { href: `/records/${CURRENT_SEASON}/teams`, label: "Season Records", key: "nav.records" },
     ];

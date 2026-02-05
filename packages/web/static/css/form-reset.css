@@ -24,6 +24,11 @@ select {
     padding-right: 30px;
 }
 
+select.select-input {
+    width: 100%;
+    min-height: 2.4em;
+}
+
 select:hover,
 input:hover {
     transition-property: background-color, border-color;

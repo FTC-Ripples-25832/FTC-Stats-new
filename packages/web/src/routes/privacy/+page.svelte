@@ -5,7 +5,7 @@
     import { t } from "$lib/i18n";
 </script>
 
-<Head title="Privacy Policy | FTCStats" description="The Privacy Policy for FTCStats." />
+<Head title="Privacy Policy | FTC Stats" description="The Privacy Policy for FTC Stats." />
 
 <WidthProvider width={"100ch"}>
     <Card>
@@ -20,7 +20,7 @@
             <p>
                 {@html $t(
                     "privacy.p1",
-                    "By your continued use of the FTC<em>Scout</em> Website, you agree to the privacy policy located on this page, including any amendments that FTC<em>Scout</em> makes in the future."
+                    "By your continued use of the FTC<em>Stats</em> Website, you agree to the privacy policy located on this page, including any amendments that FTC<em>Stats</em> makes in the future."
                 )}
             </p>
 
@@ -75,7 +75,7 @@
                 <li>{$t("privacy.analytics.use1", "Total visitor count")}</li>
                 <li>{$t("privacy.analytics.use2", "Visitor count by country")}</li>
                 <li>{$t("privacy.analytics.use3", "User counts by platform (mobile vs desktop, etc)")}</li>
-                <li>{$t("privacy.analytics.use4", "Times of day people use FTCStats the most")}</li>
+                <li>{$t("privacy.analytics.use4", "Times of day people use FTC Stats the most")}</li>
             </ul>
 
             <h3>{$t("privacy.analytics.cannot", "The information we store cannot be used to:")}</h3>

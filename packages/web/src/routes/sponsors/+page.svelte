@@ -5,7 +5,7 @@
     import { t } from "$lib/i18n";
 </script>
 
-<Head title="Sponsors | FTCStats" description="Our Sponors this season" />
+<Head title="Sponsors | FTC Stats" description="Our Sponors this season" />
 
 <WidthProvider width={"1000px"}>
     <Card>

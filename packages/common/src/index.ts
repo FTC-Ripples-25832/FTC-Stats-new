@@ -17,6 +17,7 @@ export * from "./logic/stats/make-tep-stats";
 export * from "./logic/stats/make-match-stats";
 export * from "./logic/predictions/match-prediction";
 export * from "./logic/predictions/event-simulation";
+export * from "./logic/predictions/epa";
 export * from "./logic/TournamentLevel";
 export * from "./utils/filter";
 export * from "./utils/gql/enum";

@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { faTrophy } from "@fortawesome/free-solid-svg-icons";
+    import { faChartBar, faTrophy } from "@fortawesome/free-solid-svg-icons";
     import InfoIconRow from "$lib/components/InfoIconRow.svelte";
     import type { TeamQuery } from "$lib/graphql/generated/graphql-operations";
     import { prettyPrintFloat, prettyPrintOrdinal } from "$lib/printers/number";
     import { DESCRIPTORS, type Season } from "@ftc-stats/common";
     import { t } from "$lib/i18n";
+    import OprBreakdownChips from "./OprBreakdownChips.svelte";
+    import { getOprBreakdown } from "./team-opr";
 
     type Stats = NonNullable<TeamQuery["teamByNumber"]>["events"][number]["stats"];
 
@@ -20,6 +22,13 @@
     $: qualsLabel = $t("stats.quals", "quals");
     $: recordLabel = $t("stats.record-label", "W-L-T");
     $: rpLabel = $t("stats.rp", "RP");
+    $: breakdownLabel = $t("teams.opr-breakdown", "OPR Breakdown");
+    $: oprBreakdown = getOprBreakdown(stats as { opr?: Record<string, unknown> }, season, remote);
+    $: hasOprBreakdown =
+        !!oprBreakdown &&
+        [oprBreakdown.auto, oprBreakdown.teleop, oprBreakdown.endgame, oprBreakdown.total].some(
+            (val) => val != null
+        );
 </script>
 
 {#if stats}
@@ -50,4 +59,16 @@
             {np}AVG
         {/if}
     </InfoIconRow>
+
+    {#if hasOprBreakdown}
+        <InfoIconRow icon={faChartBar}>
+            {breakdownLabel}
+        </InfoIconRow>
+        <OprBreakdownChips
+            auto={oprBreakdown.auto}
+            teleop={oprBreakdown.teleop}
+            endgame={oprBreakdown.endgame}
+            total={oprBreakdown.total}
+        />
+    {/if}
 {/if}

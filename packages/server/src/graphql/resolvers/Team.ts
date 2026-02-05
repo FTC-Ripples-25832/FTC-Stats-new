@@ -30,6 +30,230 @@ import { RegionOptionGQL } from "./enums";
 import { DATA_SOURCE } from "../../db/data-source";
 import { Event } from "../../db/entities/Event";
 
+const REGION_VALUES = new Set(Object.values(RegionOption));
+
+const US_STATE_ABBR_TO_REGION: Record<string, RegionOption> = {
+    AK: RegionOption.USAK,
+    AL: RegionOption.USAL,
+    AR: RegionOption.USAR,
+    AZ: RegionOption.USAZ,
+    CA: RegionOption.USCA,
+    CO: RegionOption.USCO,
+    CT: RegionOption.USCT,
+    DE: RegionOption.USDE,
+    FL: RegionOption.USFL,
+    GA: RegionOption.USGA,
+    HI: RegionOption.USHI,
+    IA: RegionOption.USIA,
+    ID: RegionOption.USID,
+    IL: RegionOption.USIL,
+    IN: RegionOption.USIN,
+    KS: RegionOption.USMOKS,
+    KY: RegionOption.USKY,
+    LA: RegionOption.USLA,
+    MA: RegionOption.USMA,
+    MD: RegionOption.USMD,
+    MI: RegionOption.USMI,
+    MN: RegionOption.USMN,
+    MO: RegionOption.USMOKS,
+    MS: RegionOption.USMS,
+    MT: RegionOption.USMT,
+    NC: RegionOption.USNC,
+    ND: RegionOption.USND,
+    NE: RegionOption.USNE,
+    NH: RegionOption.USNH,
+    NJ: RegionOption.USNJ,
+    NM: RegionOption.USNM,
+    NV: RegionOption.USNV,
+    NY: RegionOption.USNY,
+    OH: RegionOption.USOH,
+    OK: RegionOption.USOK,
+    OR: RegionOption.USOR,
+    PA: RegionOption.USPA,
+    RI: RegionOption.USRI,
+    SC: RegionOption.USSC,
+    TN: RegionOption.USTN,
+    TX: RegionOption.USTX,
+    UT: RegionOption.USUT,
+    VA: RegionOption.USVA,
+    VT: RegionOption.USVT,
+    WA: RegionOption.USWA,
+    WI: RegionOption.USWI,
+    WV: RegionOption.USWV,
+    WY: RegionOption.USWY,
+};
+
+const US_STATE_NAME_TO_ABBR: Record<string, string> = {
+    alaska: "AK",
+    alabama: "AL",
+    arkansas: "AR",
+    arizona: "AZ",
+    california: "CA",
+    colorado: "CO",
+    connecticut: "CT",
+    delaware: "DE",
+    florida: "FL",
+    georgia: "GA",
+    hawaii: "HI",
+    iowa: "IA",
+    idaho: "ID",
+    illinois: "IL",
+    indiana: "IN",
+    kansas: "KS",
+    kentucky: "KY",
+    louisiana: "LA",
+    massachusetts: "MA",
+    maryland: "MD",
+    michigan: "MI",
+    minnesota: "MN",
+    missouri: "MO",
+    mississippi: "MS",
+    montana: "MT",
+    northcarolina: "NC",
+    "north carolina": "NC",
+    northdakota: "ND",
+    "north dakota": "ND",
+    nebraska: "NE",
+    newhampshire: "NH",
+    "new hampshire": "NH",
+    newjersey: "NJ",
+    "new jersey": "NJ",
+    newmexico: "NM",
+    "new mexico": "NM",
+    nevada: "NV",
+    newyork: "NY",
+    "new york": "NY",
+    ohio: "OH",
+    oklahoma: "OK",
+    oregon: "OR",
+    pennsylvania: "PA",
+    rhodeisland: "RI",
+    "rhode island": "RI",
+    southcarolina: "SC",
+    "south carolina": "SC",
+    tennessee: "TN",
+    texas: "TX",
+    utah: "UT",
+    virginia: "VA",
+    vermont: "VT",
+    washington: "WA",
+    wisconsin: "WI",
+    westvirginia: "WV",
+    "west virginia": "WV",
+    wyoming: "WY",
+};
+
+const CANADA_PROVINCE_ABBR_TO_REGION: Record<string, RegionOption> = {
+    AB: RegionOption.CAAB,
+    BC: RegionOption.CABC,
+    ON: RegionOption.CAON,
+    QC: RegionOption.CAQC,
+};
+
+const CANADA_PROVINCE_NAME_TO_ABBR: Record<string, string> = {
+    alberta: "AB",
+    "british columbia": "BC",
+    "britishcolumbia": "BC",
+    ontario: "ON",
+    quebec: "QC",
+    "québec": "QC",
+};
+
+const COUNTRY_NAME_TO_REGION: Record<string, RegionOption> = {
+    "united states": RegionOption.UnitedStates,
+    "united states of america": RegionOption.UnitedStates,
+    usa: RegionOption.UnitedStates,
+    us: RegionOption.UnitedStates,
+    "u.s.": RegionOption.UnitedStates,
+    "u.s.a.": RegionOption.UnitedStates,
+    australia: RegionOption.AU,
+    brazil: RegionOption.BR,
+    china: RegionOption.CN,
+    cyprus: RegionOption.CY,
+    germany: RegionOption.DE,
+    egypt: RegionOption.EG,
+    spain: RegionOption.ES,
+    france: RegionOption.FR,
+    "great britain": RegionOption.GB,
+    "united kingdom": RegionOption.GB,
+    england: RegionOption.GB,
+    scotland: RegionOption.GB,
+    wales: RegionOption.GB,
+    israel: RegionOption.IL,
+    india: RegionOption.IN,
+    jamaica: RegionOption.JM,
+    "south korea": RegionOption.KR,
+    korea: RegionOption.KR,
+    kazakhstan: RegionOption.KZ,
+    libya: RegionOption.LY,
+    mexico: RegionOption.MX,
+    nigeria: RegionOption.NG,
+    netherlands: RegionOption.NL,
+    "new zealand": RegionOption.NZ,
+    qatar: RegionOption.QA,
+    romania: RegionOption.RO,
+    russia: RegionOption.RU,
+    "russian federation": RegionOption.RU,
+    "saudi arabia": RegionOption.SA,
+    thailand: RegionOption.TH,
+    taiwan: RegionOption.TW,
+    "south africa": RegionOption.ZA,
+};
+
+function normalizePlace(value: string | null | undefined) {
+    return value?.trim().toLowerCase() ?? "";
+}
+
+function inferStateRegion(state: string | null | undefined, country: string | null | undefined) {
+    const normalizedState = normalizePlace(state);
+    if (!normalizedState) return null;
+
+    const normalizedCountry = normalizePlace(country);
+    const isUs =
+        normalizedCountry === "" ||
+        normalizedCountry === "united states" ||
+        normalizedCountry === "united states of america" ||
+        normalizedCountry === "usa" ||
+        normalizedCountry === "us" ||
+        normalizedCountry === "u.s." ||
+        normalizedCountry === "u.s.a.";
+    const isCanada =
+        normalizedCountry === "canada" ||
+        normalizedCountry === "ca" ||
+        normalizedCountry === "can";
+
+    if (isUs) {
+        const abbr = US_STATE_NAME_TO_ABBR[normalizedState] ?? normalizedState.toUpperCase();
+        return US_STATE_ABBR_TO_REGION[abbr] ?? null;
+    }
+
+    if (isCanada) {
+        const abbr = CANADA_PROVINCE_NAME_TO_ABBR[normalizedState] ?? normalizedState.toUpperCase();
+        return CANADA_PROVINCE_ABBR_TO_REGION[abbr] ?? null;
+    }
+
+    return null;
+}
+
+function inferCountryRegion(country: string | null | undefined, state: string | null | undefined) {
+    const normalized = normalizePlace(country);
+    if (!normalized) return null;
+
+    if (normalized === "canada") {
+        return inferStateRegion(state, country);
+    }
+
+    const mapped = COUNTRY_NAME_TO_REGION[normalized];
+    if (mapped) return mapped;
+
+    const upper = normalized.toUpperCase();
+    if (REGION_VALUES.has(upper as RegionOption)) {
+        return upper as RegionOption;
+    }
+
+    return null;
+}
+
 const QuickStatGQL = new GraphQLObjectType({
     name: "QuickStat",
     fields: {
@@ -47,6 +271,16 @@ const QuickStatsGQL = new GraphQLObjectType({
         dc: { type: nn(QuickStatGQL) },
         eg: { type: nn(QuickStatGQL) },
         count: IntTy,
+    },
+});
+
+const TeamLocationQuickStatsGQL = new GraphQLObjectType({
+    name: "TeamLocationQuickStats",
+    fields: {
+        world: { type: QuickStatsGQL },
+        country: { type: QuickStatsGQL },
+        state: { type: QuickStatsGQL },
+        district: { type: QuickStatsGQL },
     },
 });
 
@@ -219,6 +453,53 @@ export const TeamGQL: GraphQLObjectType = new GraphQLObjectType({
             ) => {
                 if (ALL_SEASONS.indexOf(season) == -1) throw "invalid season";
                 return getQuickStats(team.number, season, region);
+            },
+        },
+
+        quickStatsBySeason: {
+            type: list(nn(QuickStatsGQL)),
+            args: { seasons: listTy(IntTy), region: { type: RegionOptionGQL } },
+            resolve: async (
+                team,
+                {
+                    seasons,
+                    region,
+                }: { seasons: number[] | null | undefined; region: RegionOption | null }
+            ) => {
+                const seasonList =
+                    seasons && seasons.length
+                        ? seasons.filter((s) => ALL_SEASONS.includes(s as Season))
+                        : ALL_SEASONS;
+                const stats = await Promise.all(
+                    seasonList.map((season) =>
+                        getQuickStats(team.number, season as Season, region ?? null)
+                    )
+                );
+                return stats.filter((s): s is NonNullable<typeof s> => !!s);
+            },
+        },
+
+        locationQuickStats: {
+            type: TeamLocationQuickStatsGQL,
+            args: { season: IntTy },
+            resolve: async (team, { season }: { season: Season }) => {
+                if (ALL_SEASONS.indexOf(season) == -1) throw "invalid season";
+
+                const countryRegion = inferCountryRegion(team.country, team.state);
+                const stateRegion = inferStateRegion(team.state, team.country);
+
+                const [world, country, state] = await Promise.all([
+                    getQuickStats(team.number, season, null),
+                    countryRegion ? getQuickStats(team.number, season, countryRegion) : null,
+                    stateRegion ? getQuickStats(team.number, season, stateRegion) : null,
+                ]);
+
+                return {
+                    world,
+                    country,
+                    state,
+                    district: null,
+                };
             },
         },
     }),

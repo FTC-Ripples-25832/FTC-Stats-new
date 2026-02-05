@@ -5,7 +5,7 @@
     import { t } from "$lib/i18n";
 </script>
 
-<Head title="OPR | FTCStats" description="What OPR is, how it works, and when to use it." />
+<Head title="OPR | FTC Stats" description="What OPR is, how it works, and when to use it." />
 
 <WidthProvider width={"1000px"}>
     <Card>
@@ -126,7 +126,7 @@
                 <img
                     class="statsimg"
                     src="/img/statsbutton.png"
-                    alt="A screenshot of FTCStats's Season Records page, with an orange arrow pointing to the statistics button."
+                    alt="A screenshot of FTC Stats' Season Records page, with an orange arrow pointing to the statistics button."
                 />
             </div>
         </div></Card

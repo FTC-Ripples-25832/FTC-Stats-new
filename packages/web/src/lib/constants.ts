@@ -21,3 +21,6 @@ export const DISCORD = "https://discord.gg/XTZhD9RnKa";
 export const STATUS = "https://uptime.9021007.xyz/status/ftcscout";
 export const GITHUB = "https://github.com/ftc-scout/ftc-scout";
 export const DONATIONS = "https://hcb.hackclub.com/donations/start/ftcscout";
+
+// prediction feature flags
+export const ENABLE_XGB_PREDICTIONS = true;

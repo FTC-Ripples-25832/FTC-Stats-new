@@ -8,35 +8,35 @@
 </script>
 
 <Head
-    title="About | FTCStats"
-    description="About FTCStats, a way to track and scout FIRST Tech Challenge."
+    title="About | FTC Stats"
+    description="About FTC Stats, a way to track and scout FIRST Tech Challenge."
 />
 
 <WidthProvider width={"1000px"}>
     <Card>
-        <h1 class="head">{$t("about.title", "About")} FTC<em>Scout</em></h1>
+        <h1 class="head">{$t("about.title", "About")} FTC<em>Stats</em></h1>
 
         <div class="rest">
             <p>
                 {@html $t(
                     "about.p1",
-                    "FTC<i>Scout</i> is a repository of results and statistics on every aspect of FTC. View all a teams events, an event's matches, rankings and awards, the best results and matches for each season, and search for teams and events."
+                    "FTC<i>Stats</i> is a repository of results and statistics on every aspect of FTC. View all a teams events, an event's matches, rankings and awards, the best results and matches for each season, and search for teams and events."
                 )}
             </p>
 
             <p>
                 {@html $t(
                     "about.p2",
-                    "Started in Los Angeles, California, FTC<i>Scout</i> is the passion project of a group of alumni from team <a href=\\\"/teams/16321\\\">16321 X Drive</a>."
+                    "Started in Los Angeles, California, FTC<i>Stats</i> is the passion project of a group of alumni from team <a href=\\\"/teams/16321\\\">16321 X Drive</a>."
                 )}
             </p>
 
-            <h2>{$t("about.why-prefix", "Why")} FTC<em>Scout</em>?</h2>
+            <h2>{$t("about.why-prefix", "Why")} FTC<em>Stats</em>?</h2>
 
             <p>
                 {@html $t(
                     "about.why-intro",
-                    "Although FTC<em>Scout</em> provides similar features to other websites we believe it has several advantages:"
+                    "Although FTC<em>Stats</em> provides similar features to other websites we believe it has several advantages:"
                 )}
             </p>
 
@@ -45,7 +45,7 @@
             <p>
                 {@html $t(
                     "about.feature-full.p1",
-                    "FTC<em>Scout</em> provides more advanced statistics than any other FTC website on the Internet. Although other websites offer many of the features of FTC<em>Scout</em>, we collect them all in one place. Additionally, FTC<em>Scout</em> offers features that no other websites do."
+                    "FTC<em>Stats</em> provides more advanced statistics than any other FTC website on the Internet. Although other websites offer many of the features of FTC<em>Stats</em>, we collect them all in one place. Additionally, FTC<em>Stats</em> offers features that no other websites do."
                 )}
             </p>
 
@@ -66,7 +66,7 @@
             <p>
                 {@html $t(
                     "about.feature-full.p4",
-                    "Finally, starting in the 2022-2023 Power Play season, FTC<em>Scout</em> now provides a visualization of the playing field for every match. To access this feature, just click \\\"View Field Layout\\\" in the score breakdown popup of any match."
+                    "Finally, starting in the 2022-2023 Power Play season, FTC<em>Stats</em> now provides a visualization of the playing field for every match. To access this feature, just click \\\"View Field Layout\\\" in the score breakdown popup of any match."
                 )}
             </p>
 
@@ -74,13 +74,13 @@
             <p>
                 {@html $t(
                     "about.fast-secure.p1",
-                    "We designed FTC<em>Scout</em> with performance, security, and accessability in mind. FTC<em>Scout</em> pages load fast and with all data at the same time instead of popping in slowly. As a result of optimizations, FTC<em> Scout </em> receives exceptional <a href=\\\"https://en.wikipedia.org/wiki/Google_Lighthouse\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">Google Lighthouse</a> scores and A+ security ratings from several auditors."
+                    "We designed FTC<em>Stats</em> with performance, security, and accessability in mind. FTC<em>Stats</em> pages load fast and with all data at the same time instead of popping in slowly. As a result of optimizations, FTC<em> Stats </em> receives exceptional <a href=\\\"https://en.wikipedia.org/wiki/Google_Lighthouse\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">Google Lighthouse</a> scores and A+ security ratings from several auditors."
                 )}
             </p>
             <div class="image-wrap">
                 <img
                     src="/img/lighthouse.png"
-                    alt="A screenshot of FTCStats's lighthouse scores showing 99% for Performance, 97% for Accessibility, 100% for Best Practices, and 100% for SEO."
+                    alt="A screenshot of FTC Stats' lighthouse scores showing 99% for Performance, 97% for Accessibility, 100% for Best Practices, and 100% for SEO."
                 />
             </div>
 
@@ -88,7 +88,7 @@
             <p>
                 {@html $t(
                     "about.beautiful.p1",
-                    "Lastly, although this is a matter of opinion, we believe FTC<em>Scout</em> is beautiful. We put a lot of effort into the design of FTC<em>Scout</em> and think that it looks sleek, modern, and is the best looking of the FTC websites."
+                    "Lastly, although this is a matter of opinion, we believe FTC<em>Stats</em> is beautiful. We put a lot of effort into the design of FTC<em>Stats</em> and think that it looks sleek, modern, and is the best looking of the FTC websites."
                 )}
             </p>
 
@@ -96,7 +96,7 @@
             <p>
                 {@html $t(
                     "about.team.p1",
-                    `FTC<em>Scout</em> was developed by alumni from <a href=\\\"/teams/16321\\\">16321 X Drive</a>, and it is FOSS (<a href=\\\"https://en.wikipedia.org/wiki/Free_and_open-source_software\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">Free and Open-Source Software</a>), so you can contribute your ideas and improvements to it <a href=\\\"${GITHUB}\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">on our Github</a>.`
+                    `FTC<em>Stats</em> was developed by alumni from <a href=\\\"/teams/16321\\\">16321 X Drive</a>, and it is FOSS (<a href=\\\"https://en.wikipedia.org/wiki/Free_and_open-source_software\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">Free and Open-Source Software</a>), so you can contribute your ideas and improvements to it <a href=\\\"${GITHUB}\\\" target=\\\"_blank\\\" rel=\\\"noreferrer\\\">on our Github</a>.`
                 )}
             </p>
             <div class="contributors">

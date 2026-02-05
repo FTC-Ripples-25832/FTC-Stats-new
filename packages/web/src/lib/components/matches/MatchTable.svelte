@@ -4,9 +4,9 @@
 </script>
 
 <script lang="ts">
-    import { groupBy } from "@ftc-stats/common";
+    import { groupBy, type Season } from "@ftc-stats/common";
     import {
-        TournamentLevel,
+        TournamentLevel as GqlTournamentLevel,
         type FullMatchFragment,
     } from "../../graphql/generated/graphql-operations";
     import { matchSorter } from "../../util/sorters";
@@ -23,6 +23,11 @@
     import { faHeart as faHeartOutline } from "@fortawesome/free-regular-svg-icons";
     import Fa from "svelte-fa";
     import { t } from "$lib/i18n";
+    import {
+        buildEpaMapFromMatches,
+        buildOprMapFromMatches,
+        hasEntries,
+    } from "./prediction-maps";
 
     export let matches: FullMatchFragment[];
     export let event: {
@@ -35,18 +40,21 @@
     };
     export let focusedTeam: number | null = null;
     export let teamOprMap: Record<number, number> | null = null;
+    export let teamEpaMap: Record<number, number> | null = null;
 
     $: timeZone = event.timezone;
     $: remote = event.remote;
     $: eventCode = event.code;
-    $: season = event.season;
+    $: season = event.season as Season;
 
-    $: quals = matches.filter((m) => m.tournamentLevel == TournamentLevel.Quals).sort(matchSorter);
-    $: semis = matches.filter((m) => m.tournamentLevel == TournamentLevel.Semis);
-    $: finals = matches
-        .filter((m) => m.tournamentLevel == TournamentLevel.Finals)
+    $: quals = matches
+        .filter((m) => m.tournamentLevel == GqlTournamentLevel.Quals)
         .sort(matchSorter);
-    $: doubleElim = matches.filter((m) => m.tournamentLevel == TournamentLevel.DoubleElim);
+    $: semis = matches.filter((m) => m.tournamentLevel == GqlTournamentLevel.Semis);
+    $: finals = matches
+        .filter((m) => m.tournamentLevel == GqlTournamentLevel.Finals)
+        .sort(matchSorter);
+    $: doubleElim = matches.filter((m) => m.tournamentLevel == GqlTournamentLevel.DoubleElim);
 
     $: soloMatches = groupBy(matches, (m) => m.id - (m.id % 1000));
 
@@ -98,6 +106,15 @@
     $: elimRemaining = $t("matches.elim-remaining", "Elimination Remaining");
     $: lostThisMatch = $t("matches.lost-this", "Lost This Match");
     $: lostPreviousMatch = $t("matches.lost-previous", "Lost Previous Match");
+
+    $: useAutoOpr = !hasEntries(teamOprMap);
+    $: useAutoEpa = !hasEntries(teamEpaMap);
+    $: autoOprMap = useAutoOpr
+        ? buildOprMapFromMatches(matches, season, eventCode, remote)
+        : {};
+    $: autoEpaMap = useAutoEpa ? buildEpaMapFromMatches(matches, season) : {};
+    $: resolvedTeamOprMap = useAutoOpr ? autoOprMap : teamOprMap ?? {};
+    $: resolvedTeamEpaMap = useAutoEpa ? autoEpaMap : teamEpaMap ?? {};
 </script>
 
 <ScoreModal
@@ -139,7 +156,8 @@
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
                         {teamCount}
-                        {teamOprMap}
+                        teamOprMap={resolvedTeamOprMap}
+                        teamEpaMap={resolvedTeamEpaMap}
                     />
                 {/each}
                 {#if finals.length}
@@ -153,7 +171,8 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
-                        {teamOprMap}
+                        teamOprMap={resolvedTeamOprMap}
+                        teamEpaMap={resolvedTeamEpaMap}
                     />
                 {/each}
                 {#if semis.length}
@@ -167,7 +186,8 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
-                        {teamOprMap}
+                        teamOprMap={resolvedTeamOprMap}
+                        teamEpaMap={resolvedTeamEpaMap}
                     />
                 {/each}
                 {#if quals.length && (finals.length || semis.length || doubleElim.length)}
@@ -181,7 +201,8 @@
                         {timeZone}
                         {focusedTeam}
                         zebraStripe={i % 2 == 1}
-                        {teamOprMap}
+                        teamOprMap={resolvedTeamOprMap}
+                        teamEpaMap={resolvedTeamEpaMap}
                     />
                 {/each}
             {/if}

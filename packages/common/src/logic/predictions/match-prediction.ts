@@ -33,6 +33,28 @@ function calculateWinProbability(scoreDiff: number, variance: number): number {
 }
 
 /**
+ * Predict match outcome from precomputed alliance scores.
+ */
+export function predictMatchFromScores(
+    predictedRedScore: number,
+    predictedBlueScore: number,
+    variance: number = 100
+): MatchPrediction {
+    const scoreDiff = predictedRedScore - predictedBlueScore;
+    const redWinProb = calculateWinProbability(scoreDiff, variance);
+    const blueWinProb = 1 - redWinProb;
+    const confidence = Math.min(Math.abs(scoreDiff) / 50, 1);
+
+    return {
+        redWinProbability: redWinProb,
+        blueWinProbability: blueWinProb,
+        predictedRedScore: Math.max(0, predictedRedScore),
+        predictedBlueScore: Math.max(0, predictedBlueScore),
+        confidence,
+    };
+}
+
+/**
  * Predict match outcome based on alliance OPRs
  *
  * @param redAlliance - Red alliance team OPRs

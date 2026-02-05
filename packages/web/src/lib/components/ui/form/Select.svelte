@@ -8,18 +8,30 @@
     export let id: string | null = null;
     export let style = "";
     export let nonForm = false;
+    export let disabled = false;
 
     let form = getContext(FORM_ID) as string | null;
 </script>
 
-<select bind:value {form} {name} {id} on:change {style} class:non-form={nonForm}>
+<select
+    bind:value
+    {form}
+    {name}
+    {id}
+    {disabled}
+    on:change
+    {style}
+    class:non-form={nonForm}
+    class="select-input"
+>
     {#each options as o}
         <option selected={value == o.value} value={o.value}>{o.name}</option>
     {/each}
 </select>
 
 <style>
-    select {
-        width: 100%;
+    select:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 </style>

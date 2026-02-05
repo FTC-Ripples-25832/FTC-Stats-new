@@ -18,6 +18,7 @@
     export let zebraStripe: boolean;
     export let teamCount = 0;
     export let teamOprMap: Record<number, number> | null = null;
+    export let teamEpaMap: Record<number, number> | null = null;
 
     $: teams = match.teams;
     $: redTeams = teams.filter((t) => t.alliance == Alliance.Red);
@@ -84,7 +85,7 @@
 </script>
 
 <tr class:zebraStripe class:isDoubleElim class:new-round={isNewRound}>
-    <MatchScore {match} {timeZone} {teamOprMap} />
+    <MatchScore {match} {timeZone} {teamOprMap} {teamEpaMap} />
 
     {#if isDoubleElim}
         <DeLives

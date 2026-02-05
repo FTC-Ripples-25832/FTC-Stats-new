@@ -13,6 +13,7 @@
         faServer,
         faHandHoldingDollar,
         faChartLine,
+        faBolt,
     } from "@fortawesome/free-solid-svg-icons";
     import { faGithub, faDiscord } from "@fortawesome/free-brands-svg-icons";
     import SidebarItem from "./SidebarItem.svelte";
@@ -41,6 +42,7 @@
     nameKey="nav.events"
     link="/events/{CURRENT_SEASON}"
 />
+<SidebarItem icon={faBolt} name="Matches" nameKey="nav.matches" link="/matches" />
 <SidebarItem icon={faHashtag} name="Teams" nameKey="nav.teams" link="/teams" />
 <SidebarItem
     icon={faChartLine}

@@ -18,7 +18,7 @@
     <p>After much waiting, the Scouting Report hath returned.</p>
 
     <p>
-        I and the rest of the FTCStats team (just Daniel) are sorry for the lack of Scouting Reports
+        I and the rest of the FTC Stats team (just Daniel) are sorry for the lack of Scouting Reports
         over the past few weeks. Rest assured that we will resume regular updates starting this
         week. So a few weeks ago, <a href="/teams/16321">my team </a>(completely shameless plug),
         had our <a href="/events/2022/USCALAROQ2/matches"> tournament qualifier</a>. The top 7 teams

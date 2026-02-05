@@ -7,8 +7,8 @@
 </script>
 
 <Head
-    title="API | FTCStats"
-    description="The developer API for FTCStats, providing access to all our statistics and data."
+    title="API | FTC Stats"
+    description="The developer API for FTC Stats, providing access to all our statistics and data."
 />
 
 <WidthProvider width="100ch">

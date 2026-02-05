@@ -6,11 +6,13 @@ import { getData } from "$lib/graphql/getData";
 import type { PageLoad } from "./$types";
 import { error } from "@sveltejs/kit";
 import { seasonFromUrl } from "./+page.svelte";
+import { ALL_SEASONS } from "@ftc-stats/common";
 
 export const load: PageLoad = async ({ url, params, fetch }) => {
     let teamData = await getData(getClient(fetch), TeamDocument, {
         number: +params.number,
         season: seasonFromUrl(url),
+        seasons: ALL_SEASONS,
     });
 
     if (!browser && !get(teamData)?.data?.teamByNumber)

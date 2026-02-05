@@ -53,7 +53,7 @@
     }
 </script>
 
-<Head title="Teams | FTCStats" description="Find and search for FTC teams." />
+<Head title="Teams | FTC Stats" description="Find and search for FTC teams." />
 
 <WidthProvider width={"1200px"}>
     <PageShell railWidth="340px">

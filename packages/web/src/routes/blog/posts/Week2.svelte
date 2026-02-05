@@ -50,7 +50,7 @@
         matches. With a low enough standard deviation for us to count it. To be fair,
         <a href="/teams/9881">Team 9881, Golden Gears</a>, scored an average of 89 points over 33
         matches, which is the closest to the total <em>median</em> (89) score of matches in FTC. I
-        guess not all battles have one winner, so at FTCStats we want to congratulate both
+        guess not all battles have one winner, so at FTC Stats we want to congratulate both
         <a href="/teams/9881">Golden Gear</a>s and
         <a href="/teams/11337">Robonauts</a> on their terrific performances this past year. Truly the
         teams of all time.

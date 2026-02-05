@@ -13,7 +13,7 @@
     $: computedMessage = message ?? $page?.error?.message;
 </script>
 
-<Head title="FTCStats" />
+<Head title="FTC Stats" />
 
 <WidthProvider width="800px">
     <Card vis={false}>

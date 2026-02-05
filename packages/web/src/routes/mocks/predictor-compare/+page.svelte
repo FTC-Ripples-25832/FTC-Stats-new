@@ -154,7 +154,7 @@
 <div class="mock-panel">
     <h1>Predictor Comparison Sandbox</h1>
     <p class="mock-muted">
-        Compares ftc-match-predictor (XGBoost) with the FTCStats OPR predictor using the same
+        Compares ftc-match-predictor (XGBoost) with the FTC Stats OPR predictor using the same
         team stats file.
     </p>
 
@@ -252,7 +252,7 @@
         </div>
 
         <div class="mock-panel result-card">
-            <h2>FTCStats OPR predictor</h2>
+            <h2>FTC Stats OPR predictor</h2>
             {#if ftcstatsPrediction}
                 <div class="result-row">
                     <span>Winner</span>

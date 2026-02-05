@@ -1,4 +1,4 @@
-query Team($number: Int!, $season: Int!) {
+query Team($number: Int!, $season: Int!, $seasons: [Int!]!) {
     teamByNumber(number: $number) {
         name
         number
@@ -26,6 +26,44 @@ query Team($number: Int!, $season: Int!) {
                 rank
             }
             eg {
+                value
+                rank
+            }
+            count
+        }
+        locationQuickStats(season: $season) {
+            world {
+                tot {
+                    value
+                    rank
+                }
+                count
+            }
+            country {
+                tot {
+                    value
+                    rank
+                }
+                count
+            }
+            state {
+                tot {
+                    value
+                    rank
+                }
+                count
+            }
+            district {
+                tot {
+                    value
+                    rank
+                }
+                count
+            }
+        }
+        quickStatsBySeason(seasons: $seasons) {
+            season
+            tot {
                 value
                 rank
             }

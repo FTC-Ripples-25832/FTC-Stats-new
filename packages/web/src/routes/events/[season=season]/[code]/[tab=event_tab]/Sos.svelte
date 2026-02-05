@@ -5,8 +5,10 @@
     import Fa from "svelte-fa";
     import { onDestroy } from "svelte";
     import Card from "$lib/components/Card.svelte";
+    import Select from "$lib/components/ui/form/Select.svelte";
     import { t } from "$lib/i18n";
     import { prettyPrintFloat } from "$lib/printers/number";
+    import { hasEntries } from "$lib/components/matches/prediction-maps";
     import {
         TournamentLevel,
         type EventPageQuery,
@@ -86,12 +88,38 @@
     export let season: number;
 
     let simCount = 1000;
+    let simCountStr = "1000";
+    const i = (x: number) => (simCountStr = `${x}`);
+    const o = (x: string) => (simCount = +x);
+    $: i(simCount);
+    $: o(simCountStr);
     let isSimulating = false;
     let simulationError: string | null = null;
     let metrics: Record<number, SosMetrics> | null = null;
     let showDetailed = false;
     let sortKey = "overall";
     let sortDir: "asc" | "desc" = "desc";
+    $: hasOpr = hasEntries(teamOprMap);
+
+    let simOptions: { value: string; name: string }[] = [];
+    let sortOptions: { value: string; name: string }[] = [];
+
+    $: simOptions = [
+        { value: "200", name: $t("events.sos.sim-fast", "200 (Fast)") },
+        { value: "1000", name: $t("events.sos.sim-recommended", "1,000 (Recommended)") },
+        { value: "5000", name: $t("events.sos.sim-accurate", "5,000 (Accurate)") },
+    ];
+
+    $: sortOptions = [
+        { value: "overall", name: $t("events.sos.composite-score", "Composite Score") },
+        { value: "rankScore", name: $t("events.sos.rank-score", "Rank Score") },
+        { value: "rpScore", name: $t("events.sos.rp-score", "RP Score") },
+        { value: "oprScore", name: $t("events.sos.opr-score", "OPR Score") },
+        { value: "opponentOpr", name: $t("events.sos.opponent-opr", "Opponent OPR") },
+        { value: "netOpr", name: $t("events.sos.net", "Net OPR") },
+        { value: "deltaRank", name: $t("events.sos.delta-rank", "Delta Rank") },
+        { value: "deltaRp", name: $t("events.sos.delta-rp", "Delta RP") },
+    ];
 
     let worker: Worker | null = null;
 
@@ -176,6 +204,10 @@
         if (isSimulating) return;
         simulationError = null;
         metrics = null;
+        if (!hasOpr) {
+            simulationError = "OPR ratings are not available for this event yet.";
+            return;
+        }
         if (!schedule.length || !teamInputs.length) {
             simulationError = "No qualification schedule is available.";
             return;
@@ -307,25 +339,18 @@
 <div class="controls">
     <div class="control-group">
         <label for="sos-sims">{$t("events.sos.simulations", "Simulations")}:</label>
-        <select id="sos-sims" bind:value={simCount} disabled={isSimulating}>
-            <option value={200}>{$t("events.sos.sim-fast", "200 (Fast)")}</option>
-            <option value={1000}>{$t("events.sos.sim-recommended", "1,000 (Recommended)")}</option>
-            <option value={5000}>{$t("events.sos.sim-accurate", "5,000 (Accurate)")}</option>
-        </select>
+        <Select
+            id="sos-sims"
+            bind:value={simCountStr}
+            options={simOptions}
+            nonForm
+            disabled={isSimulating}
+        />
     </div>
 
     <div class="control-group">
         <label for="sos-sort">{$t("events.sos.sort-by", "Sort By")}:</label>
-        <select id="sos-sort" bind:value={sortKey}>
-            <option value="overall">{$t("events.sos.composite-score", "Composite Score")}</option>
-            <option value="rankScore">{$t("events.sos.rank-score", "Rank Score")}</option>
-            <option value="rpScore">{$t("events.sos.rp-score", "RP Score")}</option>
-            <option value="oprScore">{$t("events.sos.opr-score", "OPR Score")}</option>
-            <option value="opponentOpr">{$t("events.sos.opponent-opr", "Opponent OPR")}</option>
-            <option value="netOpr">{$t("events.sos.net-opr", "Net OPR")}</option>
-            <option value="deltaRank">{$t("events.sos.delta-rank", "Delta Rank")}</option>
-            <option value="deltaRp">{$t("events.sos.delta-rp", "Delta RP")}</option>
-        </select>
+        <Select id="sos-sort" bind:value={sortKey} options={sortOptions} nonForm />
     </div>
 
     <div class="control-group checkbox">

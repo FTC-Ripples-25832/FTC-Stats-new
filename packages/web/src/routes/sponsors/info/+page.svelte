@@ -6,7 +6,7 @@
     import { t } from "$lib/i18n";
 </script>
 
-<Head title="Sponsor Info | FTCStats" description="Become a sponsor of FTCStats" />
+<Head title="Sponsor Info | FTC Stats" description="Become a sponsor of FTC Stats" />
 
 <WidthProvider width={"1000px"}>
     <Card>
@@ -31,7 +31,7 @@
                 <img
                     class="statsimg"
                     src="/img/examplesidebar.png"
-                    alt="A screenshot of FTCStats's Teams Records page, with a green example logo in the sidebar"
+                    alt="A screenshot of FTC Stats' Teams Records page, with a green example logo in the sidebar"
                 />
             </div>
             <h2>{$t("sponsors.info.expenses", "Our expenses:")}</h2>
@@ -72,7 +72,7 @@
             <p>
                 {$t(
                     "sponsors.info.commitment.p1",
-                    "The cost to sponsor us for 1 year is $150. This will cover our hosting and domain costs for the year, as well as other miscellaneous costs, like taxes, price fluctuations, and server upgrades if necessary. All money will be used to maintain FTCStats."
+                    "The cost to sponsor us for 1 year is $150. This will cover our hosting and domain costs for the year, as well as other miscellaneous costs, like taxes, price fluctuations, and server upgrades if necessary. All money will be used to maintain FTC Stats."
                 )}
             </p>
 

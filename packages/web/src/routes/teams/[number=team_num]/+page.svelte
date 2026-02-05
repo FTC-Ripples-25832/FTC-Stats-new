@@ -20,6 +20,7 @@
         faLocationDot,
         faMedal,
         faSchool,
+        faVideo,
     } from "@fortawesome/free-solid-svg-icons";
     import { prettyPrintURL } from "$lib/printers/url";
     import Location from "$lib/components/Location.svelte";
@@ -39,6 +40,11 @@
     import { setContext } from "svelte";
     import { SHOW_REMOTE_FOCUS_CTX } from "$lib/components/matches/MatchTeam.svelte";
     import QuickStats from "./QuickStats.svelte";
+    import TeamSeasonSummary from "./TeamSeasonSummary.svelte";
+    import TeamYearStats from "./TeamYearStats.svelte";
+    import TeamInsights from "./TeamInsights.svelte";
+    import TeamAwardsTimeline from "./TeamAwardsTimeline.svelte";
+    import EventScoreSparkline from "./EventScoreSparkline.svelte";
     import { t } from "$lib/i18n";
 
     const toSeason = (n: number) => n as Season;
@@ -61,7 +67,7 @@
 </script>
 
 <Head
-    title={!!team ? `${team.number} ${team.name} | FTCStats` : "Team Page | FTCStats"}
+    title={!!team ? `${team.number} ${team.name} | FTC Stats` : "Team Page | FTC Stats"}
     description={!!team
         ? `Information and matches for team ${team.number} ${team.name}.`
         : `Information and matches for team ${$page.params.number}`}
@@ -128,6 +134,11 @@
             </div>
 
             <div class="main">
+                {#if team}
+                    <TeamSeasonSummary {team} season={$season} />
+                    <TeamInsights {team} />
+                    <TeamAwardsTimeline {team} />
+                {/if}
                 {#each sortedEvents as tep}
                     {@const event = tep.event}
                     {@const href = `/events/${event.season}/${event.code}/matches`}
@@ -142,11 +153,46 @@
                             <Location {...event.location} />
                         </InfoIconRow>
 
+                        {#if event.liveStreamURL || (event.webcasts && event.webcasts.length)}
+                            <InfoIconRow icon={faVideo}>
+                                {#if event.liveStreamURL}
+                                    <a
+                                        href={event.liveStreamURL}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        class="norm-link"
+                                    >
+                                        {$t("events.livestream", "Live Stream")}
+                                    </a>
+                                {/if}
+                                {#if event.webcasts?.length}
+                                    <a
+                                        href={event.webcasts[0]}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        class="norm-link"
+                                    >
+                                        {$t("events.webcast", "Webcast")}
+                                    </a>
+                                {/if}
+                            </InfoIconRow>
+                        {/if}
+
                         <TeamEventStats
                             stats={tep.stats}
                             season={toSeason(event.season)}
                             remote={event.remote}
                         />
+
+                        <div class="sparkline-row">
+                            <span class="sparkline-label">
+                                {$t("teams.match-trend", "Match Trend")}
+                            </span>
+                            <EventScoreSparkline
+                                matches={tep.matches.map((m) => m.match)}
+                                teamNumber={team.number}
+                            />
+                        </div>
 
                         {#if tep.awards.length}
                             <InfoIconRow icon={faMedal}>
@@ -183,6 +229,10 @@
                         </div>
                     </Card>
                 {/each}
+
+                {#if team?.quickStatsBySeason?.length}
+                    <TeamYearStats stats={team.quickStatsBySeason} />
+                {/if}
             </div>
         </PageShell>
     </Loading>
@@ -205,5 +255,18 @@
         align-items: center;
         gap: var(--md-gap);
         text-align: center;
+    }
+
+    .sparkline-row {
+        display: flex;
+        align-items: center;
+        gap: var(--md-gap);
+        margin: var(--md-gap) 0;
+        flex-wrap: wrap;
+    }
+
+    .sparkline-label {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
     }
 </style>

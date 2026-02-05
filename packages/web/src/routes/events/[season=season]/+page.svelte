@@ -124,7 +124,7 @@
 </script>
 
 <Head
-    title="Events | FTCStats"
+    title="Events | FTC Stats"
     description="Find and search for FTC events in the {$page.params.season} season."
 />
 

@@ -32,7 +32,7 @@
     $: wrTooltip = $t(wrTooltipKey, `Top ${np}score in a FIRST sponsored event.`);
 </script>
 
-<Head title="FTCStats" />
+<Head title="FTC Stats" />
 
 <!-- <AlertBar
     message="Welcome to the FTC World Championships! We're doing our best to keep the site online, but the championships bring extremely large traffic flows to the website. You can check the website status with the arrow to the right..."

@@ -38,7 +38,12 @@
     }
 </script>
 
-<select aria-label="Language" on:change={handleChange} value={selectedValue}>
+<select
+    aria-label="Language"
+    on:change={handleChange}
+    value={selectedValue}
+    class="select-input locale-select"
+>
     <option value="auto">{autoLabel}</option>
     {#if customOption}
         <option value={customOption.value}>{customOption.label}</option>
@@ -49,13 +54,10 @@
 </select>
 
 <style>
-    select {
+    .locale-select {
         padding: calc(var(--navbar-size) / 6) var(--lg-pad);
         padding-right: 30px;
-        border-radius: var(--control-radius);
-        border: var(--border-width) solid var(--sep-color);
-        background-color: var(--form-bg-color);
-        color: var(--text-color);
         font-size: 14px;
+        min-height: unset;
     }
 </style>

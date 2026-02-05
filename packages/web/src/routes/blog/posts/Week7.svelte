@@ -3,12 +3,12 @@
 </script>
 
 <BlogTemplate slug="change-log">
-    <svelte:fragment slot="title">FTC<em>Scout</em> Season 2: What's New</svelte:fragment>
+    <svelte:fragment slot="title">FTC<em>Stats</em> Season 2: What's New</svelte:fragment>
     <svelte:fragment slot="author">Daniel James</svelte:fragment>
     <svelte:fragment slot="date">October 15, 2023</svelte:fragment>
 
     <p>
-        This offseason we rewrote FTC<em>Scout</em> from the ground up. In the process we made many improvements,
+        This offseason we rewrote FTC<em>Stats</em> from the ground up. In the process we made many improvements,
         fixed lots of bugs, and added cool new features. Here is a fairly exhaustive list of what's changed.
     </p>
 
@@ -16,7 +16,7 @@
     <ul>
         <li><b>Center Stage!:</b> We now have the 2023-2024 season Center Stage!</li>
         <li>
-            <b>Dark Mode!:</b> FTC<em>Scout</em> is the first FTC website with dark mode. Enable it by
+            <b>Dark Mode!:</b> FTC<em>Stats</em> is the first FTC website with dark mode. Enable it by
             clicking the moon icon in the top right. Your preference will be remembered and your operating
             system preference respected. Let us know if there are any dark mode visual bugs or things
             that don't look great.
@@ -24,7 +24,7 @@
         <li>
             <b>Matches Update Without Refresh:</b> If you are viewing the event page for a live
             event you no longer need to refresh the page to see if new matches have been added. The
-            matches will be updated automatically as soon as FTC<em>Scout</em> has them.
+            matches will be updated automatically as soon as FTC<em>Stats</em> has them.
         </li>
         <li>
             <b>Vote for the best team name:</b> We are running a competition to see which team has the
@@ -73,7 +73,7 @@
             <b>Searchbar Rework:</b> The searchbar in the top right of the screen has been reworked.
             It now loads all data immediately so future searches are instant. You can use the hotkey
             '/' to start a search. We've also switched to a custom search algorithm developed
-            specifically for FTC<em>Scout</em>. Let us know hot it works!
+            specifically for FTC<em>Stats</em>. Let us know hot it works!
         </li>
         <li>
             <b>Records and Custom Events:</b> Events with modified rules are no longer included in the

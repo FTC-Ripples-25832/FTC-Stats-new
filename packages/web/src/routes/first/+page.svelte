@@ -5,7 +5,7 @@
     import { t } from "$lib/i18n";
 </script>
 
-<Head title="FIRST | FTCStats" description="How to get started competing in FIRST" />
+<Head title="FIRST | FTC Stats" description="How to get started competing in FIRST" />
 
 <WidthProvider width={"1000px"}>
     <Card>
@@ -15,7 +15,7 @@
             <p>
                 {@html $t(
                     "first.p1",
-                    "On occasion, we recieve emails from mildly confused parents asking how to enroll their kids in FIRST. My best guess for why this happens is that the parent and kid come across, or are invited to, an FTC event, and are told that the scores are available on FTCStats. After spending the day watching robots and following the scores on FTCStats, their kid asks to join, and they end up hitting the email button. Reasonable enough."
+                    "On occasion, we recieve emails from mildly confused parents asking how to enroll their kids in FIRST. My best guess for why this happens is that the parent and kid come across, or are invited to, an FTC event, and are told that the scores are available on FTC Stats. After spending the day watching robots and following the scores on FTC Stats, their kid asks to join, and they end up hitting the email button. Reasonable enough."
                 )}
             </p>
             <p>
