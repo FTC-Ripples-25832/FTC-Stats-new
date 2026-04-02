@@ -6,6 +6,7 @@
 </script>
 
 <script lang="ts">
+    import { browser } from "$app/environment";
     import WidthProvider from "$lib/components/WidthProvider.svelte";
     import Card from "$lib/components/Card.svelte";
     import Loading from "$lib/components/Loading.svelte";
@@ -45,7 +46,10 @@
     import TeamInsights from "./TeamInsights.svelte";
     import TeamAwardsTimeline from "./TeamAwardsTimeline.svelte";
     import EventScoreSparkline from "./EventScoreSparkline.svelte";
+    import EpaQuickStats from "./EpaQuickStats.svelte";
     import { t } from "$lib/i18n";
+    import { getTeamSeasonEpa } from "$lib/api/epa";
+    import type { TeamSeasonEpa } from "@ftc-stats/common";
 
     const toSeason = (n: number) => n as Season;
 
@@ -64,6 +68,12 @@
     });
 
     setContext(SHOW_REMOTE_FOCUS_CTX, false);
+
+    let epaData: TeamSeasonEpa | null = null;
+
+    $: if (browser && team?.number) {
+        getTeamSeasonEpa(team.number, $season).then((d) => (epaData = d));
+    }
 </script>
 
 <Head
@@ -131,6 +141,8 @@
                         <QuickStats stats={team.quickStats} season={$season} />
                     </div>
                 {/if}
+
+                <EpaQuickStats epa={epaData} />
             </div>
 
             <div class="main">

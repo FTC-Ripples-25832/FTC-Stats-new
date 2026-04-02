@@ -5,6 +5,7 @@ import { loadAllEvents } from "../db/loaders/load-all-events";
 import { loadAllMatches } from "../db/loaders/load-all-matches";
 import { loadAllAwards } from "../db/loaders/load-all-awards";
 import { loadFutureEvents } from "../db/loaders/load-future-events";
+import { triggerCalculation } from "../epa/client";
 
 export const LoadType = {
     Full: "Full",
@@ -65,6 +66,14 @@ export async function watchApi() {
         await runJob(async () => await loadAllAwards(CURRENT_SEASON, LoadType.Partial), 5);
         await runJob(async () => await loadAllAwards(CURRENT_SEASON, LoadType.Full), MINS_PER_HOUR);
         await runJob(async () => await loadFutureEvents(CURRENT_SEASON), MINS_PER_DAY / 2);
+
+        // Trigger EPA recalculation after match data sync (every hour)
+        await runJob(async () => {
+            console.info("Triggering EPA recalculation...");
+            const ok = await triggerCalculation(CURRENT_SEASON);
+            if (ok) console.info("EPA recalculation triggered successfully.");
+            else console.warn("EPA service unavailable — skipping recalculation.");
+        }, MINS_PER_HOUR);
 
         cycleCount += 1;
         setTimeout(run, MS_PER_MIN);

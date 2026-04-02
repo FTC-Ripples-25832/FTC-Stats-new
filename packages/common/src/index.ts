@@ -25,3 +25,4 @@ export * from "./utils/gql/types";
 export * from "./utils/search";
 export * from "./utils/string";
 export * from "./utils/throttle";
+export * from "./types/epa";

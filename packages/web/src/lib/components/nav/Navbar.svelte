@@ -14,10 +14,12 @@
         { href: `/events/${CURRENT_SEASON}`, label: "Events", key: "nav.events" },
         { href: "/matches", label: "Matches", key: "nav.matches" },
         { href: "/compare", label: "Compare Teams", key: "nav.compare-teams" },
+        { href: "/simulate", label: "Simulate", key: "nav.simulate" },
         { href: `/records/${CURRENT_SEASON}/teams`, label: "Season Records", key: "nav.records" },
     ];
 
     const secondaryLinks = [
+        { href: "/worlds", label: "Worlds Scouting", key: "nav.worlds" },
         { href: "/blog", label: "The Scouting Report", key: "nav.scouting-report" },
         { href: "/about", label: "About", key: "nav.about" },
         { href: "/api", label: "API", key: "nav.api" },

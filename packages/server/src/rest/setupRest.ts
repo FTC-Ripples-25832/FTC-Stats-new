@@ -20,6 +20,7 @@ import { DATA_SOURCE } from "../db/data-source";
 import { frontendMSFromDB } from "../graphql/dyn/match-score";
 import { FindOptionsWhere } from "typeorm";
 import { getQuickStats } from "../graphql/resolvers/Team";
+import * as epaClient from "../epa/client";
 
 const pre = "/rest/v1/";
 
@@ -56,6 +57,17 @@ export function setupRest(app: Express) {
     app.get(pre + "events/:season(\\d+)/:code/awards", eventAwards);
     app.get(pre + "events/:season(\\d+)/:code/teams", eventTeams);
     app.get(pre + "events/search/:season(\\d+)", eventSearch);
+
+    // EPA endpoints (proxy to EPA microservice)
+    app.get(pre + "epa/team/:number(\\d+)", epaTeam);
+    app.get(pre + "epa/team/:number(\\d+)/season/:season(\\d+)", epaTeamSeason);
+    app.get(pre + "epa/team/:number(\\d+)/seasons", epaTeamSeasons);
+    app.get(pre + "epa/team/:number(\\d+)/matches/:season(\\d+)", epaTeamMatches);
+    app.get(pre + "epa/rankings/:season(\\d+)", epaRankings);
+    app.get(pre + "epa/season/:year(\\d+)", epaSeason);
+    app.get(pre + "epa/event/:season(\\d+)/:code", epaEvent);
+    app.post(pre + "epa/predict", epaPredict);
+    app.get(pre + "epa/health", epaHealth);
 }
 
 async function teamByNumber(req: Request<{ number: string }>, res: Response) {
@@ -438,4 +450,64 @@ async function eventSearch(req: Request<{ season: string }>, res: Response) {
     }
 
     res.send(entities);
+}
+
+// --- EPA proxy handlers ---
+
+async function epaTeam(req: Request<{ number: string }>, res: Response) {
+    let data = await epaClient.getTeamEpa(+req.params.number);
+    if (!data) return res.status(404).send("EPA data not available");
+    res.send(data);
+}
+
+async function epaTeamSeason(req: Request<{ number: string; season: string }>, res: Response) {
+    let data = await epaClient.getTeamSeasonEpa(+req.params.number, +req.params.season);
+    if (!data) return res.status(404).send("EPA data not available");
+    res.send(data);
+}
+
+async function epaTeamSeasons(req: Request<{ number: string }>, res: Response) {
+    let data = await epaClient.getTeamAllSeasons(+req.params.number);
+    res.send(data ?? []);
+}
+
+async function epaTeamMatches(req: Request<{ number: string; season: string }>, res: Response) {
+    let data = await epaClient.getTeamMatchEpas(+req.params.number, +req.params.season);
+    res.send(data ?? []);
+}
+
+async function epaRankings(req: Request<{ season: string }>, res: Response) {
+    let data = await epaClient.getEpaRankings(+req.params.season, {
+        limit: req.query.limit ? +req.query.limit : undefined,
+        offset: req.query.offset ? +req.query.offset : undefined,
+        country: req.query.country as string | undefined,
+        state: req.query.state as string | undefined,
+    });
+    res.send(data ?? []);
+}
+
+async function epaSeason(req: Request<{ year: string }>, res: Response) {
+    let data = await epaClient.getSeasonEpa(+req.params.year);
+    if (!data) return res.status(404).send("EPA data not available");
+    res.send(data);
+}
+
+async function epaEvent(req: Request<{ season: string; code: string }>, res: Response) {
+    let data = await epaClient.getEventEpa(+req.params.season, req.params.code);
+    res.send(data ?? []);
+}
+
+async function epaPredict(req: Request, res: Response) {
+    let { red_teams, blue_teams, season } = req.body ?? {};
+    if (!red_teams?.length || !blue_teams?.length) {
+        return res.status(400).send("red_teams and blue_teams are required");
+    }
+    let data = await epaClient.predictMatch(red_teams, blue_teams, season ?? 2025);
+    if (!data) return res.status(503).send("EPA service unavailable");
+    res.send(data);
+}
+
+async function epaHealth(_req: Request, res: Response) {
+    let healthy = await epaClient.isEpaServiceHealthy();
+    res.send({ epa_service: healthy ? "ok" : "unavailable" });
 }

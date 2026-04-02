@@ -3,6 +3,7 @@
     import { goto } from "$app/navigation";
     import { browser } from "$app/environment";
     import { CURRENT_SEASON, DESCRIPTORS, type Season } from "@ftc-stats/common";
+    import type { TeamSeasonEpa, TeamMatchEpa } from "@ftc-stats/common";
     import { onMount } from "svelte";
     import Card from "$lib/components/Card.svelte";
     import Head from "$lib/components/Head.svelte";
@@ -12,12 +13,15 @@
     import Form from "$lib/components/ui/form/Form.svelte";
     import PageShell from "$lib/components/layout/PageShell.svelte";
     import OPRTrendChart from "$lib/components/charts/OPRTrendChart.svelte";
+    import EpaComparisonBar from "$lib/components/charts/EpaComparisonBar.svelte";
+    import EpaTrendChart from "$lib/components/charts/EpaTrendChart.svelte";
     import Location from "$lib/components/Location.svelte";
     import { prettyPrintFloat, prettyPrintOrdinal } from "$lib/printers/number";
     import type { CompareTeamsQuery } from "$lib/graphql/generated/graphql-operations";
     import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
     import Fa from "svelte-fa";
     import { t } from "$lib/i18n";
+    import { getTeamSeasonEpa, getTeamMatchEpas } from "$lib/api/epa";
 
     export let data;
 
@@ -233,6 +237,55 @@
     }
 
     $: updateRecents();
+
+    let epaByTeam: Map<string, TeamSeasonEpa> = new Map();
+    let epaMatchesByTeam: Map<string, TeamMatchEpa[]> = new Map();
+
+    $: if (browser && teamNumbers.length >= 2) {
+        Promise.all(
+            teamNumbers.map(async (num) => {
+                const epa = await getTeamSeasonEpa(+num, selectedSeason);
+                if (epa) epaByTeam.set(num, epa);
+            })
+        ).then(() => (epaByTeam = epaByTeam));
+
+        Promise.all(
+            teamNumbers.map(async (num) => {
+                const matches = await getTeamMatchEpas(+num, selectedSeason);
+                if (matches.length) epaMatchesByTeam.set(num, matches);
+            })
+        ).then(() => (epaMatchesByTeam = epaMatchesByTeam));
+    }
+
+    $: epaBarTeams = compareTeams
+        ?.filter((t) => epaByTeam.has(String(t.number)))
+        .map((t) => {
+            const epa = epaByTeam.get(String(t.number))!;
+            return {
+                teamNumber: t.number,
+                teamName: t.name,
+                epaTotal: epa.epa_total ?? 0,
+                epaAuto: epa.epa_auto ?? 0,
+                epaDc: epa.epa_dc ?? 0,
+                epaEndgame: epa.epa_endgame ?? 0,
+            };
+        }) ?? [];
+
+    $: epaTrendTeams = compareTeams
+        ?.filter((t) => epaMatchesByTeam.has(String(t.number)))
+        .map((t) => {
+            const matches = epaMatchesByTeam.get(String(t.number))!;
+            return {
+                teamNumber: t.number,
+                teamName: t.name,
+                matches: matches.map((m) => ({
+                    matchId: m.match_id,
+                    eventCode: m.event_code,
+                    epaPre: m.epa_pre ?? 0,
+                    epaPost: m.epa_post ?? 0,
+                })),
+            };
+        }) ?? [];
 </script>
 
 <Head title="Compare Teams | FTC Stats" description="Compare multiple FTC teams side-by-side" />
@@ -499,6 +552,29 @@
                                                     </em>
                                                 </div>
                                             </div>
+                                            {#if epaByTeam.has(String(team.number))}
+                                                {@const epa = epaByTeam.get(String(team.number))}
+                                                <div class="epa-divider"></div>
+                                                <div class="stats-grid">
+                                                    <div class="stat">
+                                                        <span>Total EPA</span>
+                                                        <strong class="epa-val">{epa?.epa_total?.toFixed(1) ?? "—"}</strong>
+                                                        <em>{epa?.total_epa_rank ? prettyPrintOrdinal(epa.total_epa_rank) : "—"}</em>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <span>Auto EPA</span>
+                                                        <strong>{epa?.epa_auto?.toFixed(1) ?? "—"}</strong>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <span>DC EPA</span>
+                                                        <strong>{epa?.epa_dc?.toFixed(1) ?? "—"}</strong>
+                                                    </div>
+                                                    <div class="stat">
+                                                        <span>Endgame EPA</span>
+                                                        <strong>{epa?.epa_endgame?.toFixed(1) ?? "—"}</strong>
+                                                    </div>
+                                                </div>
+                                            {/if}
                                         {:else}
                                             <div class="no-stats">
                                                 {$t("compare.no-stats", "No stats available yet.")}
@@ -531,6 +607,24 @@
                                 )}
                             </p>
                         </div>
+                    </Card>
+                {/if}
+
+                {#if epaBarTeams.length > 0}
+                    <Card>
+                        <h2>EPA Comparison</h2>
+                        {#key `epa-bar-${teamNumbers.join(",")}-${selectedSeason}`}
+                            <EpaComparisonBar teams={epaBarTeams} />
+                        {/key}
+                    </Card>
+                {/if}
+
+                {#if epaTrendTeams.length > 0}
+                    <Card>
+                        <h2>EPA Progression</h2>
+                        {#key `epa-trend-${teamNumbers.join(",")}-${selectedSeason}`}
+                            <EpaTrendChart teamData={epaTrendTeams} />
+                        {/key}
                     </Card>
                 {/if}
             </Loading>
@@ -837,6 +931,15 @@
 
     .no-stats {
         color: var(--secondary-text-color);
+    }
+
+    .epa-divider {
+        border-top: 1px solid var(--sep-color);
+        margin: var(--md-gap) 0;
+    }
+
+    .epa-val {
+        color: var(--theme-color);
     }
 
     @media (max-width: 800px) {
