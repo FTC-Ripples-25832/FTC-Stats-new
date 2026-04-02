@@ -454,60 +454,61 @@ async function eventSearch(req: Request<{ season: string }>, res: Response) {
 
 // --- EPA proxy handlers ---
 
-async function epaTeam(req: Request<{ number: string }>, res: Response) {
+async function epaTeam(req: Request<{ number: string }>, res: Response): Promise<void> {
     let data = await epaClient.getTeamEpa(+req.params.number);
-    if (!data) return res.status(404).send("EPA data not available");
+    if (!data) { res.status(404).send("EPA data not available"); return; }
     res.send(data);
 }
 
-async function epaTeamSeason(req: Request<{ number: string; season: string }>, res: Response) {
+async function epaTeamSeason(req: Request<{ number: string; season: string }>, res: Response): Promise<void> {
     let data = await epaClient.getTeamSeasonEpa(+req.params.number, +req.params.season);
-    if (!data) return res.status(404).send("EPA data not available");
+    if (!data) { res.status(404).send("EPA data not available"); return; }
     res.send(data);
 }
 
-async function epaTeamSeasons(req: Request<{ number: string }>, res: Response) {
+async function epaTeamSeasons(req: Request<{ number: string }>, res: Response): Promise<void> {
     let data = await epaClient.getTeamAllSeasons(+req.params.number);
     res.send(data ?? []);
 }
 
-async function epaTeamMatches(req: Request<{ number: string; season: string }>, res: Response) {
+async function epaTeamMatches(req: Request<{ number: string; season: string }>, res: Response): Promise<void> {
     let data = await epaClient.getTeamMatchEpas(+req.params.number, +req.params.season);
     res.send(data ?? []);
 }
 
-async function epaRankings(req: Request<{ season: string }>, res: Response) {
-    let data = await epaClient.getEpaRankings(+req.params.season, {
-        limit: req.query.limit ? +req.query.limit : undefined,
-        offset: req.query.offset ? +req.query.offset : undefined,
-        country: req.query.country as string | undefined,
-        state: req.query.state as string | undefined,
-    });
+async function epaRankings(req: Request<{ season: string }>, res: Response): Promise<void> {
+    let opts: { limit?: number; offset?: number; country?: string; state?: string } = {};
+    if (req.query.limit) opts.limit = +req.query.limit;
+    if (req.query.offset) opts.offset = +req.query.offset;
+    if (req.query.country) opts.country = req.query.country as string;
+    if (req.query.state) opts.state = req.query.state as string;
+    let data = await epaClient.getEpaRankings(+req.params.season, opts);
     res.send(data ?? []);
 }
 
-async function epaSeason(req: Request<{ year: string }>, res: Response) {
+async function epaSeason(req: Request<{ year: string }>, res: Response): Promise<void> {
     let data = await epaClient.getSeasonEpa(+req.params.year);
-    if (!data) return res.status(404).send("EPA data not available");
+    if (!data) { res.status(404).send("EPA data not available"); return; }
     res.send(data);
 }
 
-async function epaEvent(req: Request<{ season: string; code: string }>, res: Response) {
+async function epaEvent(req: Request<{ season: string; code: string }>, res: Response): Promise<void> {
     let data = await epaClient.getEventEpa(+req.params.season, req.params.code);
     res.send(data ?? []);
 }
 
-async function epaPredict(req: Request, res: Response) {
+async function epaPredict(req: Request, res: Response): Promise<void> {
     let { red_teams, blue_teams, season } = req.body ?? {};
     if (!red_teams?.length || !blue_teams?.length) {
-        return res.status(400).send("red_teams and blue_teams are required");
+        res.status(400).send("red_teams and blue_teams are required");
+        return;
     }
     let data = await epaClient.predictMatch(red_teams, blue_teams, season ?? 2025);
-    if (!data) return res.status(503).send("EPA service unavailable");
+    if (!data) { res.status(503).send("EPA service unavailable"); return; }
     res.send(data);
 }
 
-async function epaHealth(_req: Request, res: Response) {
+async function epaHealth(_req: Request, res: Response): Promise<void> {
     let healthy = await epaClient.isEpaServiceHealthy();
     res.send({ epa_service: healthy ? "ok" : "unavailable" });
 }

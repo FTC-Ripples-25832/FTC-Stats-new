@@ -2,10 +2,12 @@
 
 import os
 
-DATABASE_URL = os.environ.get(
+_raw_db_url = os.environ.get(
     "DATABASE_URL",
     "postgresql://ftcscoutuser:ftcscoutpassword@localhost:5432/ftcscoutdb",
 )
+# Normalize postgres:// to postgresql:// (SQLAlchemy requires the latter)
+DATABASE_URL = _raw_db_url.replace("postgres://", "postgresql://", 1) if _raw_db_url.startswith("postgres://") else _raw_db_url
 
 EPA_PORT = int(os.environ.get("EPA_PORT", "8001"))
 EPA_HOST = os.environ.get("EPA_HOST", "0.0.0.0")
