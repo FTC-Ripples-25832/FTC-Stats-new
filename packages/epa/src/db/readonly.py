@@ -5,7 +5,7 @@ FTC-Stats database tables without ever writing to them. The table
 names and column names match the SnakeNamingStrategy used by TypeORM.
 """
 
-from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm import declarative_base
 
 ReadBase = declarative_base()
@@ -46,15 +46,18 @@ class Match(ReadBase):
 
     __tablename__ = "match"
 
-    season = Column(Integer, primary_key=True)
+    season = Column("event_season", Integer, primary_key=True)
     event_code = Column(String, primary_key=True)
-    id = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
     tournament_level = Column(String, nullable=True)
     series = Column(Integer, nullable=True)
-    match_num = Column(Integer, nullable=True)
     has_been_played = Column(Boolean, default=False)
-    scheduled_start_time = Column(String, nullable=True)
-    actual_start_time = Column(String, nullable=True)
+    scheduled_start_time = Column(DateTime, nullable=True)
+    actual_start_time = Column(DateTime, nullable=True)
+
+    @property
+    def match_num(self) -> int:
+        return self.id % 1000
 
 
 class TeamMatchParticipation(ReadBase):

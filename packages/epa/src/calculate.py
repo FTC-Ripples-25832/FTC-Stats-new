@@ -24,17 +24,21 @@ def get_score_stats(db: Session, season: int) -> tuple[float, float]:
     Reads from the dynamic match_score_YYYY tables managed by TypeORM.
     """
     table = f"match_score_{season}"
+    breakdown = get_breakdown(season)
 
     try:
         result = db.execute(
-            text(f"SELECT total_points FROM {table} WHERE total_points IS NOT NULL")
+            text(
+                f"SELECT {breakdown.total_column} "
+                f"FROM {table} WHERE {breakdown.total_column} IS NOT NULL"
+            )
         )
         scores = [row[0] for row in result if row[0] is not None]
     except Exception:
+        db.rollback()
         return 100.0, 30.0
 
     if not scores:
-        breakdown = get_breakdown(season)
         return breakdown.score_mean, breakdown.score_sd
 
     return float(np.mean(scores)), max(1.0, float(np.std(scores)))
@@ -43,10 +47,22 @@ def get_score_stats(db: Session, season: int) -> tuple[float, float]:
 def _get_match_scores(db: Session, season: int, event_code: str, match_id: str) -> dict:
     """Fetch match scores from dynamic match_score_YYYY table."""
     table = f"match_score_{season}"
+    breakdown = get_breakdown(season)
+
+    def sum_expr(columns: list[str]) -> str:
+        if not columns:
+            return "0"
+        return " + ".join(f"COALESCE({column}, 0)" for column in columns)
+
     try:
         result = db.execute(
             text(
-                f"SELECT alliance, total_points, total_points_np, auto_points, dc_points, eg_points "
+                f"SELECT alliance, "
+                f"{breakdown.total_column} AS total_points, "
+                f"{(breakdown.total_np_column or breakdown.total_column)} AS total_points_np, "
+                f"{sum_expr(breakdown.auto_columns)} AS auto_points, "
+                f"{sum_expr(breakdown.dc_columns)} AS dc_points, "
+                f"{sum_expr(breakdown.endgame_columns)} AS eg_points "
                 f"FROM {table} WHERE season = :season AND event_code = :event_code AND match_id = :match_id"
             ),
             {"season": season, "event_code": event_code, "match_id": match_id},
@@ -63,6 +79,7 @@ def _get_match_scores(db: Session, season: int, event_code: str, match_id: str) 
             }
         return scores
     except Exception:
+        db.rollback()
         return {}
 
 
@@ -105,11 +122,13 @@ def process_season_epa(db: Session, season: int, force: bool = False) -> Dict:
                 Match.event_code == event.code,
                 Match.has_been_played == True,
             )
-            .order_by(Match.tournament_level, Match.match_num)
+            .order_by(Match.tournament_level, Match.series, Match.id)
             .all()
         )
 
         for match in matches:
+            match_key = str(match.id)
+
             # Get team participation
             tmps = (
                 db.query(TeamMatchParticipation)
@@ -170,7 +189,7 @@ def process_season_epa(db: Session, season: int, force: bool = False) -> Dict:
                         EpaTeamMatch.team_number == team_num,
                         EpaTeamMatch.season == season,
                         EpaTeamMatch.event_code == event.code,
-                        EpaTeamMatch.match_id == match.id,
+                        EpaTeamMatch.match_id == match_key,
                     )
                     .first()
                 )
@@ -179,7 +198,7 @@ def process_season_epa(db: Session, season: int, force: bool = False) -> Dict:
                         team_number=team_num,
                         season=season,
                         event_code=event.code,
-                        match_id=match.id,
+                        match_id=match_key,
                         alliance=alliance,
                     )
                     db.add(etm)
@@ -223,7 +242,7 @@ def process_season_epa(db: Session, season: int, force: bool = False) -> Dict:
                         EpaTeamMatch.team_number == team_num,
                         EpaTeamMatch.season == season,
                         EpaTeamMatch.event_code == event.code,
-                        EpaTeamMatch.match_id == match.id,
+                        EpaTeamMatch.match_id == match_key,
                     )
                     .first()
                 )
