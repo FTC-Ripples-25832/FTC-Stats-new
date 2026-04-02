@@ -18,10 +18,22 @@ FROM base as build
 
 # Install packages needed to build node modules
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq -o Acquire::Retries=5 && \
-    apt-get install -y --no-install-recommends --fix-missing -o Acquire::Retries=5 \
-    python3 make g++ pkg-config \
-    libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev && \
+RUN set -eux; \
+    printf 'Acquire::http::Proxy "false";\nAcquire::https::Proxy "false";\n' > /etc/apt/apt.conf.d/99no-proxy; \
+    success=; \
+    for attempt in 1 2 3 4 5; do \
+        if apt-get update -qq -o Acquire::Retries=5 -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false && \
+           apt-get install -y --no-install-recommends --fix-missing -o Acquire::Retries=5 -o Acquire::http::Proxy=false -o Acquire::https::Proxy=false \
+           python3 make g++ pkg-config \
+           libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev; then \
+            success=1; \
+            break; \
+        fi; \
+        rm -rf /var/lib/apt/lists/*; \
+        echo "apt install failed on attempt ${attempt}; retrying" >&2; \
+        sleep 5; \
+    done; \
+    [ -n "$success" ]; \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application code
